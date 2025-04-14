@@ -1,0 +1,9 @@
+[14 Apr, 2025 - 20:58:22:5822] info: 📑 Visit the documentation at: http://localhost:4100
+[14 Apr, 2025 - 20:58:22:5822] info: ⚙️  Server is running on port: 4100
+[14 Apr, 2025 - 20:58:36:5836] http: ::1 GET /api/v1/users/login-busowner 200 - 155.200 ms
+[14 Apr, 2025 - 20:58:42:5842] error: 401 - Invalid credentials. - /api/v1/users/login-busowner - GET - ::1
+[14 Apr, 2025 - 20:58:42:5842] http: ::1 GET /api/v1/users/login-busowner 401 - 4.736 ms
+[14 Apr, 2025 - 21:03:01:31] info: 📑 Visit the documentation at: http://localhost:4100
+[14 Apr, 2025 - 21:03:01:31] info: ⚙️  Server is running on port: 4100
+[14 Apr, 2025 - 21:03:27:327] error: 401 - Invalid credentials. - /api/v1/users/login-busowner - GET - ::1
+[14 Apr, 2025 - 21:03:27:327] http: ::1 GET /api/v1/users/login-busowner 401 - 87.119 ms

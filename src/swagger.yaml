@@ -12,7 +12,7 @@ info:
 servers:
   - url: __SERVER_URL__
 paths:
-  /users/current-user:
+  /users/bus-owners:
     get:
       tags:
         - 🔐 Authentication
