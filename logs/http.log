@@ -118,3 +118,45 @@
 [14 Apr, 2025 - 06:48:15:4815] [35mhttp[39m: [35m::1 GET /swagger-ui-standalone-preset.js 200 - 10.653 ms[39m
 [14 Apr, 2025 - 06:48:15:4815] [35mhttp[39m: [35m::1 GET /swagger-ui-bundle.js 200 - 10.046 ms[39m
 [14 Apr, 2025 - 06:48:15:4815] [35mhttp[39m: [35m::1 GET /favicon-32x32.png 200 - 1.316 ms[39m
+[14 Apr, 2025 - 08:25:21:2521] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:25:21:2521] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:25:44:2544] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:25:44:2544] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:25:47:2547] [35mhttp[39m: [35m::1 GET / 304 - 7.937 ms[39m
+[14 Apr, 2025 - 08:25:47:2547] [35mhttp[39m: [35m::1 GET /swagger-ui-init.js 304 - 0.364 ms[39m
+[14 Apr, 2025 - 08:25:47:2547] [35mhttp[39m: [35m::1 GET /swagger-ui.css 200 - 7.747 ms[39m
+[14 Apr, 2025 - 08:25:47:2547] [35mhttp[39m: [35m::1 GET /swagger-ui-standalone-preset.js 200 - 7.691 ms[39m
+[14 Apr, 2025 - 08:25:47:2547] [35mhttp[39m: [35m::1 GET /swagger-ui-bundle.js 200 - 5.163 ms[39m
+[14 Apr, 2025 - 08:26:32:2632] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:26:32:2632] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:28:39:2839] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:28:39:2839] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:31:37:3137] [35mhttp[39m: [35m::1 GET /api/users/current-users 200 - 8.756 ms[39m
+[14 Apr, 2025 - 08:32:52:3252] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:32:52:3252] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:32:54:3254] [35mhttp[39m: [35m::1 GET /api/users/current-users 200 - 1.970 ms[39m
+[14 Apr, 2025 - 08:32:54:3254] [35mhttp[39m: [35m::1 GET /api/users/current-users 200 - 0.660 ms[39m
+[14 Apr, 2025 - 08:33:33:3333] [35mhttp[39m: [35m::1 GET /api/users/current-user 200 - 5.622 ms[39m
+[14 Apr, 2025 - 08:33:37:3337] [35mhttp[39m: [35m::1 GET /api/users/current-user 200 - 0.484 ms[39m
+[14 Apr, 2025 - 08:34:49:3449] [35mhttp[39m: [35m::1 GET /api/v1/users/current-user - - - ms[39m
+[14 Apr, 2025 - 08:35:19:3519] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:35:19:3519] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:36:11:3611] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:36:11:3611] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:37:25:3725] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:37:25:3725] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:38:05:385] [35mhttp[39m: [35m::1 GET /api/v1/users/current-user - - - ms[39m
+[14 Apr, 2025 - 08:41:31:4131] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:41:31:4131] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:41:36:4136] [35mhttp[39m: [35m::1 GET /api/v1/users/current-user 200 - 63.069 ms[39m
+[14 Apr, 2025 - 08:41:45:4145] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:41:45:4145] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:42:08:428] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:42:08:428] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:42:53:4253] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:42:53:4253] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:42:58:4258] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:42:58:4258] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
+[14 Apr, 2025 - 08:43:29:4329] [35mhttp[39m: [35m::1 GET /api/v1/users/current-user 200 - 80.997 ms[39m
+[14 Apr, 2025 - 08:48:03:483] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
+[14 Apr, 2025 - 08:48:03:483] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m

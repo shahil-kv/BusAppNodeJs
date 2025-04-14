@@ -1,5 +1,8 @@
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient()
 
 const generateAccessAndRefreshTokens = async (userId: string) => {
   try {
@@ -59,8 +62,9 @@ const changeCurrentPassword = asyncHandler(async (req: any, res: any) => {
   return null;
 });
 
-const getCurrentUser = asyncHandler(async (req: any, res: any) => {
-  return null;
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const users = await prisma.user.findMany()
+  res.json(users);
 });
 
 const handleSocialLogin = asyncHandler(async (req: any, res: any) => {
