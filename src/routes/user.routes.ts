@@ -41,7 +41,7 @@ router.route('/reset-password/:resetToken').post(userResetForgottenPasswordValid
 // Secured routes
 router.route('/logout').post(verifyJWT, logoutUser);
 router.route('/avatar').post(verifyJWT, updateUserAvatar);
-router.route('/current-user').get(verifyJWT, getCurrentUser);
+router.route('/current-user').get(getCurrentUser);
 router.route('/change-password').post(verifyJWT, userChangeCurrentPasswordValidator(), validate, changeCurrentPassword);
 router.route('/resend-email-verification').post(verifyJWT, resendEmailVerification);
 router.route('/assign-role/:userId').post(verifyJWT, verifyPermission([UserRolesEnum.ADMIN]), userAssignRoleValidator(), validate, assignRole);
