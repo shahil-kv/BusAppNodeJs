@@ -1,9 +1,0 @@
-[14 Apr, 2025 - 20:52:26:5226] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
-[14 Apr, 2025 - 20:52:26:5226] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
-[14 Apr, 2025 - 20:53:07:537] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
-[14 Apr, 2025 - 20:53:07:537] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
-[14 Apr, 2025 - 20:55:55:5555] [31merror[39m: [31m401 - Invalid credentials. - /api/v1/users/login-busowner - GET - ::1[39m
-[14 Apr, 2025 - 20:55:55:5555] [35mhttp[39m: [35m::1 GET /api/v1/users/login-busowner 401 - 121.956 ms[39m
-[14 Apr, 2025 - 20:56:02:562] [35mhttp[39m: [35m::1 GET /api/v1/users/login-busowner 200 - 95.549 ms[39m
-[14 Apr, 2025 - 20:56:59:5659] [34minfo[39m: [34m📑 Visit the documentation at: http://localhost:4100[39m
-[14 Apr, 2025 - 20:56:59:5659] [34minfo[39m: [34m⚙️  Server is running on port: 4100[39m
