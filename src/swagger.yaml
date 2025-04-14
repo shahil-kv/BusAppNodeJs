@@ -1,0 +1,1414 @@
+openapi: 3.0.3
+info:
+  title: Bus App
+  description: >-
+    # Bus App.app
+
+     Description
+    Testing Bus App
+
+  version: 1.3.1
+  contact: {}
+servers:
+  - url: http://localhost:8080 # add `http://localhost:<port_from_.env>/api/v1` in case of local testing
+paths:
+  /users/google:
+    get:
+      tags:
+        - 🔐 Authentication
+
+      summary: Redirect to google login
+      description: >-
+        Redirect user to this url when user clicks on the **`Login with
+        Google`** button.
+
+
+        This url will render the google concent screen where user can select the
+        google account with which he/she wants to login with.
+      operationId: redirectToGoogleLogin
+      responses:
+        '200':
+          description: ''
+  /users/google/callback:
+    get:
+      tags:
+        - 🔐 Authentication
+
+      summary: Google login callback url
+      description: >-
+        Google will send user details in JSON format once user successfully logs
+        in.
+
+
+        Backend will create an access and refresh token and will redirect user
+        to the appropreate frontend url with access token and refresh token in
+        the query parameter.
+      operationId: googleLoginCallbackUrl
+      responses:
+        '200':
+          description: ''
+  /users/github:
+    get:
+      tags:
+        - 🔐 Authentication
+
+      summary: Redirect to github login
+      description: >-
+        Redirect user to this url when user clicks on the **`Login with
+        Github`** button.
+
+
+        This url will render the github concent screen where user can select the
+        github account with which he/she wants to login with.
+      operationId: redirectToGithubLogin
+      responses:
+        '200':
+          description: ''
+  /users/github/callback:
+    get:
+      tags:
+        - 🔐 Authentication
+
+      summary: Github login callback url
+      description: >-
+        Github will send user details in JSON format once user successfully logs
+        in.
+
+
+        Backend will create an access and refresh token and will redirect user
+        to the appropreate frontend url with access token and refresh token in
+        the query parameter.
+      operationId: githubLoginCallbackUrl
+      responses:
+        '200':
+          description: ''
+  /users/current-user:
+    get:
+      tags:
+        - 🔐 Authentication
+      summary: Get logged in user
+      description: >-
+        The API endpoint allows you to retrieve the details of the currently
+        logged-in user based on their authentication token.
+
+
+        When accessing this endpoint with a valid authentication token, you will
+        receive a response containing the information of the user who is
+        currently authenticated and logged in.
+      operationId: getLoggedInUser
+      responses:
+        '200':
+          description: Get logged in user
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '443'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:44:47 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"1bb-YVaffq7t8o3of0yDl9g26tprr/8"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '493'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '631'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      __v:
+                        type: number
+                        example: 0
+                      _id:
+                        type: string
+                        example: 649e795264e7dba29b726936
+                      avatar:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 649e795264e7dba29b726935
+                          localPath:
+                            type: string
+                            example: ''
+                          url:
+                            type: string
+                            example: https://via.placeholder.com/200x200.png
+                      createdAt:
+                        type: string
+                        example: '2023-06-30T06:42:26.163Z'
+                      email:
+                        type: string
+                        example: user.email@domain.com
+                      isEmailVerified:
+                        type: boolean
+                        example: false
+                      loginType:
+                        type: string
+                        example: EMAIL_PASSWORD
+                      role:
+                        type: string
+                        example: ADMIN
+                      updatedAt:
+                        type: string
+                        example: '2023-06-30T06:44:29.831Z'
+                      username:
+                        type: string
+                        example: doejohn
+                  message:
+                    type: string
+                    example: Current user fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get logged in user:
+                  value:
+                    data:
+                      __v: 0
+                      _id: 649e795264e7dba29b726936
+                      avatar:
+                        _id: 649e795264e7dba29b726935
+                        localPath: ''
+                        url: https://via.placeholder.com/200x200.png
+                      createdAt: '2023-06-30T06:42:26.163Z'
+                      email: user.email@domain.com
+                      isEmailVerified: false
+                      loginType: EMAIL_PASSWORD
+                      role: ADMIN
+                      updatedAt: '2023-06-30T06:44:29.831Z'
+                      username: doejohn
+                    message: Current user fetched successfully
+                    statusCode: 200
+                    success: true
+  /users/verify-email/{verificationToken}:
+    get:
+      tags:
+        - 🔐 Authentication
+      summary: Verify user email
+      description: >-
+        The API endpoint is used to verify a user's email by accessing the
+        verification token (**verificationToken**) included in the path
+        variable.
+
+
+        When the user clicks on the email verification link provided to them,
+        this API is invoked to validate their email address.
+
+
+        By including the verification token in the URL path, the endpoint
+        confirms the authenticity of the token and marks the user's email as
+        verified.
+      operationId: verifyUserEmail
+      responses:
+        '200':
+          description: Verify user email
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '95'
+            Date:
+              schema:
+                type: string
+                example: Fri, 02 Jun 2023 06:06:05 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"5f-LuP/p60fMKWCCasH+xNnLel8HrI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isEmailVerified:
+                        type: boolean
+                        example: true
+                  message:
+                    type: string
+                    example: Email is verified
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Verify user email:
+                  value:
+                    data:
+                      isEmailVerified: true
+                    message: Email is verified
+                    statusCode: 200
+                    success: true
+    parameters:
+      - name: verificationToken
+        in: path
+        required: true
+        schema:
+          type: string
+          example: ffff8c2d25725516cf34c8cfa9c5f4d8f1f1f407
+  /api/v1/users/register:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Register user
+      description: >-
+        The API endpoint allows users to register or signup to create their
+        accounts.
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user.email@domain.com
+                password:
+                  type: string
+                  example: test@123
+                role:
+                  type: string
+                  example: ADMIN
+                username:
+                  type: string
+                  example: doejohn
+            example:
+              email: user.email@domain.com
+              password: test@123
+              role: ADMIN
+              username: doejohn
+      responses:
+        '201':
+          description: Register user
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '500'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:44:09 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"1f4-1q38Sbu25p0UVmeYQmrEv2VrgPg"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '495'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '772'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          __v:
+                            type: number
+                            example: 0
+                          _id:
+                            type: string
+                            example: 649e795264e7dba29b726936
+                          avatar:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 649e795264e7dba29b726935
+                              localPath:
+                                type: string
+                                example: ''
+                              url:
+                                type: string
+                                example: https://via.placeholder.com/200x200.png
+                          createdAt:
+                            type: string
+                            example: '2023-06-30T06:42:26.163Z'
+                          email:
+                            type: string
+                            example: user.email@domain.com
+                          isEmailVerified:
+                            type: boolean
+                            example: false
+                          loginType:
+                            type: string
+                            example: EMAIL_PASSWORD
+                          role:
+                            type: string
+                            example: ADMIN
+                          updatedAt:
+                            type: string
+                            example: '2023-06-30T06:42:26.247Z'
+                          username:
+                            type: string
+                            example: doejohn
+                  message:
+                    type: string
+                    example: >-
+                      Users registered successfully and verification email has
+                      been sent on your email.
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Register user:
+                  value:
+                    data:
+                      user:
+                        __v: 0
+                        _id: 649e795264e7dba29b726936
+                        avatar:
+                          _id: 649e795264e7dba29b726935
+                          localPath: ''
+                          url: https://via.placeholder.com/200x200.png
+                        createdAt: '2023-06-30T06:42:26.163Z'
+                        email: user.email@domain.com
+                        isEmailVerified: false
+                        loginType: EMAIL_PASSWORD
+                        role: ADMIN
+                        updatedAt: '2023-06-30T06:42:26.247Z'
+                        username: doejohn
+                    message: >-
+                      Users registered successfully and verification email has
+                      been sent on your email.
+                    statusCode: 200
+                    success: true
+  /users/login:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Login user
+      description: >-
+        The API endpoint allows users to log into the application securely and
+        also returns an access token.
+
+
+        When accessing this endpoint with valid login credentials, users will
+        receive an access token in the response.
+
+
+        Additionally, the API endpoint securely sets the access token within the
+        browser/client httpOnly cookies for future authentication and
+        authorization purposes.
+
+
+        This functionality ensures a secure and efficient login process for
+        users, providing them with an access token that can be used to
+        authenticate subsequent API requests.
+
+
+        By securely storing the access token in browser cookies, the endpoint
+        enables automatic inclusion of the access token in future API requests,
+        eliminating the need for users to manually manage and provide the token
+        with each request.
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: test@123
+                username:
+                  type: string
+                  example: doejohn
+            example:
+              password: test@123
+              username: doejohn
+      responses:
+        '200':
+          description: Login user
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '926'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:44:29 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"39e-a7Fdn0Th2/i/29/rw1he3r/pebo"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '494'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '648'
+            Set-Cookie:
+              schema:
+                type: string
+                example: >-
+                  refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho;
+                  Path=/; HttpOnly
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: >-
+                          eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjg4MTA3NDY5LCJleHAiOjE2ODgxOTM4Njl9.40qfVrWi8x8fGBRB9JBVCVsdMYvlwzjIRpffz5z7DK4
+                      refreshToken:
+                        type: string
+                        example: >-
+                          eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho
+                      user:
+                        type: object
+                        properties:
+                          __v:
+                            type: number
+                            example: 0
+                          _id:
+                            type: string
+                            example: 649e795264e7dba29b726936
+                          avatar:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 649e795264e7dba29b726935
+                              localPath:
+                                type: string
+                                example: ''
+                              url:
+                                type: string
+                                example: https://via.placeholder.com/200x200.png
+                          createdAt:
+                            type: string
+                            example: '2023-06-30T06:42:26.163Z'
+                          email:
+                            type: string
+                            example: user.email@domain.com
+                          isEmailVerified:
+                            type: boolean
+                            example: false
+                          loginType:
+                            type: string
+                            example: EMAIL_PASSWORD
+                          role:
+                            type: string
+                            example: ADMIN
+                          updatedAt:
+                            type: string
+                            example: '2023-06-30T06:44:29.831Z'
+                          username:
+                            type: string
+                            example: doejohn
+                  message:
+                    type: string
+                    example: User logged in successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Login user:
+                  value:
+                    data:
+                      accessToken: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjg4MTA3NDY5LCJleHAiOjE2ODgxOTM4Njl9.40qfVrWi8x8fGBRB9JBVCVsdMYvlwzjIRpffz5z7DK4
+                      refreshToken: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho
+                      user:
+                        __v: 0
+                        _id: 649e795264e7dba29b726936
+                        avatar:
+                          _id: 649e795264e7dba29b726935
+                          localPath: ''
+                          url: https://via.placeholder.com/200x200.png
+                        createdAt: '2023-06-30T06:42:26.163Z'
+                        email: user.email@domain.com
+                        isEmailVerified: false
+                        loginType: EMAIL_PASSWORD
+                        role: ADMIN
+                        updatedAt: '2023-06-30T06:44:29.831Z'
+                        username: doejohn
+                    message: User logged in successfully
+                    statusCode: 200
+                    success: true
+  /users/logout:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Logout user
+      description: >-
+        The API endpoint is responsible for logging out users from the
+        application and destroying the access token cookies stored on the
+        client-side.
+
+
+        When accessing this endpoint, it triggers the logout process, revoking
+        the user's authentication and terminating their active session.
+
+
+        Additionally, it ensures that any access token cookies associated with
+        the user's session are removed from the client's browser, effectively
+        logging them out from the application.
+      operationId: logoutUser
+      responses:
+        '200':
+          description: Logout user
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '71'
+            Date:
+              schema:
+                type: string
+                example: Sun, 04 Jun 2023 14:53:17 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"47-As20QlSbGGTq515zdhzWHPjwWhg"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            Set-Cookie:
+              schema:
+                type: string
+                example: >-
+                  refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;
+                  HttpOnly
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  message:
+                    type: string
+                    example: User logged out
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Logout user:
+                  value:
+                    data: {}
+                    message: User logged out
+                    statusCode: 200
+                    success: true
+  /users/refresh-token:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Refresh token
+      description: >-
+        The Refresh Access Token API is responsible for refreshing the access
+        token when it expires.
+
+
+        It allows you to make a request to this endpoint with the refresh token,
+        which has a lengthy expiry time, to obtain a new access token.
+
+
+        Simultaneously, the API sets the new access token in a cookie for future
+        authentication purposes while replacing the expired one.
+
+
+        This functionality ensures continuous access to protected resources by
+        automatically renewing the access token **without requiring the user to
+        reauthenticate manually**.
+
+
+        By utilizing the refresh token, the API securely refreshes the access
+        token and updates it in the cookie, ensuring seamless and uninterrupted
+        access to authorized endpoints.
+      operationId: refreshToken
+      responses:
+        '200':
+          description: Refresh token
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '556'
+            Date:
+              schema:
+                type: string
+                example: Wed, 31 May 2023 20:00:21 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"22c-gnaKNqPZuv/nGCkHvGfPrASxDPw"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            Set-Cookie:
+              schema:
+                type: string
+                example: >-
+                  refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc2ZTM0ZWJlMWNmYjljYzA4YmQ0NDYiLCJpYXQiOjE2ODU1NjMyMjEsImV4cCI6MTY4NjQyNzIyMX0.TJpj8-2qU__GI_dKDdrHwQvUWCFSFXCfgOuV6MV05UI;
+                  Path=/; HttpOnly
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: >-
+                          eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc2ZTM0ZWJlMWNmYjljYzA4YmQ0NDYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2ODU1NjMyMjEsImV4cCI6MTY4NTY0OTYyMX0.o6vbC9qrMHV_FfQNFZX3h053eOHvBgbl0iQJSB5NeNc
+                      refreshToken:
+                        type: string
+                        example: >-
+                          eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc2ZTM0ZWJlMWNmYjljYzA4YmQ0NDYiLCJpYXQiOjE2ODU1NjMyMjEsImV4cCI6MTY4NjQyNzIyMX0.TJpj8-2qU__GI_dKDdrHwQvUWCFSFXCfgOuV6MV05UI
+                  message:
+                    type: string
+                    example: Access token refreshed
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Refresh token:
+                  value:
+                    data:
+                      accessToken: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc2ZTM0ZWJlMWNmYjljYzA4YmQ0NDYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2ODU1NjMyMjEsImV4cCI6MTY4NTY0OTYyMX0.o6vbC9qrMHV_FfQNFZX3h053eOHvBgbl0iQJSB5NeNc
+                      refreshToken: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc2ZTM0ZWJlMWNmYjljYzA4YmQ0NDYiLCJpYXQiOjE2ODU1NjMyMjEsImV4cCI6MTY4NjQyNzIyMX0.TJpj8-2qU__GI_dKDdrHwQvUWCFSFXCfgOuV6MV05UI
+                    message: Access token refreshed
+                    statusCode: 200
+                    success: true
+  /users/assign-role/{userId}:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Assign role
+      description: >-
+        The API endpoint allows administrators to change the roles of users
+        within the system.
+
+
+        This functionality is restricted to users with the `ADMIN` role,
+        ensuring that only authorized personnel can modify user roles.
+
+
+        It provides an essential tool for managing user permissions and ensuring
+        proper authorization levels within the system.
+      operationId: assignRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: ADMIN
+            example:
+              role: ADMIN
+      responses:
+        '200':
+          description: Assign role
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '81'
+            Date:
+              schema:
+                type: string
+                example: Thu, 01 Jun 2023 18:21:25 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"51-BNIeEDSuAnaNdBbrTmV3XGTq/UI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  message:
+                    type: string
+                    example: Role changed for the user
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Assign role:
+                  value:
+                    data: {}
+                    message: Role changed for the user
+                    statusCode: 200
+                    success: true
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 6489626dc265f0aa2dbb73a4
+  /users/resend-email-verification:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Resend email verification
+      description: >-
+        The API endpoint allows the logged-in user to request a resend of the
+        email verification mail.
+
+
+        By accessing this endpoint, the user can trigger the system to send
+        another email verification link to their registered email address.
+
+
+        This functionality is useful in cases where the initial verification
+        email may have been missed, expired, or encountered delivery issues.
+      operationId: resendEmailVerification
+      responses:
+        '200':
+          description: Resend email verification
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '90'
+            Date:
+              schema:
+                type: string
+                example: Tue, 11 Jul 2023 11:21:09 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"5a-X7vQiakRpbaQ9FVZl382RqNiEXM"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '496'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '256'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  message:
+                    type: string
+                    example: Mail has been sent to your mail ID
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Resend email verification:
+                  value:
+                    data: {}
+                    message: Mail has been sent to your mail ID
+                    statusCode: 200
+                    success: true
+        '409':
+          description: Email already verified
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '308'
+            Date:
+              schema:
+                type: string
+                example: Tue, 11 Jul 2023 11:20:26 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"134-2nk8UuSQMCvNMSSCvXDmtH9sxC0"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '499'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '295'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    nullable: true
+                    example: null
+                  errors:
+                    type: array
+                    items: {}
+                    example: []
+                  message:
+                    type: string
+                    example: Email is already verified!
+                  stack:
+                    type: string
+                    example: |-
+                      Error: Email is already verified!
+                          at file:///usr/src/freeapi/src/controllers/apps/auth/user.controllers.js:240:11
+                          at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                  statusCode:
+                    type: number
+                    example: 409
+                  success:
+                    type: boolean
+                    example: false
+              examples:
+                Email already verified:
+                  value:
+                    data: null
+                    errors: []
+                    message: Email is already verified!
+                    stack: |-
+                      Error: Email is already verified!
+                          at file:///usr/src/freeapi/src/controllers/apps/auth/user.controllers.js:240:11
+                          at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    statusCode: 409
+                    success: false
+  /users/change-password:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Change current password
+      description: >-
+        The Change Password API allows logged-in users to update their current
+        password by providing the old password as a verification step.
+
+
+        This API provides a secure mechanism for users to change their passwords
+        within the application.
+
+
+        By accessing this endpoint and providing the old password, users can
+        initiate the password change process and set a new password of their
+        choice.
+      operationId: changeCurrentPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: test@123
+                oldPassword:
+                  type: string
+                  example: new@123
+            example:
+              newPassword: test@123
+              oldPassword: new@123
+      responses:
+        '200':
+          description: Change current password
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '85'
+            Date:
+              schema:
+                type: string
+                example: Wed, 31 May 2023 19:59:47 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"55-CyGJCaxqcCXrzMloar9z7m95mvk"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  message:
+                    type: string
+                    example: Password changed successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Change current password:
+                  value:
+                    data: {}
+                    message: Password changed successfully
+                    statusCode: 200
+                    success: true
+  /users/forgot-password:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Forgot password request
+      description: >-
+        The API endpoint allows you to send a forgot password email by providing
+        the user's email ID.
+
+
+        When accessing this endpoint and providing the email ID as a parameter,
+        the API initiates the process of sending a password reset email to the
+        specified email address.
+
+
+        This functionality is useful for implementing password recovery
+        mechanisms within your application, allowing users to reset their
+        passwords securely.
+      operationId: forgotPasswordRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user.email@domain.com
+            example:
+              email: user.email@domain.com
+      responses:
+        '200':
+          description: Forgot password request
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '105'
+            Date:
+              schema:
+                type: string
+                example: Wed, 31 May 2023 19:56:15 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"69-7OD21C6OqsuAipwphfFVCzbFDQc"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  message:
+                    type: string
+                    example: Password reset mail has been sent on your mail id
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Forgot password request:
+                  value:
+                    data: {}
+                    message: Password reset mail has been sent on your mail id
+                    statusCode: 200
+                    success: true
+  /users/reset-password/{resetToken}:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Reset forgotten password
+      description: >-
+        The API endpoint enables users to reset their password through the
+        password reset email.
+
+
+        By providing the new password and the password reset token obtained from
+        the URL, users can securely reset their password and regain access to
+        their account.
+
+
+        This functionality ensures a secure and streamlined password reset
+        process, allowing users to update their password conveniently and
+        protect their account from unauthorized access.
+      operationId: resetForgottenPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: test@123
+            example:
+              newPassword: test@123
+      responses:
+        '200':
+          description: Reset forgotten password
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '83'
+            Date:
+              schema:
+                type: string
+                example: Wed, 31 May 2023 19:56:40 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"53-RWrdVFUHS8Zx4JB6qmRarYVrwKw"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  message:
+                    type: string
+                    example: Password reset successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Reset forgotten password:
+                  value:
+                    data: {}
+                    message: Password reset successfully
+                    statusCode: 200
+                    success: true
+    parameters:
+      - name: resetToken
+        in: path
+        required: true
+        schema:
+          type: string
+          example: ''
+  /users/avatar:
+
+tags:
+  - name: 🔐 Authentication
+    description: >-
+      This section encompasses all the APIs related to user authentication.
+  - name: 🚫 Danger Zone
+    description: '**WARNING: Sensitive Operations ⚠️**'
