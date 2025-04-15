@@ -1,0 +1,102 @@
+[15 Apr, 2025 - 14:49:10:4910] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:49:10:4910] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:49:57:4957] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:49:57:4957] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:50:21:5021] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:50:21:5021] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:50:45:5045] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:50:45:5045] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:51:38:5138] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:51:38:5138] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:51:48:5148] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:51:48:5148] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:52:13:5213] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:52:13:5213] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:52:28:5228] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:52:28:5228] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:52:30:5230] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:52:30:5230] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:53:02:532] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:53:02:532] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:54:00:540] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:54:01:541] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:54:15:5415] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:54:15:5415] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:55:26:5526] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:55:26:5526] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:56:36:5636] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:56:36:5636] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 14:57:09:579] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 14:57:09:579] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:00:49:049] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:00:49:049] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:11:42:1142] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:11:42:1142] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:13:34:1334] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:13:34:1334] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:13:34:1334] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:13:56:1356] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:13:56:1356] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:23:36:2336] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:23:36:2336] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:27:27:2727] error: 401 - Invalid credentials. - /api/v1/users/login-busowner - POST - ::1
+[15 Apr, 2025 - 15:27:33:2733] error: 401 - Invalid credentials. - /api/v1/users/login-busowner - POST - ::1
+[15 Apr, 2025 - 15:30:20:3020] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:30:20:3020] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:30:20:3020] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:30:36:3036] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:30:37:3037] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:30:37:3037] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:38:02:382] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:38:02:382] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:38:02:382] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:38:11:3811] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:38:11:3811] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:38:11:3811] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:40:31:4031] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:40:31:4031] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:40:31:4031] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:40:56:4056] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:40:57:4057] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:40:57:4057] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:41:23:4123] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:41:23:4123] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:41:23:4123] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:41:25:4125] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:41:25:4125] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:41:25:4125] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:43:02:432] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:43:02:432] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:43:02:432] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:46:31:4631] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:46:32:4632] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:46:32:4632] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:48:03:483] error: 400 - Error: Bus Owner ID 1 does not exist. - /api/v1/users/manage-bus - POST - ::1
+[15 Apr, 2025 - 15:49:17:4917] error: 409 - Error: Bus with registration number 'KL-07-ZZ-9999' already exists (ID: 1). - /api/v1/users/manage-bus - POST - ::1
+[15 Apr, 2025 - 15:53:06:536] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 15:53:07:537] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 15:53:07:537] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 15:54:34:5434] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:10:51:1051] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:10:51:1051] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:12:05:125] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:12:05:125] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:12:05:125] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:12:53:1253] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:12:54:1254] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:12:54:1254] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:13:47:1347] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:13:47:1347] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:13:47:1347] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:14:13:1413] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:14:14:1414] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:14:14:1414] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:14:18:1418] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:14:18:1418] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:14:18:1418] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:14:31:1431] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:14:31:1431] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:14:31:1431] info: ⚙️  Server is running on port: 4100
+[15 Apr, 2025 - 16:17:42:1742] info: Received SIGTERM. Closing http server.
+[15 Apr, 2025 - 16:17:42:1742] info: 📑 Visit the documentation at: http://localhost:4100
+[15 Apr, 2025 - 16:17:42:1742] info: ⚙️  Server is running on port: 4100

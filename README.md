@@ -1,102 +1,176 @@
-# NodeNX
+# Bus Tracking App Backend
 
-<a alt="Nx logs" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Welcome to the Bus Tracking App Backend! This document explains what the project does, how it's structured, and how to get it running.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## What is this?
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/node?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This is the backend server for a Bus Tracking application. It handles:
 
-## Run tasks
+- Managing bus owners (registration, login).
+- Managing buses (adding, updating, deleting buses linked to owners).
+- Managing bus routes (defining stops, sequence, and timings).
+- Providing an API (Application Programming Interface) for a frontend application (like a web or mobile app) to interact with.
 
-To run the dev server for your app, use:
+Think of it as the "brain" behind the scenes that stores and processes all the data related to buses and owners.
 
-```sh
-npx nx serve Node_NX
+## How it Works: The Request Lifecycle
+
+When a request comes into the server (e.g., someone trying to register a new bus owner), it goes through several steps. This diagram shows the typical flow:
+
+```mermaid
+graph LR
+    A[Client Sends Request<br>(e.g., POST /api/v1/bus-owner/register)] --> B(Node.js HTTP Server<br>Listens on Port);
+    B --> C{Express App<br>(app.ts)};
+    C --> D(Global Middleware Pipeline);
+    D --> E{Route Matching};
+
+    subgraph D [Global Middleware]
+        direction TB
+        D1(CORS Check) --> D2(Rate Limiter) --> D3(Body Parsers<br>JSON/URL Encoded) --> D4(Cookie Parser) --> D5(Morgan Request Logging);
+    end
+
+    E -- Path Matches<br>/api/v1/bus-owner --> F{BusOwner Router<br>(busOwner.routes.ts)};
+    E -- Path Doesn't Match --> C; # Or potentially 404 handler
+
+    F -- Route Matches<br>/register-busowner --> G(Route Middleware<br>Validation);
+    G -- Validation OK --> H(Controller Function<br>e.g., BusOwnerRegistration);
+    G -- Validation Fails --> I(Error Passed to `next()`);
+
+    H -- Success --> J(Format Success Response<br>ApiResponse);
+    H -- Error Thrown --> I;
+
+    J --> K(Express Sends Response<br>e.g., res.json());
+    K --> L[Client Receives<br>Success Response];
+    K --> M(Morgan Logs Response);
+
+    I --> N{Error Handling Middleware<br>(errorHandler in error.middleware.ts)};
+    N --> O(Log Error with Winston);
+    O --> P(Format Error Response<br>ApiError);
+    P --> K; # Express Sends Error Response
+
+    style F fill:#f9f,stroke:#333,stroke-width:2px
+    style H fill:#ccf,stroke:#333,stroke-width:2px
+    style N fill:#fcc,stroke:#333,stroke-width:2px
 ```
 
-To create a production bundle:
+**Explanation of the Flow:**
 
-```sh
-npx nx build Node_NX
+1.  **Request In:** A client (like a web browser or mobile app) sends a request to the server's address and port.
+2.  **Server Receives:** The basic Node.js server listens for requests and passes them to the Express framework.
+3.  **Global Middleware:** The request goes through a series of checks and transformations defined in `src/app.ts`:
+    - **CORS:** Checks if the request is allowed from the client's origin.
+    - **Rate Limiter:** Prevents too many requests from the same IP address.
+    - **Body Parsers:** Reads incoming data (like JSON) and makes it available in `req.body`.
+    - **Cookie Parser:** Reads cookies sent by the client.
+    - **Morgan Logging:** Logs basic information about the incoming request (like `POST /api/v1/bus-owner/register`).
+4.  **Routing:** Express looks at the request path (e.g., `/api/v1/bus-owner/register-busowner`) and finds the matching router (here, `busOwner.routes.ts`).
+5.  **Route Middleware:** The specific route might have its own middleware, especially for **validation** (`express-validator` rules defined in `src/validators/`).
+6.  **Controller:** If validation passes, the corresponding controller function (e.g., `BusOwnerRegistration` in `src/controllers/BusOwner/busOwner.controller.ts`) is executed. This is where the main logic happens (interacting with the database via Prisma, etc.).
+7.  **Response:**
+    - **Success:** The controller prepares a successful response (often using `ApiResponse` from `src/utils/`) and sends it back via `res.json()`. Morgan logs the successful response.
+    - **Error:** If anything goes wrong (validation fails, database error, etc.), an error is generated (often using `ApiError` from `src/utils/`). This error skips the normal flow and goes directly to the **Global Error Handler** (`errorHandler` in `src/middleware/error.middleware.ts`).
+8.  **Error Handling:** The `errorHandler` logs the detailed error using **Winston** (`logs/error.log`) and sends a standardized error response back to the client.
+
+## Tech Stack
+
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Language:** TypeScript
+- **Database ORM:** Prisma (Manages database interactions)
+- **Database:** (You'll need to specify this based on your `prisma/schema.prisma` or `.env` file - e.g., PostgreSQL, MySQL)
+- **API Documentation:** Swagger UI (`swagger-jsdoc`, `swagger-ui-express`)
+- **Validation:** `express-validator`
+- **Logging:** Winston (Detailed logs), Morgan (HTTP request logs)
+- **Development Tools:** Nx Workspace, ESLint, Prettier, Husky
+
+## Project Structure Guide
+
+```
+.
+├── prisma/             # Database schema definition
+├── src/
+│   ├── app.ts          # Core Express setup, global middleware
+│   ├── main.ts         # Starts the HTTP server
+│   ├── configs/        # Specific configurations (like rate limits)
+│   ├── constants.ts    # Reusable constant values
+│   ├── controllers/    # Handles incoming requests, contains business logic
+│   ├── logger/         # Logging setup (Winston, Morgan)
+│   ├── middleware/     # Reusable request handlers (auth, error handling)
+│   ├── routes/         # Defines API endpoints and links them to controllers
+│   ├── utils/          # Helper classes/functions (ApiError, ApiResponse)
+│   ├── validators/     # Input validation rules
+│   └── assets/         # Static files (if any)
+├── logs/               # Where log files are stored
+├── generated/          # Auto-generated Prisma client code (don't edit)
+├── .env.sample         # Example environment variables file
+├── package.json        # Lists project dependencies and scripts
+├── tsconfig.json       # TypeScript compiler options
+└── README.md           # You are here!
 ```
 
-To see all available targets to run for a project, run:
+## Getting Started: Setup
 
-```sh
-npx nx show project Node_NX
-```
+1.  **Get the code:**
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+    ```bash
+    git clone <repository-url>
+    cd <repository-directory>
+    ```
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+2.  **Install necessary tools:**
 
-## Add new projects
+    ```bash
+    npm install
+    ```
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+3.  **Configure your environment:**
 
-Use the plugin's generator to create new projects.
+    - Make a copy of the example environment file:
+      ```bash
+      cp .env.sample .env
+      ```
+    - Open the `.env` file in a text editor.
+    - **Crucially, set the `DATABASE_URL`**. This tells Prisma how to connect to your database (e.g., `postgresql://user:password@host:port/database`).
+    - Set the `PORT` (e.g., `8080`).
+    - Fill in any other required values (like `JWT_SECRET` if you're using authentication).
 
-To generate a new application, use:
+4.  **Prepare the database:**
+    - Make sure your database server (like PostgreSQL) is running.
+    - Apply the database schema defined in `prisma/schema.prisma`:
+      ```bash
+      npx prisma migrate dev --name init
+      ```
+      _(This creates the tables in your database)_
+    - Generate the Prisma client code (needed to interact with the DB from TypeScript):
+      ```bash
+      npx prisma generate
+      ```
 
-```sh
-npx nx g @nx/node:app demo
-```
+## Running the App
 
-To generate a new library, use:
+- **For development (auto-restarts on changes):**
 
-```sh
-npx nx g @nx/node:lib mylib
-```
+  ```bash
+  npm start
+  ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+  The server will usually be accessible at `http://localhost:PORT` (replace `PORT` with the value in your `.env`).
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **To build for production:**
+  ```bash
+  npm run build
+  ```
+  _(This creates optimized JavaScript files, usually in a `dist/` folder)_
+  ```bash
+  node dist/src/main.js # Or the correct path to the built main file
+  ```
 
-## Set up CI!
+## API Documentation (Swagger)
 
-### Step 1
+While the server is running, you can usually view interactive API documentation in your browser. Look in `src/app.ts` for a line like `app.use('/api-docs', ...)` to find the correct path (e.g., `http://localhost:PORT/api-docs`).
 
-To connect to Nx Cloud, run the following command:
+## Code Quality Tools
 
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/node?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **Linting (Check code style):** `npm run lint`
+- **Formatting (Auto-fix style):** `npm run format`
+  _(These often run automatically before you commit code, thanks to Husky and lint-staged)_

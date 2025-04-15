@@ -1,37 +1,48 @@
 import { createServer } from "http";
-require("dotenv").config();
-import path from "path";
-import cookieParser from "cookie-parser";
-import fs from "fs";
-import morganMiddleware from "./logger/morgan.logger";
-import requestIp from "request-ip";
-import YAML from "yaml";
-import express from "express";
-import cors from "cors";
-import { avoidInProduction } from "./middleware/auth.middleware";
-import { ApiError } from "./utils/ApiError";
-import { ApiResponse } from "./utils/ApiResponse";
-import * as swaggerUi from "swagger-ui-express";
 import dotenv from "dotenv";
 dotenv.config();
+import cookieParser from "cookie-parser";
+import morganMiddleware from "./logger/morgan.logger";
+import requestIp from "request-ip";
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import * as swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+import limiter from "./configs/limiter";
+import busOwnerRouter from "./routes/BusOwner/busOwner.routes";
+import busRouter from "./routes/Bus/Bus.routes";
+import { errorHandler } from "./middleware/error.middleware";
 
-/**
- * for setting app the url for swagger dynamically using the .env file
- */
-const rootDir = process.cwd();
-const swaggerPath = path.join(rootDir, "src", "swagger.yaml");
-const fileContent = fs.readFileSync(swaggerPath, "utf8");
-const port = process.env.PORT || 8080;
-const baseUrl = process.env.BASE_URL || "http://localhost";
-const apiPrefix = process.env.API_PREFIX || "/api/v1";
-const fullUrl = `${baseUrl}:${port}${apiPrefix}`;
-const updatedContent = fileContent.replace("__SERVER_URL__", fullUrl);
-const swaggerDocument = YAML.parse(updatedContent);
+// Swagger definition
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Bus API",
+      version: "1.0.0",
+      description: "API documentation for the Bus Application",
+    },
+    servers: [
+      {
+        url: `${process.env.BASE_URL || "http://localhost"}:${
+          process.env.PORT || 8080
+        }${process.env.API_PREFIX || "/api/v1"}`,
+        description: "Development server",
+      },
+    ],
+  },
+  apis: ["./src/routes/**/*.ts"], // Path to the API docs (your route files)
+};
+
+// Generate Swagger specification
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 const httpServer = createServer(app);
 
 // global middlewares
+app.use(helmet()); // Use helmet for security headers
 app.use(
   cors({
     origin:
@@ -54,58 +65,17 @@ app.use(cookieParser());
 
 app.use(morganMiddleware);
 
-//imports routes
-import userRouter from "./routes/user.routes";
-import logger from "./logger/winston.logger";
-import { errorHandler } from "./middleware/error.middleware";
-import limiter from "./configs/limiter";
-
-//user auth
-app.use("/api/v1/users", userRouter);
-
-// ! 🚫 Danger Zone
-app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {
-  const isTrue = true;
-  if (isTrue) {
-    // // Drop the whole DB
-    // await dbInstance.connection.db.dropDatabase({
-    //   dbName: DB_NAME,
-    // });
-
-    const directory = "./public/images";
-
-    // Remove all product images from the file system
-    fs.readdir(directory, (err, files) => {
-      if (err) {
-        // fail silently
-        logger.error("Error while removing the images: ", err);
-      } else {
-        for (const file of files) {
-          if (file === ".gitkeep") continue;
-          fs.unlink(path.join(directory, file), (err) => {
-            if (err) throw err;
-          });
-        }
-      }
-    });
-    // remove the seeded users if exist
-    fs.unlink("./public/temp/seed-credentials.json", (err) => {
-      // fail silently
-      if (err) logger.error("Seed credentials are missing.");
-    });
-    return res
-      .status(200)
-      .json(new ApiResponse(200, null, "Database dropped successfully"));
-  }
-  throw new ApiError(500, "Something went wrong while dropping the database");
-});
+//user route
+app.use("/api/v1/bus-owner", busOwnerRouter);
+//bus route
+app.use("/api/v1/bus", busRouter);
 
 // * API DOCS
-// ? Keeping swagger code at the end so that we can load swagger on "/" route
+// ? Serve the dynamically generated Swagger docs
 app.use(
-  "/",
+  "/", // Serve Swagger UI at the root
   swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
+  swaggerUi.setup(swaggerSpec, {
     swaggerOptions: {
       docExpansion: "none", // keep all the sections collapsed by default
     },
