@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body } from "express-validator"; // Import both body and query
 
 const manageBusValidation = () => {
   return [
@@ -11,12 +11,12 @@ const manageBusValidation = () => {
 
 const GetBusOwnerDashboardValidation = () => {
   return [
-    body("ownerId") // Check the route parameter named 'ownerId'
+    body("ownerId") // Validate the body parameter 'ownerId'
+      .trim()
       .notEmpty()
-      .withMessage("Owner ID route parameter is required.")
+      .withMessage("Body parameter 'ownerId' is required.")
       .isInt({ min: 1 })
-      .withMessage("Owner ID must be a positive integer.")
-      .toInt(), // Convert valid parameter to an integer
+      .withMessage("Body parameter 'ownerId' must be a positive integer."),
   ];
 };
 

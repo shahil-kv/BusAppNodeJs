@@ -7,7 +7,7 @@ import {
 import {
   busOwnerLoginValidator,
   busOwnerRegisteration,
-} from "../../validators/auth/BusOwner.validate";
+} from "../../validators/BusOwner/BusOwner.validate";
 import { validate } from "../../validators/validate";
 const router = Router();
 

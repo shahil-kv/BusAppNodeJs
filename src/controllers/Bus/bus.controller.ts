@@ -75,57 +75,21 @@ const manageBus = asyncHandler(async (req, res) => {
     );
 });
 
-// Define/Update the interface for the structure returned by the function
-interface OwnerOperationalData {
-  // Renamed interface for better description
-  BusList: Array<{
-    bus_id: number;
-    registration_number: string;
-    model: string;
-    capacity: number;
-    bus_created_at: string;
-    bus_updated_at: string;
-    routes: Array<{
-      route_id: number;
-      sequence_order: number;
-      // ... other route fields
-      start_time: string;
-      end_time: string;
-      route_created_at: string;
-      route_updated_at: string;
-    }>;
-  }>;
-  // **** THIS PART IS UPDATED ****
-  reports: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    reportList: Array<any>; // Define specific Report type later if needed
-    summaryMetrics: {
-      totalBusesOperated: number;
-      activeRoutesReported: number;
-      totalDistanceCoveredToday: number;
-      totalRevenueReportedToday: number;
-      metricsLastUpdated: string;
-    };
-  };
-  // **** END OF UPDATE ****
-}
-
-type FunctionResult = { get_owner_dashboard_data: OwnerOperationalData | null };
-
-// --- Controller Logic (mostly unchanged) ---
 const GetBusOwnersDashboard = asyncHandler(async (req, res) => {
-  // Renamed controller
+  console.log("GetBusOwnersDashboard function called");
   const { ownerId } = req.body;
-  console.log(req.body);
+  console.log("shail");
 
   if (isNaN(ownerId)) {
     throw new ApiError(400, "Invalid owner ID provided.");
   }
 
   // Call the *updated* PostgreSQL function
-  const result = await prisma.$queryRaw<FunctionResult[]>`
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = await prisma.$queryRaw<any[]>`
       SELECT * FROM public.get_owner_dashboard_data(${ownerId}::integer);
     `;
+  console.log(result);
 
   // Basic check (unchanged)
   if (
