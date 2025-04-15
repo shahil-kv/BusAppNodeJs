@@ -19,33 +19,33 @@ When a request comes into the server (e.g., someone trying to register a new bus
 
 ```mermaid
 graph LR
-    A[Client Sends Request<br>(e.g., POST /api/v1/bus-owner/register)] --> B(Node.js HTTP Server<br>Listens on Port);
-    B --> C{Express App<br>(app.ts)};
+    A["Client Sends Request\n(e.g., POST /api/v1/bus-owner/register)"] --> B("Node.js HTTP Server\nListens on Port");
+    B --> C{"Express App\n(app.ts)"};
     C --> D(Global Middleware Pipeline);
     D --> E{Route Matching};
 
     subgraph D [Global Middleware]
         direction TB
-        D1(CORS Check) --> D2(Rate Limiter) --> D3(Body Parsers<br>JSON/URL Encoded) --> D4(Cookie Parser) --> D5(Morgan Request Logging);
+        D1(CORS Check) --> D2(Rate Limiter) --> D3("Body Parsers\nJSON/URL Encoded") --> D4(Cookie Parser) --> D5(Morgan Request Logging);
     end
 
-    E -- Path Matches<br>/api/v1/bus-owner --> F{BusOwner Router<br>(busOwner.routes.ts)};
-    E -- Path Doesn't Match --> C; # Or potentially 404 handler
+    E -- "Path Matches\n/api/v1/bus-owner" --> F{"BusOwner Router\n(busOwner.routes.ts)"};
+    E -- "Path Doesn't Match" --> C; # Or potentially 404 handler
 
-    F -- Route Matches<br>/register-busowner --> G(Route Middleware<br>Validation);
-    G -- Validation OK --> H(Controller Function<br>e.g., BusOwnerRegistration);
-    G -- Validation Fails --> I(Error Passed to `next()`);
+    F -- "Route Matches\n/register-busowner" --> G("Route Middleware\nValidation");
+    G -- Validation OK --> H("Controller Function\ne.g., BusOwnerRegistration");
+    G -- "Validation Fails" --> I(Error Passed to `next()`);
 
-    H -- Success --> J(Format Success Response<br>ApiResponse);
-    H -- Error Thrown --> I;
+    H -- Success --> J("Format Success Response\nApiResponse");
+    H -- "Error Thrown" --> I;
 
-    J --> K(Express Sends Response<br>e.g., res.json());
-    K --> L[Client Receives<br>Success Response];
+    J --> K("Express Sends Response\ne.g., res.json()");
+    K --> L["Client Receives\nSuccess Response"];
     K --> M(Morgan Logs Response);
 
-    I --> N{Error Handling Middleware<br>(errorHandler in error.middleware.ts)};
+    I --> N{"Error Handling Middleware\n(errorHandler in error.middleware.ts)"};
     N --> O(Log Error with Winston);
-    O --> P(Format Error Response<br>ApiError);
+    O --> P("Format Error Response\nApiError");
     P --> K; # Express Sends Error Response
 
     style F fill:#f9f,stroke:#333,stroke-width:2px
