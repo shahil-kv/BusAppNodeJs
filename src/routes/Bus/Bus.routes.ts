@@ -1,6 +1,12 @@
 import { Router } from "express";
-import { manageBus } from "../../controllers/Bus/bus.controller";
-import { manageBusValidation } from "../../validators/bus/Bus.validate";
+import {
+  GetBusOwnersDashboard,
+  manageBus,
+} from "../../controllers/Bus/bus.controller";
+import {
+  GetBusOwnerDashboardValidation,
+  manageBusValidation,
+} from "../../validators/bus/Bus.validate";
 import { validate } from "../../validators/validate";
 const router = Router();
 
@@ -80,4 +86,7 @@ const router = Router();
  */
 router.route("/manage-bus").post(manageBusValidation(), validate, manageBus);
 
+router
+  .route("/get-owner-dashboard")
+  .get(GetBusOwnerDashboardValidation(), validate, GetBusOwnersDashboard);
 export default router;

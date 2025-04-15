@@ -16,20 +16,6 @@ const manageBus = asyncHandler(async (req, res) => {
     busIdToModify,
   } = req.body;
 
-  // Basic validation (add more robust validation as needed)
-  if (!opsMode || !["INSERT", "UPDATE", "DELETE"].includes(opsMode)) {
-    throw new ApiError(400, "Invalid opsMode specified.");
-  }
-  if (opsMode === "INSERT" && (!busOwnerId || !registrationNumber)) {
-    throw new ApiError(
-      400,
-      "busOwnerId and registrationNumber are required for INSERT."
-    );
-  }
-  if ((opsMode === "UPDATE" || opsMode === "DELETE") && !busIdToModify) {
-    throw new ApiError(400, "busIdToModify is required for UPDATE or DELETE.");
-  }
-
   const routesJsonString =
     Array.isArray(routes) && routes.length > 0 ? JSON.stringify(routes) : null;
 
@@ -89,4 +75,93 @@ const manageBus = asyncHandler(async (req, res) => {
     );
 });
 
-export { manageBus };
+// Define/Update the interface for the structure returned by the function
+interface OwnerOperationalData {
+  // Renamed interface for better description
+  BusList: Array<{
+    bus_id: number;
+    registration_number: string;
+    model: string;
+    capacity: number;
+    bus_created_at: string;
+    bus_updated_at: string;
+    routes: Array<{
+      route_id: number;
+      sequence_order: number;
+      // ... other route fields
+      start_time: string;
+      end_time: string;
+      route_created_at: string;
+      route_updated_at: string;
+    }>;
+  }>;
+  // **** THIS PART IS UPDATED ****
+  reports: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    reportList: Array<any>; // Define specific Report type later if needed
+    summaryMetrics: {
+      totalBusesOperated: number;
+      activeRoutesReported: number;
+      totalDistanceCoveredToday: number;
+      totalRevenueReportedToday: number;
+      metricsLastUpdated: string;
+    };
+  };
+  // **** END OF UPDATE ****
+}
+
+type FunctionResult = { get_owner_dashboard_data: OwnerOperationalData | null };
+
+// --- Controller Logic (mostly unchanged) ---
+const GetBusOwnersDashboard = asyncHandler(async (req, res) => {
+  // Renamed controller
+  const { ownerId } = req.body;
+  console.log(req.body);
+
+  if (isNaN(ownerId)) {
+    throw new ApiError(400, "Invalid owner ID provided.");
+  }
+
+  // Call the *updated* PostgreSQL function
+  const result = await prisma.$queryRaw<FunctionResult[]>`
+      SELECT * FROM public.get_owner_dashboard_data(${ownerId}::integer);
+    `;
+
+  // Basic check (unchanged)
+  if (
+    !result ||
+    result.length === 0 ||
+    !("get_owner_dashboard_data" in result[0])
+  ) {
+    console.error(
+      "Function call 'get_owner_dashboard_data' did not return the expected structure.",
+      result
+    );
+    throw new ApiError(
+      500,
+      "Failed to retrieve operational data due to an unexpected database response."
+    );
+  }
+
+  // Extract the structured payload (unchanged)
+  const operationalData = result[0].get_owner_dashboard_data;
+
+  // Handle owner not found (unchanged)
+  if (operationalData === null) {
+    throw new ApiError(
+      404,
+      `Operational data not found for owner ID ${ownerId}. Owner might not exist.`
+    );
+  }
+
+  // Pass the entire structured object to ApiResponse (unchanged)
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      operationalData, // Pass the structured object directly
+      `Successfully retrieved operational data for owner ID ${ownerId}.`
+    )
+  );
+});
+
+export { manageBus, GetBusOwnersDashboard };

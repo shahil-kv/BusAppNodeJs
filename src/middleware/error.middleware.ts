@@ -11,7 +11,6 @@ import logger from "../logger/winston.logger"; // Ensure Winston logger is impor
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (err, req, res, next) => {
   let error = err;
-
   if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || 500; // Default to 500 if status code not present
     const message = error.message || "Something went wrong";
