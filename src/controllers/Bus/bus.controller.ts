@@ -76,20 +76,16 @@ const manageBus = asyncHandler(async (req, res) => {
 });
 
 const GetBusOwnersDashboard = asyncHandler(async (req, res) => {
-  console.log("GetBusOwnersDashboard function called");
   const { ownerId } = req.body;
-  console.log("shail");
 
   if (isNaN(ownerId)) {
     throw new ApiError(400, "Invalid owner ID provided.");
   }
 
-  // Call the *updated* PostgreSQL function
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = await prisma.$queryRaw<any[]>`
       SELECT * FROM public.get_owner_dashboard_data(${ownerId}::integer);
     `;
-  console.log(result);
 
   // Basic check (unchanged)
   if (

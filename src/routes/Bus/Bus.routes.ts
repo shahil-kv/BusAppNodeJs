@@ -195,6 +195,8 @@ router.route("/manage-bus").post(manageBusValidation(), validate, manageBus);
  *       500:
  *         description: Internal server error.
  */
-router.route("/get-owner-dashboard").get(validate, GetBusOwnersDashboard);
+router
+  .route("/get-owner-dashboard")
+  .get(GetBusOwnerDashboardValidation(), validate, GetBusOwnersDashboard);
 
 export default router;
