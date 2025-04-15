@@ -25,9 +25,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `${process.env.BASE_URL || "http://localhost"}:${
-          process.env.PORT || 8080
-        }${process.env.API_PREFIX || "/api/v1"}`,
+        url: `${process.env.BASE_URL || "http://localhost"}:${process.env.PORT || 8080
+          }${process.env.API_PREFIX || "/api/v1"}`,
         description: "Development server",
       },
     ],
@@ -42,7 +41,7 @@ const app = express();
 const httpServer = createServer(app);
 
 // global middlewares
-// app.use(helmet()); // Use helmet for security headers
+app.use(helmet()); // Use helmet for security headers
 app.use(
   cors({
     origin:
@@ -53,10 +52,10 @@ app.use(
   })
 );
 
-// app.use(requestIp.mw());
+app.use(requestIp.mw());
 
-// // Apply the rate limiting middleware to all requests
-// app.use(limiter);
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
