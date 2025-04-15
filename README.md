@@ -17,59 +17,94 @@ Think of it as the "brain" behind the scenes that stores and processes all the d
 
 When a request comes into the server (e.g., someone trying to register a new bus owner), it goes through several steps. This diagram shows the typical flow:
 
-```mermaid
-graph LR
-    A["Client Sends Request\n(e.g., POST /api/v1/bus-owner/register)"] --> B("Node.js HTTP Server\nListens on Port");
-    B --> C{"Express App\n(app.ts)"};
-    C --> D(Global Middleware Pipeline);
-    D --> E{Route Matching};
+![Request Flow Diagram](src/assets/images/diagram.png)
 
-    subgraph D [Global Middleware]
-        direction TB
-        D1(CORS Check) --> D2(Rate Limiter) --> D3("Body Parsers\nJSON/URL Encoded") --> D4(Cookie Parser) --> D5(Morgan Request Logging);
-    end
+### Detailed Startup & Request Flow Explanation
 
-    E -- "Path Matches\n/api/v1/bus-owner" --> F{"BusOwner Router\n(busOwner.routes.ts)"};
-    E -- "Path Doesn't Match" --> C; # Or potentially 404 handler
+#### 🟢 App Startup Process (`npm start`)
 
-    F -- "Route Matches\n/register-busowner" --> G("Route Middleware\nValidation");
-    G -- Validation OK --> H("Controller Function\ne.g., BusOwnerRegistration");
-    G -- "Validation Fails" --> I(Error Passed to `next()`);
+1.  **Execution:** Runs `node your-main-file.js` (e.g., `src/main.ts` via Nx).
+2.  **Module Loading:** All `require`/`import` statements are processed.
+3.  **Environment Variables:** `dotenv.config()` loads variables from the `.env` file.
+4.  **App Initialization:**
+    - `express()` creates the main Express application object.
+    - Middleware Registration: All `app.use(...)` calls register middleware functions (they don't execute yet). This includes global middleware and router registration (e.g., `app.use('/api/v1/bus-owner', busOwnerRouter)`).
+    - Swagger UI Setup (Optional): Configures the API documentation endpoint.
+    - Error Handler Registration: `app.use(errorHandler)` registers the global error handler (must be last).
+5.  **Server Starts:** `httpServer.listen(port, ...)` makes the application start listening for incoming HTTP requests on the configured port.
 
-    H -- Success --> J("Format Success Response\nApiResponse");
-    H -- "Error Thrown" --> I;
+#### 📥 Request Flow (Example: `POST /api/v1/bus-owner/login`)
 
-    J --> K("Express Sends Response\ne.g., res.json()");
-    K --> L["Client Receives\nSuccess Response"];
-    K --> M(Morgan Logs Response);
+1.  **Raw Request Arrival:** Node.js's built-in HTTP server receives the raw request and passes it to the Express application instance.
+2.  **Global Middleware Pipeline (Execution Order Matters):** The request flows through the globally registered middleware in `src/app.ts`:
+    - `cors`: Checks if the request origin is allowed.
+    - `request-ip`: Adds the client's IP address to `req.clientIp`.
+    - `limiter`: Applies rate limiting rules.
+    - `express.json()`: Parses `application/json` request bodies into `req.body`.
+    - `express.urlencoded()`: Parses `application/x-www-form-urlencoded` bodies into `req.body`.
+    - `express.static`: If the request path matches a file in the static directory, serves the file and ends the request.
+    - `cookieParser`: Parses `Cookie` headers into `req.cookies`.
+    - `morganMiddleware`: Logs details about the incoming request using Morgan (e.g., `POST /api/v1/bus-owner/login ...`).
+3.  **Routing:** Express matches the request path (`/api/v1/bus-owner/login`) to the registered router (`busOwnerRouter`).
+4.  **Router Execution (`busOwner.routes.ts`):**
+    - The router matches the specific sub-path (`/login`) and HTTP method (`POST`).
+    - Any middleware specific to this route (e.g., authentication checks, validation middleware like `busOwnerLoginValidator()`, `validate`) is executed in order.
+5.  **Controller Logic (`loginBusOwner` in `busOwner.controller.ts`):** If all preceding middleware passes control (by calling `next()`), the final controller function runs. This contains the core business logic:
+    - Input validation (can also be done in middleware).
+    - Database interactions (e.g., querying user via Prisma).
+    - Password comparison (`bcrypt`), etc.
 
-    I --> N{"Error Handling Middleware\n(errorHandler in error.middleware.ts)"};
-    N --> O(Log Error with Winston);
-    O --> P("Format Error Response\nApiError");
-    P --> K; # Express Sends Error Response
+#### ✅ Scenario A: Successful Request (e.g., Login Success)
 
-    style F fill:#f9f,stroke:#333,stroke-width:2px
-    style H fill:#ccf,stroke:#333,stroke-width:2px
-    style N fill:#fcc,stroke:#333,stroke-width:2px
-```
+1.  **Controller Sends Response:** The controller function successfully completes its logic and calls `res.status(200).json(new ApiResponse(200, data, "Login successful"))`.
+2.  **Response Sent:** Express sends the formatted JSON response back to the client.
+3.  **Logging:** The `morganMiddleware` logs the successful response details (e.g., `... 200 55ms`).
 
-**Explanation of the Flow:**
+#### ❌ Scenario B: Request Error (e.g., Invalid Credentials)
 
-1.  **Request In:** A client (like a web browser or mobile app) sends a request to the server's address and port.
-2.  **Server Receives:** The basic Node.js server listens for requests and passes them to the Express framework.
-3.  **Global Middleware:** The request goes through a series of checks and transformations defined in `src/app.ts`:
-    - **CORS:** Checks if the request is allowed from the client's origin.
-    - **Rate Limiter:** Prevents too many requests from the same IP address.
-    - **Body Parsers:** Reads incoming data (like JSON) and makes it available in `req.body`.
-    - **Cookie Parser:** Reads cookies sent by the client.
-    - **Morgan Logging:** Logs basic information about the incoming request (like `POST /api/v1/bus-owner/register`).
-4.  **Routing:** Express looks at the request path (e.g., `/api/v1/bus-owner/register-busowner`) and finds the matching router (here, `busOwner.routes.ts`).
-5.  **Route Middleware:** The specific route might have its own middleware, especially for **validation** (`express-validator` rules defined in `src/validators/`).
-6.  **Controller:** If validation passes, the corresponding controller function (e.g., `BusOwnerRegistration` in `src/controllers/BusOwner/busOwner.controller.ts`) is executed. This is where the main logic happens (interacting with the database via Prisma, etc.).
-7.  **Response:**
-    - **Success:** The controller prepares a successful response (often using `ApiResponse` from `src/utils/`) and sends it back via `res.json()`. Morgan logs the successful response.
-    - **Error:** If anything goes wrong (validation fails, database error, etc.), an error is generated (often using `ApiError` from `src/utils/`). This error skips the normal flow and goes directly to the **Global Error Handler** (`errorHandler` in `src/middleware/error.middleware.ts`).
-8.  **Error Handling:** The `errorHandler` logs the detailed error using **Winston** (`logs/error.log`) and sends a standardized error response back to the client.
+1.  **Error Occurs:** An error is thrown within the controller (e.g., `throw new ApiError(401, "Invalid credentials.")`) or passed via `next(error)` from middleware (e.g., validation failure).
+2.  **Error Propagation:** The `asyncHandler` utility (or manual `try...catch` with `next(error)`) catches the error and passes it to Express's error handling mechanism.
+3.  **Skipping Middleware:** Express skips any remaining regular route handlers and middleware.
+4.  **Error Handler Found:** Express finds the registered global error handling middleware (`errorHandler` because it has 4 arguments: `err, req, res, next`).
+5.  **Error Handler Execution (`error.middleware.ts`):**
+    - The `errorHandler` function receives the `error` object.
+    - It logs the detailed error using **Winston** (e.g., `logger.error("Invalid credentials.")` which goes to console and `logs/error.log`).
+    - It sends a standardized JSON error response back to the client (e.g., `res.status(401).json(...)`).
+
+### 🧾 Logging Overview
+
+#### 📋 Morgan: HTTP Request Logger
+
+- **Purpose:** Automatically logs details of every incoming HTTP request and its corresponding response.
+- **Example Log:** `POST /api/v1/users/login 200 55ms`
+- **Configuration:** Configured in `src/logger/morgan.logger.ts` to use Winston's `http` level.
+- **Registration:** Applied as global middleware in `src/app.ts` via `app.use(morganMiddleware)`.
+
+#### 🛠 Winston: General-Purpose Logger
+
+- **Purpose:** Used for manual logging within the application code (controllers, services, utils) to record specific events, debug information, or errors.
+- **Usage:** Import the `logger` instance (from `src/logger/winston.logger.ts`) and call methods like `logger.info(...)`, `logger.debug(...)`, `logger.error(...)`.
+- **Transports (Outputs):** Configured in `src/logger/winston.logger.ts` to write logs to:
+  - Console (for development visibility).
+  - `logs/error.log`: For errors (`logger.error`).
+  - `logs/info.log`: For general information (`logger.info`).
+  - `logs/http.log`: Used by Morgan via the stream configuration (`logger.http`).
+- **Integration:** Winston effectively captures logs generated both manually by the application and automatically by Morgan.
+
+#### 🧼 Log Rotation
+
+- **Purpose:** Prevents log files from growing indefinitely and consuming excessive disk space.
+- **Mechanism:** Typically handled by Winston transports. The example uses `winston-daily-rotate-file` (check `winston.logger.ts`) or Winston's built-in `maxsize` and `maxFiles` options on file transports.
+  - `maxsize`: Maximum size of a single log file before rotation (e.g., 10MB).
+  - `maxFiles`: Maximum number of rotated log files to keep (e.g., keep the last 3).
+
+### 💡 Logging Summary
+
+| Tool    | Role                       | Where Used                   | Output Example/Level |
+| :------ | :------------------------- | :--------------------------- | :------------------- |
+| Morgan  | HTTP Request/Response Logs | Global Middleware (`app.ts`) | `logger.http`        |
+| Winston | Manual App Logs & Errors   | App Logic & `errorHandler`   | `logger.info/error`  |
+| Express | Routing & Middleware       | `app.ts`, `*.routes.ts`      | N/A                  |
 
 ## Tech Stack
 
