@@ -12,6 +12,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 import limiter from "./configs/limiter";
 import busOwnerRouter from "./routes/BusOwner/busOwner.routes";
 import busRouter from "./routes/Bus/Bus.routes";
+import driverRouter from './routes/Driver/driver.routes'
 import { errorHandler } from "./middleware/error.middleware";
 
 // Swagger definition
@@ -68,6 +69,8 @@ app.use(morganMiddleware);
 app.use("/api/v1/bus-owner", busOwnerRouter);
 //bus route
 app.use("/api/v1/bus", busRouter);
+//driver route
+app.use('/api/v1/driver', driverRouter)
 
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs

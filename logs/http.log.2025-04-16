@@ -1,0 +1,102 @@
+[16 Apr, 2025 - 08:59:12:5912] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 08:59:12:5912] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 10:46:35:4635] http: ::1 GET / 304 - 8.329 ms
+[16 Apr, 2025 - 10:46:35:4635] http: ::1 GET /swagger-ui-bundle.js 304 - 17.296 ms
+[16 Apr, 2025 - 10:46:35:4635] http: ::1 GET /swagger-ui-standalone-preset.js 304 - 19.008 ms
+[16 Apr, 2025 - 10:46:35:4635] http: ::1 GET /swagger-ui-init.js 200 - 1.240 ms
+[16 Apr, 2025 - 10:46:35:4635] http: ::1 GET /swagger-ui.css 304 - 18.458 ms
+[16 Apr, 2025 - 10:46:35:4635] http: ::1 GET /favicon-32x32.png 304 - 0.867 ms
+[16 Apr, 2025 - 10:49:25:4925] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:25:23:2523] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:25:23:2523] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:25:28:2528] http: ::1 GET /api/v1/driver/register-driver 200 - 2.070 ms
+[16 Apr, 2025 - 11:25:34:2534] error: 422 - Received data is not valid - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:25:34:2534] http: ::1 POST /api/v1/driver/register-driver 422 - 12.213 ms
+[16 Apr, 2025 - 11:26:03:263] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:26:04:264] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:26:04:264] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:26:13:2613] http: ::1 POST /api/v1/driver/register-driver 201 - 166.514 ms
+[16 Apr, 2025 - 11:31:46:3146] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:31:47:3147] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:31:47:3147] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:32:07:327] http: ::1 GET /api/v1/driver/register-driver 200 - 1.686 ms
+[16 Apr, 2025 - 11:32:12:3212] error: 422 - Received data is not valid - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:32:12:3212] http: ::1 POST /api/v1/driver/register-driver 422 - 13.097 ms
+[16 Apr, 2025 - 11:32:22:3222] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:32:23:3223] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:32:23:3223] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:32:26:3226] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:32:26:3226] http: ::1 POST /api/v1/driver/register-driver 409 - 163.232 ms
+[16 Apr, 2025 - 11:32:55:3255] http: ::1 GET /api/v1/bus/get-owner-dashboard 200 - 48.185 ms
+[16 Apr, 2025 - 11:33:18:3318] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:33:18:3318] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:33:18:3318] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:33:25:3325] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:33:25:3325] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:33:25:3325] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:36:10:3610] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:36:11:3611] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:36:11:3611] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:36:53:3653] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:36:53:3653] http: ::1 POST /api/v1/driver/register-driver 409 - 160.053 ms
+[16 Apr, 2025 - 11:37:16:3716] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:37:16:3716] http: ::1 POST /api/v1/driver/register-driver 409 - 89.498 ms
+[16 Apr, 2025 - 11:37:19:3719] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:37:19:3719] http: ::1 POST /api/v1/driver/register-driver 409 - 86.586 ms
+[16 Apr, 2025 - 11:37:32:3732] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:37:32:3732] http: ::1 POST /api/v1/driver/register-driver 409 - 84.456 ms
+[16 Apr, 2025 - 11:37:35:3735] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:37:35:3735] http: ::1 POST /api/v1/driver/register-driver 409 - 79.079 ms
+[16 Apr, 2025 - 11:37:53:3753] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:37:53:3753] http: ::1 POST /api/v1/driver/register-driver 409 - 90.558 ms
+[16 Apr, 2025 - 11:41:39:4139] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:41:39:4139] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:41:39:4139] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:43:35:4335] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 11:43:35:4335] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 11:43:35:4335] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 11:44:26:4426] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:44:26:4426] http: ::1 POST /api/v1/driver/register-driver 409 - 149.333 ms
+[16 Apr, 2025 - 11:50:24:5024] http: ::1 GET /apple-touch-icon-precomposed.png 200 - 13.195 ms
+[16 Apr, 2025 - 11:50:24:5024] http: ::1 GET /apple-touch-icon.png 200 - 63.572 ms
+[16 Apr, 2025 - 11:50:24:5024] http: ::1 GET /favicon.ico 200 - 4.200 ms
+[16 Apr, 2025 - 11:50:24:5024] http: ::1 GET /api/v1 200 - 0.765 ms
+[16 Apr, 2025 - 11:50:24:5024] http: ::1 GET /api/favicon-16x16.png 200 - 0.935 ms
+[16 Apr, 2025 - 11:50:24:5024] http: ::1 GET /api/favicon-32x32.png 200 - 2.889 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /apple-touch-icon-precomposed.png 200 - 1.598 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /apple-touch-icon.png 200 - 2.896 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /favicon.ico 200 - 3.639 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET / 200 - 2.542 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /favicon-32x32.png 200 - 4.688 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /favicon-16x16.png 200 - 6.929 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /apple-touch-icon-precomposed.png 200 - 1.191 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /apple-touch-icon.png 200 - 2.116 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /favicon.ico 200 - 2.084 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /api/v1 200 - 0.289 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /api/favicon-16x16.png 200 - 3.303 ms
+[16 Apr, 2025 - 11:50:26:5026] http: ::1 GET /api/favicon-32x32.png 200 - 3.994 ms
+[16 Apr, 2025 - 11:51:21:5121] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:51:21:5121] http: ::1 POST /api/v1/driver/register-driver 409 - 165.634 ms
+[16 Apr, 2025 - 11:51:35:5135] http: ::1 GET /api/v1/bus/get-owner-dashboard 200 - 47.346 ms
+[16 Apr, 2025 - 11:51:50:5150] http: ::1 GET /api/v1/bus-owner/bus-owners 200 - 54.765 ms
+[16 Apr, 2025 - 11:51:56:5156] http: ::1 POST /api/v1/bus-owner/login-busowner 200 - 89.916 ms
+[16 Apr, 2025 - 11:52:04:524] http: ::1 POST /api/v1/bus-owner/register-busowner 201 - 101.944 ms
+[16 Apr, 2025 - 11:52:19:5219] error: 409 - Error: Bus with registration number 'KL-07-ZZ-9999' already exists (ID: 9). - /api/v1/bus/manage-bus - POST - ::1
+[16 Apr, 2025 - 11:52:19:5219] http: ::1 POST /api/v1/bus/manage-bus 409 - 17.023 ms
+[16 Apr, 2025 - 11:53:04:534] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 11:53:04:534] http: ::1 POST /api/v1/driver/register-driver 409 - 130.236 ms
+[16 Apr, 2025 - 11:53:21:5321] http: ::1 GET / 304 - 8.171 ms
+[16 Apr, 2025 - 11:53:21:5321] http: ::1 GET /swagger-ui.css 304 - 2.932 ms
+[16 Apr, 2025 - 11:53:21:5321] http: ::1 GET /swagger-ui-standalone-preset.js 304 - 4.068 ms
+[16 Apr, 2025 - 11:53:21:5321] http: ::1 GET /swagger-ui-init.js 200 - 0.870 ms
+[16 Apr, 2025 - 11:53:21:5321] http: ::1 GET /swagger-ui-bundle.js 304 - 2.043 ms
+[16 Apr, 2025 - 11:57:39:5739] info: Received SIGTERM. Closing http server.
+[16 Apr, 2025 - 12:32:01:321] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 12:32:01:321] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 12:32:20:3220] info: 📑 Visit the documentation at: http://localhost:4100
+[16 Apr, 2025 - 12:32:20:3220] info: ⚙️  Server is running on port: 4100
+[16 Apr, 2025 - 12:32:25:3225] error: 409 - Driver already exists with phone number: +919876543210 - /api/v1/driver/register-driver - POST - ::1
+[16 Apr, 2025 - 12:32:25:3225] http: ::1 POST /api/v1/driver/register-driver 409 - 149.681 ms
+[16 Apr, 2025 - 12:34:09:349] http: ::1 GET /api/v1/driver/login-driver 200 - 6.472 ms
+[16 Apr, 2025 - 12:34:16:3416] http: ::1 POST /api/v1/driver/login-driver 200 - 147.909 ms
+[16 Apr, 2025 - 12:42:05:425] info: Received SIGTERM. Closing http server.

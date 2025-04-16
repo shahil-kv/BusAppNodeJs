@@ -1,4 +1,0 @@
-[15 Apr, 2025 - 15:27:27:2727] error: 401 - Invalid credentials. - /api/v1/users/login-busowner - POST - ::1
-[15 Apr, 2025 - 15:27:33:2733] error: 401 - Invalid credentials. - /api/v1/users/login-busowner - POST - ::1
-[15 Apr, 2025 - 15:48:03:483] error: 400 - Error: Bus Owner ID 1 does not exist. - /api/v1/users/manage-bus - POST - ::1
-[15 Apr, 2025 - 15:49:17:4917] error: 409 - Error: Bus with registration number 'KL-07-ZZ-9999' already exists (ID: 1). - /api/v1/users/manage-bus - POST - ::1
