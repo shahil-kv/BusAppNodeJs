@@ -96,6 +96,6 @@ router.route("/manage-bus").post(manageBusValidation(), validate, manageBus);
  */
 router
   .route("/get-owner-dashboard")
-  .get(GetBusOwnerDashboardValidation(), validate, GetBusOwnersDashboard);
+  .get(GetBusOwnerDashboardValidation, validate, GetBusOwnersDashboard);
 
 export default router;

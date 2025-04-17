@@ -76,4 +76,32 @@ const busDriverLogin = () => {
     ];
 };
 
-export { busDriverRegisteration, busDriverLogin };  
+const updateBusLocationValidator = () => {
+    return [
+        body("busId")
+            .trim()
+            .notEmpty()
+            .withMessage("Bus ID is required")
+            .isInt()
+            .withMessage("Bus ID must be an integer"),
+        body("latitude")
+            .optional()
+            .isNumeric()
+            .withMessage("Latitude must be a number"),
+        body("longitude")
+            .optional()
+            .isNumeric()
+            .withMessage("Longitude must be a number"),
+        body("kilometersAdded")
+            .optional()
+            .isNumeric()
+            .withMessage("Kilometers added must be a number")
+            .default(0),
+        body("isMoving")
+            .optional()
+            .isBoolean()
+            .withMessage("isMoving must be a boolean value")
+    ];
+};
+
+export { busDriverRegisteration, busDriverLogin, updateBusLocationValidator };  

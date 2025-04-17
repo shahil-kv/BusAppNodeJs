@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../../validators/validate";
-import { RegisterDriver, loginDriver } from "../../controllers/Driver/driver.controller";
-import { busDriverRegisteration, busDriverLogin } from "../../validators/Driver/Driver.validate";
+import { RegisterDriver, loginDriver, updateBusLocation } from "../../controllers/Driver/driver.controller";
+import { busDriverRegisteration, busDriverLogin, updateBusLocationValidator } from "../../validators/Driver/Driver.validate";
 
 const router = Router()
 
@@ -74,5 +74,38 @@ router.route(("/register-driver")).post(busDriverRegisteration(), validate, Regi
  *         description: Internal server error
  */
 router.route("/login-driver").post(busDriverLogin(), validate, loginDriver)
+
+/**
+ * @swagger
+ * /driver/update-bus-location:
+ *   post:
+ *     summary: Update bus location and details
+ *     tags: [Driver]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               busId:
+ *                 type: integer
+ *               latitude:
+ *                 type: number
+ *               longitude:
+ *                 type: number
+ *               kilometersAdded:
+ *                 type: number
+ *               isMoving:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Bus location updated successfully
+ *       400:
+ *         description: Invalid input data
+ *       500:
+ *         description: Internal server error
+ */
+router.route("/update-bus-location").post(updateBusLocationValidator(), validate, updateBusLocation);
 
 export default router;

@@ -9,11 +9,13 @@ import cors from "cors";
 import helmet from "helmet";
 import * as swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import { Server } from "socket.io";
 import limiter from "./configs/limiter";
 import busOwnerRouter from "./routes/BusOwner/busOwner.routes";
 import busRouter from "./routes/Bus/Bus.routes";
 import driverRouter from './routes/Driver/driver.routes'
 import { errorHandler } from "./middleware/error.middleware";
+import { SocketService } from "./services/socket.service";
 
 // Swagger definition
 const swaggerOptions = {
@@ -40,6 +42,20 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 const httpServer = createServer(app);
+
+// Initialize Socket.IO
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CORS_ORIGIN === "*"
+      ? "*"
+      : process.env.CORS_ORIGIN?.split(","),
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
+// Initialize Socket Service
+new SocketService(io);
 
 // global middlewares
 app.use(helmet()); // Use helmet for security headers
