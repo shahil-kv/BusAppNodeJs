@@ -1,37 +1,18 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
-  BusOwnerRegistration,
-  GetBusOwners,
-  loginBusOwner,
-} from "../../controllers/BusOwner/busOwner.controller";
-import {
-  busOwnerLoginValidator,
-  busOwnerRegisteration,
-} from "../../validators/BusOwner/BusOwner.validate";
-import { validate } from "../../validators/validate";
+    checkPremiumStatus,
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    registerUser,
+    upgradeToPremium,
+    verifyPhoneNumber,
+} from '../controllers/auth.controller';
+import { validateRegisterUser, validateVerifyPhoneNumber, validateLoginUser, validateUpgradeToPremium } from '../validators/user.validators';
+import { verifyJWT, verifyRole } from '../middleware/auth.middleware';
+import { validate } from '../validators/validate';
+
 const router = Router();
-
-// unsecured routes
-
-/**
- * @swagger
- * /bus-owner/bus-owners:
- *   get:
- *     summary: Retrieve a list of bus owners
- *     tags: [BusOwner]
- *     responses:
- *       200:
- *         description: A list of bus owners.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object # Define structure based on GetBusOwners response
- *       500:
- *         description: Internal server error
- */
-router.route("/bus-owners").get(GetBusOwners);
 
 /**
  * @swagger
@@ -63,8 +44,11 @@ router.route("/bus-owners").get(GetBusOwners);
  *         description: Internal server error
  */
 router
-  .route("/register-busowner")
-  .post(busOwnerRegisteration(), validate, BusOwnerRegistration);
+    .route("/register")
+    .post((req, res, next) => {
+        console.log('Register route hit:', req.body);
+        next();
+    }, validateRegisterUser, validate, registerUser);
 
 /**
  * @swagger
@@ -99,7 +83,21 @@ router
  *         description: Internal server error
  */
 router
-  .route("/login-busowner")
-  .post(busOwnerLoginValidator(), validate, loginBusOwner);
+    .route("/login")
+    .post(validateLoginUser, validate, loginUser);
+// Public routes
+router.post('/verify-phone', validateVerifyPhoneNumber, validate, verifyPhoneNumber);
 
-export default router;
+// Protected routes
+router.post('/refresh-token', refreshAccessToken);
+router.post('/logout', verifyJWT, logoutUser);
+router.post('/upgrade-premium', verifyJWT, validateUpgradeToPremium, upgradeToPremium);
+router.get('/premium-status', verifyJWT, checkPremiumStatus);
+
+// Admin routes
+router.get('/admin/users', verifyJWT, verifyRole(['ADMIN']), (req, res) => {
+    // TODO: Implement admin user list endpoint
+    res.json({ message: 'Admin user list endpoint' });
+});
+
+export default router; 

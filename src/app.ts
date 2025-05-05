@@ -9,13 +9,9 @@ import cors from "cors";
 import helmet from "helmet";
 import * as swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
-import { Server } from "socket.io";
 import limiter from "./configs/limiter";
-import busOwnerRouter from "./routes/BusOwner/busOwner.routes";
-import busRouter from "./routes/Bus/Bus.routes";
-import driverRouter from './routes/Driver/driver.routes'
 import { errorHandler } from "./middleware/error.middleware";
-import { SocketService } from "./services/socket.service";
+import router from "./routes/auth.routes";
 
 // Swagger definition
 const swaggerOptions = {
@@ -43,29 +39,17 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 const app = express();
 const httpServer = createServer(app);
 
-// Initialize Socket.IO
-const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CORS_ORIGIN === "*"
-      ? "*"
-      : process.env.CORS_ORIGIN?.split(","),
-    methods: ["GET", "POST"],
-    credentials: true
-  }
-});
-
-// Initialize Socket Service
-new SocketService(io);
-
 // global middlewares
-app.use(helmet()); // Use helmet for security headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" }
+})); // Use helmet for security headers
 app.use(
   cors({
-    origin:
-      process.env.CORS_ORIGIN === "*"
-        ? "*" // This might give CORS error for some origins due to credentials set to true
-        : process.env.CORS_ORIGIN?.split(","), // For multiple cors origin for production.
+    origin: true, // Allow all origins in development
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
   })
 );
 
@@ -82,11 +66,8 @@ app.use(cookieParser());
 app.use(morganMiddleware);
 
 //user route
-app.use("/api/v1/bus-owner", busOwnerRouter);
-//bus route
-app.use("/api/v1/bus", busRouter);
-//driver route
-app.use('/api/v1/driver', driverRouter)
+app.use("/api/v1/user", router);
+
 
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs

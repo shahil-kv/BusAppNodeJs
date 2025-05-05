@@ -6,10 +6,12 @@ import logger from "./logger/winston.logger";
 const PORT = process.env.PORT || 8080;
 
 const startServer = () => {
-  const server = httpServer.listen(PORT, () => {
+  const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
     // Store the server instance
     logger.info(`📑 Visit the documentation at: http://localhost:${PORT}`);
     logger.info(`⚙️  Server is running on port: ${PORT}`);
+    logger.info(`🌐 Server is accessible at: http://192.168.11.233:${PORT}`);
+    logger.info(`🔍 Listening on all network interfaces (0.0.0.0)`);
   });
 
   const gracefulShutdown = (signal: string) => {
