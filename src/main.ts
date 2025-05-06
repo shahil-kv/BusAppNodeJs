@@ -10,8 +10,7 @@ const startServer = () => {
     // Store the server instancess
     logger.info(`📑 Visit the documentation at: http://localhost:${PORT}`);
     logger.info(`⚙️  Server is running on port: ${PORT}`);
-    logger.info(`🌐 Server is accessible at: http://192.168.11.233:${PORT}`);
-    logger.info(`🔍 Listening on all network interfaces (0.0.0.0)`);
+    logger.info(`🔍 Server is running in local environment`);
   });
 
   const gracefulShutdown = (signal: string) => {

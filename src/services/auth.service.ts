@@ -183,7 +183,7 @@ class AuthService {
         });
 
         if (!user) {
-            throw new ApiError(404, 'User not found');
+            throw new ApiError(404, 'User not found ?');
         }
 
         if (!user.is_phone_verified) {
