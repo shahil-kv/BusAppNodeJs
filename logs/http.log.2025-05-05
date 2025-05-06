@@ -1,0 +1,411 @@
+[05 May, 2025 - 11:03:07:37] info: 📑 Visit the documentation at: http://localhost:4100
+[05 May, 2025 - 11:03:07:37] info: ⚙️  Server is running on port: 4100
+[05 May, 2025 - 11:03:10:310] http: ::1 POST /api/v1/user/login 200 - 534.245 ms
+[05 May, 2025 - 11:03:18:318] http: ::1 POST /api/v1/user/refresh-token 200 - 96.238 ms
+[05 May, 2025 - 11:03:58:358] http: ::1 POST /api/v1/user/refresh-token 200 - 79.080 ms
+[05 May, 2025 - 11:04:06:46] http: ::1 POST /api/v1/user/refresh-token 200 - 48.331 ms
+[05 May, 2025 - 11:04:10:410] http: ::1 POST /api/v1/user/logout 200 - 126.326 ms
+[05 May, 2025 - 11:04:21:421] http: ::1 POST /api/v1/user/login 200 - 102.997 ms
+[05 May, 2025 - 11:04:28:428] http: ::1 POST /api/v1/user/refresh-token 200 - 80.859 ms
+[05 May, 2025 - 11:04:34:434] http: ::1 POST /api/v1/user/logout 200 - 17.032 ms
+[05 May, 2025 - 11:04:54:454] http: ::1 POST /api/v1/user/login 200 - 126.301 ms
+[05 May, 2025 - 11:06:39:639] http: ::1 POST /api/v1/user/refresh-token 200 - 58.710 ms
+[05 May, 2025 - 11:08:17:817] http: ::1 POST /api/v1/user/refresh-token 200 - 142.505 ms
+[05 May, 2025 - 11:08:30:830] http: ::1 POST /api/v1/user/refresh-token 200 - 74.456 ms
+[05 May, 2025 - 11:08:36:836] http: ::1 POST /api/v1/user/refresh-token 200 - 24.994 ms
+[05 May, 2025 - 11:08:40:840] http: ::1 POST /api/v1/user/refresh-token 200 - 33.498 ms
+[05 May, 2025 - 11:08:44:844] http: ::1 POST /api/v1/user/refresh-token 200 - 35.611 ms
+[05 May, 2025 - 11:09:49:949] http: ::1 POST /api/v1/user/refresh-token 200 - 33.722 ms
+[05 May, 2025 - 11:10:07:107] http: ::1 POST /api/v1/user/refresh-token 200 - 91.058 ms
+[05 May, 2025 - 11:14:09:149] http: ::1 POST /api/v1/user/refresh-token 200 - 147.693 ms
+[05 May, 2025 - 11:16:25:1625] http: ::1 POST /api/v1/user/logout 200 - 102.784 ms
+[05 May, 2025 - 11:17:44:1744] http: ::1 POST /api/v1/user/login 200 - 122.888 ms
+[05 May, 2025 - 11:17:49:1749] http: ::1 POST /api/v1/user/logout 200 - 14.497 ms
+[05 May, 2025 - 11:18:00:180] http: ::1 POST /api/v1/user/login 200 - 82.612 ms
+[05 May, 2025 - 11:18:12:1812] http: ::1 POST /api/v1/user/logout 200 - 23.534 ms
+[05 May, 2025 - 11:18:23:1823] http: ::1 POST /api/v1/user/login 200 - 88.723 ms
+[05 May, 2025 - 11:45:50:4550] http: ::1 POST /api/v1/user/refresh-token 200 - 120.451 ms
+[05 May, 2025 - 11:49:16:4916] http: ::1 POST /api/v1/user/refresh-token 200 - 57.774 ms
+[05 May, 2025 - 11:58:03:583] http: ::1 POST /api/v1/user/refresh-token 200 - 128.054 ms
+[05 May, 2025 - 12:36:34:3634] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 12:36:42:3642] info: 📑 Visit the documentation at: http://localhost:4100
+[05 May, 2025 - 12:36:42:3642] info: ⚙️  Server is running on port: 4100
+[05 May, 2025 - 12:36:42:3642] info: 🌐 Server is accessible at: http://YOUR_LOCAL_IP:4100
+[05 May, 2025 - 12:38:50:3850] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 12:38:51:3851] info: 📑 Visit the documentation at: http://localhost:4100
+[05 May, 2025 - 12:38:51:3851] info: ⚙️  Server is running on port: 4100
+[05 May, 2025 - 12:38:51:3851] info: 🌐 Server is accessible at: http://192.168.11.233:4100
+[05 May, 2025 - 12:40:28:4028] info: 📑 Visit the documentation at: http://localhost:4100
+[05 May, 2025 - 12:40:28:4028] info: ⚙️  Server is running on port: 4100
+[05 May, 2025 - 12:40:28:4028] info: 🌐 Server is accessible at: http://192.168.11.233:4100
+[05 May, 2025 - 12:45:14:4514] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 12:45:14:4514] info: 📑 Visit the documentation at: http://localhost:4100
+[05 May, 2025 - 12:45:14:4514] info: ⚙️  Server is running on port: 4100
+[05 May, 2025 - 12:45:14:4514] info: 🌐 Server is accessible at: http://192.168.11.233:4100
+[05 May, 2025 - 12:47:36:4736] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 12:47:36:4736] info: 📑 Visit the documentation at: http://localhost:4100
+[05 May, 2025 - 12:47:36:4736] info: ⚙️  Server is running on port: 4100
+[05 May, 2025 - 12:47:36:4736] info: 🌐 Server is accessible at: http://192.168.11.233:4100
+[05 May, 2025 - 12:47:36:4736] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 12:47:45:4745] http: 192.168.11.233 GET / 200 - 1.652 ms
+[05 May, 2025 - 12:48:32:4832] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 12:48:32:4832] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 12:48:32:4832] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 12:48:32:4832] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 12:48:45:4845] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 12:48:45:4845] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 12:48:45:4845] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 12:48:45:4845] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 12:48:45:4845] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 12:49:03:493] http: 192.168.11.233 GET / 200 - 2.726 ms
+[05 May, 2025 - 12:49:15:4915] http: 192.168.11.233 GET /api/user 200 - 2.215 ms
+[05 May, 2025 - 12:49:58:4958] http: 192.168.11.233 GET / 200 - 0.642 ms
+[05 May, 2025 - 12:50:31:5031] http: 192.168.11.166 GET / 200 - 1.800 ms
+[05 May, 2025 - 12:50:34:5034] http: 192.168.11.166 GET / 200 - 1.039 ms
+[05 May, 2025 - 12:50:34:5034] http: 192.168.11.166 GET /favicon-32x32.png 200 - 6.867 ms
+[05 May, 2025 - 12:50:37:5037] http: 192.168.11.166 GET / 200 - 1.264 ms
+[05 May, 2025 - 12:52:03:523] http: 192.168.11.166 POST /api/v1/user/login 200 - 219.725 ms
+[05 May, 2025 - 12:55:26:5526] http: 192.168.11.166 POST /api/v1/user/refresh-token 200 - 95.985 ms
+[05 May, 2025 - 13:15:22:1522] http: 192.168.11.166 POST /api/v1/user/refresh-token 200 - 114.685 ms
+[05 May, 2025 - 13:18:31:1831] http: 192.168.11.166 POST /api/v1/user/refresh-token 200 - 71.187 ms
+[05 May, 2025 - 13:28:41:2841] http: 192.168.11.166 POST /api/v1/user/refresh-token 200 - 78.042 ms
+[05 May, 2025 - 13:34:39:3439] http: 192.168.11.166 POST /api/v1/user/refresh-token 200 - 96.758 ms
+[05 May, 2025 - 13:38:15:3815] http: 192.168.11.166 POST /api/v1/user/refresh-token 200 - 8.312 ms
+[05 May, 2025 - 13:49:00:490] http: 192.168.11.166 POST /api/v1/user/logout 200 - 176.885 ms
+[05 May, 2025 - 13:49:10:4910] http: 192.168.11.166 POST /api/v1/user/login 200 - 112.886 ms
+[05 May, 2025 - 13:49:12:4912] http: 192.168.11.166 POST /api/v1/user/logout 200 - 6.821 ms
+[05 May, 2025 - 13:49:32:4932] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:49:32:4932] http: 192.168.11.166 POST /api/v1/user/login 404 - 68.773 ms
+[05 May, 2025 - 13:49:54:4954] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:49:54:4954] http: 192.168.11.166 POST /api/v1/user/register 422 - 26.277 ms
+[05 May, 2025 - 13:49:55:4955] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:49:55:4955] http: 192.168.11.166 POST /api/v1/user/register 422 - 4.599 ms
+[05 May, 2025 - 13:49:55:4955] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:49:55:4955] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.298 ms
+[05 May, 2025 - 13:49:55:4955] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:49:55:4955] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.985 ms
+[05 May, 2025 - 13:49:56:4956] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:49:56:4956] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.295 ms
+[05 May, 2025 - 13:49:56:4956] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:49:56:4956] http: 192.168.11.166 POST /api/v1/user/register 422 - 5.246 ms
+[05 May, 2025 - 13:50:15:5015] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:50:15:5015] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.909 ms
+[05 May, 2025 - 13:50:16:5016] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:50:16:5016] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.360 ms
+[05 May, 2025 - 13:50:17:5017] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:50:17:5017] http: 192.168.11.166 POST /api/v1/user/register 422 - 0.809 ms
+[05 May, 2025 - 13:50:17:5017] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:50:17:5017] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.192 ms
+[05 May, 2025 - 13:50:17:5017] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:50:17:5017] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.194 ms
+[05 May, 2025 - 13:50:27:5027] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:50:27:5027] http: 192.168.11.166 POST /api/v1/user/register 422 - 5.178 ms
+[05 May, 2025 - 13:51:04:514] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:04:514] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.615 ms
+[05 May, 2025 - 13:51:05:515] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 13:51:05:515] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:05:515] http: 192.168.11.166 POST /api/v1/user/register 422 - 1.747 ms
+[05 May, 2025 - 13:51:06:516] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:06:516] http: 192.168.11.166 POST /api/v1/user/register 422 - 7.499 ms
+[05 May, 2025 - 13:51:06:516] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:06:516] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.564 ms
+[05 May, 2025 - 13:51:06:516] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:06:516] http: 192.168.11.166 POST /api/v1/user/register 422 - 1.629 ms
+[05 May, 2025 - 13:51:06:516] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:06:516] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.502 ms
+[05 May, 2025 - 13:51:08:518] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:08:518] http: 192.168.11.166 POST /api/v1/user/register 422 - 7.424 ms
+[05 May, 2025 - 13:51:09:519] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:09:519] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.495 ms
+[05 May, 2025 - 13:51:09:519] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:09:519] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.728 ms
+[05 May, 2025 - 13:51:09:519] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:09:519] http: 192.168.11.166 POST /api/v1/user/register 422 - 4.014 ms
+[05 May, 2025 - 13:51:09:519] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:09:519] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.022 ms
+[05 May, 2025 - 13:51:09:519] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:09:519] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.157 ms
+[05 May, 2025 - 13:51:10:5110] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:10:5110] http: 192.168.11.166 POST /api/v1/user/register 422 - 3.684 ms
+[05 May, 2025 - 13:51:10:5110] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:10:5110] http: 192.168.11.166 POST /api/v1/user/register 422 - 1.336 ms
+[05 May, 2025 - 13:51:11:5111] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:11:5111] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.979 ms
+[05 May, 2025 - 13:51:11:5111] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:11:5111] http: 192.168.11.166 POST /api/v1/user/register 422 - 6.146 ms
+[05 May, 2025 - 13:51:11:5111] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:11:5111] http: 192.168.11.166 POST /api/v1/user/register 422 - 1.732 ms
+[05 May, 2025 - 13:51:11:5111] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:11:5111] http: 192.168.11.166 POST /api/v1/user/register 422 - 5.515 ms
+[05 May, 2025 - 13:51:11:5111] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:11:5111] http: 192.168.11.166 POST /api/v1/user/register 422 - 0.982 ms
+[05 May, 2025 - 13:51:12:5112] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:12:5112] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.136 ms
+[05 May, 2025 - 13:51:12:5112] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:12:5112] http: 192.168.11.166 POST /api/v1/user/register 422 - 4.025 ms
+[05 May, 2025 - 13:51:12:5112] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:12:5112] http: 192.168.11.166 POST /api/v1/user/register 422 - 1.137 ms
+[05 May, 2025 - 13:51:12:5112] error: 422 - Received data is not valid - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 13:51:12:5112] http: 192.168.11.166 POST /api/v1/user/register 422 - 2.683 ms
+[05 May, 2025 - 13:51:15:5115] error: Could not close connections in time, forcefully shutting down
+[05 May, 2025 - 13:51:15:5115] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 13:51:15:5115] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 13:51:15:5115] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 13:51:15:5115] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 13:51:18:5118] http: 192.168.11.166 POST /api/v1/user/register 201 - 716.250 ms
+[05 May, 2025 - 13:51:43:5143] error: 500 - 
+Invalid `prisma.users.findUnique()` invocation in
+/Users/shahil/Documents/Coding/Personal/OwnerBusApp/BusAppNodeJs/src/services/auth.service.ts:149:41
+
+  146 
+  147 // Verify phone number with OTP
+  148 static async verifyPhoneNumber(phoneNumber: string, otp: string): Promise<boolean> {
+→ 149     const user = await prisma.users.findUnique({
+            where: {
+              phone_number: undefined,
+          ?   id?: Int,
+          ?   email?: String,
+          ?   AND?: usersWhereInput | usersWhereInput[],
+          ?   OR?: usersWhereInput[],
+          ?   NOT?: usersWhereInput | usersWhereInput[],
+          ?   password_hash?: StringFilter | String,
+          ?   full_name?: StringFilter | String,
+          ?   is_phone_verified?: BoolNullableFilter | Boolean | Null,
+          ?   phone_verification_otp?: StringNullableFilter | String | Null,
+          ?   phone_verification_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   is_premium?: BoolNullableFilter | Boolean | Null,
+          ?   premium_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   role?: StringNullableFilter | String | Null,
+          ?   created_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   updated_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   refresh_tokens?: Refresh_tokensListRelationFilter
+            }
+          })
+
+Argument `where` of type usersWhereUniqueInput needs at least one of `id`, `phone_number` or `email` arguments. Available options are marked with ?. - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 13:51:43:5143] http: 192.168.11.166 POST /api/v1/user/verify-phone 500 - 29.708 ms
+[05 May, 2025 - 13:52:07:527] error: 500 - 
+Invalid `prisma.users.findUnique()` invocation in
+/Users/shahil/Documents/Coding/Personal/OwnerBusApp/BusAppNodeJs/src/services/auth.service.ts:149:41
+
+  146 
+  147 // Verify phone number with OTP
+  148 static async verifyPhoneNumber(phoneNumber: string, otp: string): Promise<boolean> {
+→ 149     const user = await prisma.users.findUnique({
+            where: {
+              phone_number: undefined,
+          ?   id?: Int,
+          ?   email?: String,
+          ?   AND?: usersWhereInput | usersWhereInput[],
+          ?   OR?: usersWhereInput[],
+          ?   NOT?: usersWhereInput | usersWhereInput[],
+          ?   password_hash?: StringFilter | String,
+          ?   full_name?: StringFilter | String,
+          ?   is_phone_verified?: BoolNullableFilter | Boolean | Null,
+          ?   phone_verification_otp?: StringNullableFilter | String | Null,
+          ?   phone_verification_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   is_premium?: BoolNullableFilter | Boolean | Null,
+          ?   premium_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   role?: StringNullableFilter | String | Null,
+          ?   created_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   updated_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   refresh_tokens?: Refresh_tokensListRelationFilter
+            }
+          })
+
+Argument `where` of type usersWhereUniqueInput needs at least one of `id`, `phone_number` or `email` arguments. Available options are marked with ?. - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 13:52:07:527] http: 192.168.11.166 POST /api/v1/user/verify-phone 500 - 15.644 ms
+[05 May, 2025 - 13:52:08:528] error: 500 - 
+Invalid `prisma.users.findUnique()` invocation in
+/Users/shahil/Documents/Coding/Personal/OwnerBusApp/BusAppNodeJs/src/services/auth.service.ts:149:41
+
+  146 
+  147 // Verify phone number with OTP
+  148 static async verifyPhoneNumber(phoneNumber: string, otp: string): Promise<boolean> {
+→ 149     const user = await prisma.users.findUnique({
+            where: {
+              phone_number: undefined,
+          ?   id?: Int,
+          ?   email?: String,
+          ?   AND?: usersWhereInput | usersWhereInput[],
+          ?   OR?: usersWhereInput[],
+          ?   NOT?: usersWhereInput | usersWhereInput[],
+          ?   password_hash?: StringFilter | String,
+          ?   full_name?: StringFilter | String,
+          ?   is_phone_verified?: BoolNullableFilter | Boolean | Null,
+          ?   phone_verification_otp?: StringNullableFilter | String | Null,
+          ?   phone_verification_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   is_premium?: BoolNullableFilter | Boolean | Null,
+          ?   premium_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   role?: StringNullableFilter | String | Null,
+          ?   created_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   updated_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   refresh_tokens?: Refresh_tokensListRelationFilter
+            }
+          })
+
+Argument `where` of type usersWhereUniqueInput needs at least one of `id`, `phone_number` or `email` arguments. Available options are marked with ?. - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 13:52:08:528] http: 192.168.11.166 POST /api/v1/user/verify-phone 500 - 6.143 ms
+[05 May, 2025 - 13:52:23:5223] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 13:52:24:5224] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 13:52:24:5224] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 13:52:24:5224] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 13:52:24:5224] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 13:52:27:5227] error: 500 - 
+Invalid `prisma.users.findUnique()` invocation in
+/Users/shahil/Documents/Coding/Personal/OwnerBusApp/BusAppNodeJs/src/services/auth.service.ts:149:41
+
+  146 
+  147 // Verify phone number with OTP
+  148 static async verifyPhoneNumber(phoneNumber: string, otp: string): Promise<boolean> {
+→ 149     const user = await prisma.users.findUnique({
+            where: {
+              phone_number: undefined,
+          ?   id?: Int,
+          ?   email?: String,
+          ?   AND?: usersWhereInput | usersWhereInput[],
+          ?   OR?: usersWhereInput[],
+          ?   NOT?: usersWhereInput | usersWhereInput[],
+          ?   password_hash?: StringFilter | String,
+          ?   full_name?: StringFilter | String,
+          ?   is_phone_verified?: BoolNullableFilter | Boolean | Null,
+          ?   phone_verification_otp?: StringNullableFilter | String | Null,
+          ?   phone_verification_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   is_premium?: BoolNullableFilter | Boolean | Null,
+          ?   premium_expiry?: DateTimeNullableFilter | DateTime | Null,
+          ?   role?: StringNullableFilter | String | Null,
+          ?   created_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   updated_at?: DateTimeNullableFilter | DateTime | Null,
+          ?   refresh_tokens?: Refresh_tokensListRelationFilter
+            }
+          })
+
+Argument `where` of type usersWhereUniqueInput needs at least one of `id`, `phone_number` or `email` arguments. Available options are marked with ?. - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 13:52:27:5227] http: 192.168.11.166 POST /api/v1/user/verify-phone 500 - 86.558 ms
+[05 May, 2025 - 13:52:53:5253] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 13:52:54:5254] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 13:52:54:5254] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 13:52:54:5254] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 13:52:54:5254] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 13:53:01:531] error: 400 - Invalid OTP - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 13:53:01:531] http: 192.168.11.166 POST /api/v1/user/verify-phone 400 - 74.377 ms
+[05 May, 2025 - 13:53:03:533] error: 400 - Invalid OTP - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 13:53:03:533] http: 192.168.11.166 POST /api/v1/user/verify-phone 400 - 7.425 ms
+[05 May, 2025 - 13:53:15:5315] http: 192.168.11.166 POST /api/v1/user/verify-phone 200 - 29.571 ms
+[05 May, 2025 - 13:53:18:5318] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:53:18:5318] http: 192.168.11.166 POST /api/v1/user/login 404 - 8.655 ms
+[05 May, 2025 - 13:53:19:5319] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:53:19:5319] http: 192.168.11.166 POST /api/v1/user/login 404 - 6.145 ms
+[05 May, 2025 - 13:53:25:5325] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:53:25:5325] http: 192.168.11.166 POST /api/v1/user/login 404 - 5.765 ms
+[05 May, 2025 - 13:53:41:5341] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:53:41:5341] http: 192.168.11.166 POST /api/v1/user/login 404 - 10.504 ms
+[05 May, 2025 - 13:53:51:5351] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:53:51:5351] http: 192.168.11.166 POST /api/v1/user/login 404 - 7.688 ms
+[05 May, 2025 - 13:53:52:5352] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:53:52:5352] http: 192.168.11.166 POST /api/v1/user/login 404 - 7.453 ms
+[05 May, 2025 - 13:54:30:5430] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:30:5430] http: 192.168.11.166 POST /api/v1/user/login 404 - 10.204 ms
+[05 May, 2025 - 13:54:31:5431] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:31:5431] http: 192.168.11.166 POST /api/v1/user/login 404 - 5.384 ms
+[05 May, 2025 - 13:54:31:5431] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:31:5431] http: 192.168.11.166 POST /api/v1/user/login 404 - 3.008 ms
+[05 May, 2025 - 13:54:31:5431] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:31:5431] http: 192.168.11.166 POST /api/v1/user/login 404 - 3.964 ms
+[05 May, 2025 - 13:54:52:5452] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:52:5452] http: 192.168.11.166 POST /api/v1/user/login 404 - 8.576 ms
+[05 May, 2025 - 13:54:52:5452] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:52:5452] http: 192.168.11.166 POST /api/v1/user/login 404 - 5.115 ms
+[05 May, 2025 - 13:54:53:5453] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:53:5453] http: 192.168.11.166 POST /api/v1/user/login 404 - 4.580 ms
+[05 May, 2025 - 13:54:53:5453] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:53:5453] http: 192.168.11.166 POST /api/v1/user/login 404 - 5.361 ms
+[05 May, 2025 - 13:54:54:5454] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:54:54:5454] http: 192.168.11.166 POST /api/v1/user/login 404 - 5.347 ms
+[05 May, 2025 - 13:55:27:5527] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:55:27:5527] http: 192.168.11.166 POST /api/v1/user/login 404 - 7.673 ms
+[05 May, 2025 - 13:55:28:5528] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:55:28:5528] http: 192.168.11.166 POST /api/v1/user/login 404 - 3.150 ms
+[05 May, 2025 - 13:55:33:5533] info: Received SIGINT. Closing http server.
+[05 May, 2025 - 13:55:45:5545] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 13:55:45:5545] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 13:55:45:5545] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 13:55:45:5545] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 13:58:03:583] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:58:03:583] http: 192.168.11.166 POST /api/v1/user/login 404 - 127469.770 ms
+[05 May, 2025 - 13:58:32:5832] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 13:58:32:5832] http: 192.168.11.166 POST /api/v1/user/login 404 - 14593.173 ms
+[05 May, 2025 - 13:58:54:5854] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 13:58:55:5855] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 13:58:55:5855] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 13:58:55:5855] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 13:58:55:5855] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:01:21:121] error: 404 - User not found - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 14:01:21:121] http: 192.168.11.166 POST /api/v1/user/login 404 - 15421.884 ms
+[05 May, 2025 - 14:01:46:146] http: 192.168.11.166 POST /api/v1/user/login 200 - 7919.231 ms
+[05 May, 2025 - 14:02:05:25] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:02:06:26] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:02:06:26] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:02:06:26] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:02:06:26] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:02:11:211] http: 192.168.11.166 POST /api/v1/user/logout 200 - 91.755 ms
+[05 May, 2025 - 14:02:31:231] http: 192.168.11.166 POST /api/v1/user/login 200 - 7443.295 ms
+[05 May, 2025 - 14:02:34:234] http: 192.168.11.166 POST /api/v1/user/logout 200 - 10.064 ms
+[05 May, 2025 - 14:04:00:40] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:04:01:41] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:04:01:41] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:04:01:41] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:04:01:41] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:04:08:48] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:04:08:48] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:04:08:48] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:04:08:48] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:04:08:48] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:05:43:543] error: 500 - Failed to send OTP. Please try again later. - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 14:05:43:543] http: 192.168.11.166 POST /api/v1/user/register 500 - 668.521 ms
+[05 May, 2025 - 14:08:15:815] http: 192.168.11.166 POST /api/v1/user/register - - - ms
+[05 May, 2025 - 14:08:15:815] error: 500 - Failed to send OTP. Please try again later. - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 14:08:16:816] error: 500 - Failed to send OTP. Please try again later. - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 14:08:16:816] http: 192.168.11.166 POST /api/v1/user/register 500 - 1421.566 ms
+[05 May, 2025 - 14:09:55:955] http: 192.168.11.166 POST /api/v1/user/register - - - ms
+[05 May, 2025 - 14:10:15:1015] error: 500 - Failed to send OTP. Please try again later. - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 14:10:16:1016] error: 500 - Failed to send OTP. Please try again later. - /api/v1/user/register - POST - 192.168.11.166
+[05 May, 2025 - 14:10:16:1016] http: 192.168.11.166 POST /api/v1/user/register 500 - 20534.854 ms
+[05 May, 2025 - 14:12:49:1249] http: 192.168.11.166 POST /api/v1/user/register 201 - 6433.423 ms
+[05 May, 2025 - 14:13:10:1310] error: 404 - User not found - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 14:13:10:1310] http: 192.168.11.166 POST /api/v1/user/verify-phone 404 - 13.315 ms
+[05 May, 2025 - 14:13:15:1315] error: 404 - User not found - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 14:13:15:1315] http: 192.168.11.166 POST /api/v1/user/verify-phone 404 - 11.198 ms
+[05 May, 2025 - 14:15:39:1539] http: 192.168.11.166 POST /api/v1/user/verify-phone - - - ms
+[05 May, 2025 - 14:15:39:1539] error: 404 - User not found - /api/v1/user/verify-phone - POST - 192.168.11.166
+[05 May, 2025 - 14:15:57:1557] error: 403 - Phone number not verified - /api/v1/user/login - POST - 192.168.11.166
+[05 May, 2025 - 14:15:57:1557] http: 192.168.11.166 POST /api/v1/user/login 403 - 7814.550 ms
+[05 May, 2025 - 14:18:36:1836] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:19:43:1943] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:19:43:1943] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:19:43:1943] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:19:43:1943] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:20:42:2042] http: 192.168.11.166 POST /api/v1/user/register 201 - 139.092 ms
+[05 May, 2025 - 14:21:30:2130] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:21:31:2131] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:21:31:2131] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:21:31:2131] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:21:31:2131] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:21:39:2139] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:21:40:2140] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:21:40:2140] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:21:40:2140] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:21:40:2140] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:22:13:2213] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:22:14:2214] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:22:14:2214] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:22:14:2214] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:22:14:2214] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:22:58:2258] info: Received SIGTERM. Closing http server.
+[05 May, 2025 - 14:22:58:2258] info: 📑 Visit the documentation at: http://localhost:8080
+[05 May, 2025 - 14:22:58:2258] info: ⚙️  Server is running on port: 8080
+[05 May, 2025 - 14:22:58:2258] info: 🌐 Server is accessible at: http://192.168.11.233:8080
+[05 May, 2025 - 14:22:58:2258] info: 🔍 Listening on all network interfaces (0.0.0.0)
+[05 May, 2025 - 14:23:47:2347] http: 192.168.11.166 POST /api/v1/user/register 201 - 6428.830 ms
+[05 May, 2025 - 14:24:10:2410] http: 192.168.11.166 POST /api/v1/user/verify-phone 200 - 4209.242 ms
+[05 May, 2025 - 14:24:26:2426] http: 192.168.11.166 POST /api/v1/user/login 200 - 12349.583 ms

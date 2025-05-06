@@ -14,30 +14,10 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
- * Model user
+ * Model bus_owners
  * 
  */
-export type user = $Result.DefaultSelection<Prisma.$userPayload>
-
-/**
- * Enums
- */
-export namespace $Enums {
-  export const mpaa_rating: {
-  G: 'G',
-  PG: 'PG',
-  PG_13: 'PG_13',
-  R: 'R',
-  NC_17: 'NC_17'
-};
-
-export type mpaa_rating = (typeof mpaa_rating)[keyof typeof mpaa_rating]
-
-}
-
-export type mpaa_rating = $Enums.mpaa_rating
-
-export const mpaa_rating: typeof $Enums.mpaa_rating
+export type bus_owners = $Result.DefaultSelection<Prisma.$bus_ownersPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -46,8 +26,8 @@ export const mpaa_rating: typeof $Enums.mpaa_rating
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Bus_owners
+ * const bus_owners = await prisma.bus_owners.findMany()
  * ```
  *
  *
@@ -67,8 +47,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Users
-   * const users = await prisma.user.findMany()
+   * // Fetch zero or more Bus_owners
+   * const bus_owners = await prisma.bus_owners.findMany()
    * ```
    *
    *
@@ -165,14 +145,14 @@ export class PrismaClient<
   }>>
 
       /**
-   * `prisma.user`: Exposes CRUD operations for the **user** model.
+   * `prisma.bus_owners`: Exposes CRUD operations for the **bus_owners** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Users
-    * const users = await prisma.user.findMany()
+    * // Fetch zero or more Bus_owners
+    * const bus_owners = await prisma.bus_owners.findMany()
     * ```
     */
-  get user(): Prisma.userDelegate<ExtArgs, ClientOptions>;
+  get bus_owners(): Prisma.bus_ownersDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -613,7 +593,7 @@ export namespace Prisma {
 
 
   export const ModelName: {
-    user: 'user'
+    bus_owners: 'bus_owners'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -632,81 +612,81 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user"
+      modelProps: "bus_owners"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
-      user: {
-        payload: Prisma.$userPayload<ExtArgs>
-        fields: Prisma.userFieldRefs
+      bus_owners: {
+        payload: Prisma.$bus_ownersPayload<ExtArgs>
+        fields: Prisma.bus_ownersFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.userFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload> | null
+            args: Prisma.bus_ownersFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.userFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>
+            args: Prisma.bus_ownersFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>
           }
           findFirst: {
-            args: Prisma.userFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload> | null
+            args: Prisma.bus_ownersFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.userFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>
+            args: Prisma.bus_ownersFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>
           }
           findMany: {
-            args: Prisma.userFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>[]
+            args: Prisma.bus_ownersFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>[]
           }
           create: {
-            args: Prisma.userCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>
+            args: Prisma.bus_ownersCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>
           }
           createMany: {
-            args: Prisma.userCreateManyArgs<ExtArgs>
+            args: Prisma.bus_ownersCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.userCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>[]
+            args: Prisma.bus_ownersCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>[]
           }
           delete: {
-            args: Prisma.userDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>
+            args: Prisma.bus_ownersDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>
           }
           update: {
-            args: Prisma.userUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>
+            args: Prisma.bus_ownersUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>
           }
           deleteMany: {
-            args: Prisma.userDeleteManyArgs<ExtArgs>
+            args: Prisma.bus_ownersDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.userUpdateManyArgs<ExtArgs>
+            args: Prisma.bus_ownersUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.userUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>[]
+            args: Prisma.bus_ownersUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>[]
           }
           upsert: {
-            args: Prisma.userUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$userPayload>
+            args: Prisma.bus_ownersUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$bus_ownersPayload>
           }
           aggregate: {
-            args: Prisma.UserAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateUser>
+            args: Prisma.Bus_ownersAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBus_owners>
           }
           groupBy: {
-            args: Prisma.userGroupByArgs<ExtArgs>
-            result: $Utils.Optional<UserGroupByOutputType>[]
+            args: Prisma.bus_ownersGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Bus_ownersGroupByOutputType>[]
           }
           count: {
-            args: Prisma.userCountArgs<ExtArgs>
-            result: $Utils.Optional<UserCountAggregateOutputType> | number
+            args: Prisma.bus_ownersCountArgs<ExtArgs>
+            result: $Utils.Optional<Bus_ownersCountAggregateOutputType> | number
           }
         }
       }
@@ -794,7 +774,7 @@ export namespace Prisma {
     omit?: Prisma.GlobalOmitConfig
   }
   export type GlobalOmitConfig = {
-    user?: userOmit
+    bus_owners?: bus_ownersOmit
   }
 
   /* Types for Logging */
@@ -890,371 +870,431 @@ export namespace Prisma {
    */
 
   /**
-   * Model user
+   * Model bus_owners
    */
 
-  export type AggregateUser = {
-    _count: UserCountAggregateOutputType | null
-    _avg: UserAvgAggregateOutputType | null
-    _sum: UserSumAggregateOutputType | null
-    _min: UserMinAggregateOutputType | null
-    _max: UserMaxAggregateOutputType | null
+  export type AggregateBus_owners = {
+    _count: Bus_ownersCountAggregateOutputType | null
+    _avg: Bus_ownersAvgAggregateOutputType | null
+    _sum: Bus_ownersSumAggregateOutputType | null
+    _min: Bus_ownersMinAggregateOutputType | null
+    _max: Bus_ownersMaxAggregateOutputType | null
   }
 
-  export type UserAvgAggregateOutputType = {
-    id: number | null
+  export type Bus_ownersAvgAggregateOutputType = {
+    bus_owner_id: number | null
   }
 
-  export type UserSumAggregateOutputType = {
-    id: number | null
+  export type Bus_ownersSumAggregateOutputType = {
+    bus_owner_id: number | null
   }
 
-  export type UserMinAggregateOutputType = {
-    id: number | null
-    name: string | null
-    email: string | null
-    password: string | null
+  export type Bus_ownersMinAggregateOutputType = {
+    bus_owner_id: number | null
+    full_name: string | null
+    phone_number: string | null
+    password_hash: string | null
+    company_name: string | null
+    is_email_verified: boolean | null
+    email_verification_token: string | null
+    email_verification_expiry: Date | null
     created_at: Date | null
+    updated_at: Date | null
   }
 
-  export type UserMaxAggregateOutputType = {
-    id: number | null
-    name: string | null
-    email: string | null
-    password: string | null
+  export type Bus_ownersMaxAggregateOutputType = {
+    bus_owner_id: number | null
+    full_name: string | null
+    phone_number: string | null
+    password_hash: string | null
+    company_name: string | null
+    is_email_verified: boolean | null
+    email_verification_token: string | null
+    email_verification_expiry: Date | null
     created_at: Date | null
+    updated_at: Date | null
   }
 
-  export type UserCountAggregateOutputType = {
-    id: number
-    name: number
-    email: number
-    password: number
+  export type Bus_ownersCountAggregateOutputType = {
+    bus_owner_id: number
+    full_name: number
+    phone_number: number
+    password_hash: number
+    company_name: number
+    is_email_verified: number
+    email_verification_token: number
+    email_verification_expiry: number
     created_at: number
+    updated_at: number
     _all: number
   }
 
 
-  export type UserAvgAggregateInputType = {
-    id?: true
+  export type Bus_ownersAvgAggregateInputType = {
+    bus_owner_id?: true
   }
 
-  export type UserSumAggregateInputType = {
-    id?: true
+  export type Bus_ownersSumAggregateInputType = {
+    bus_owner_id?: true
   }
 
-  export type UserMinAggregateInputType = {
-    id?: true
-    name?: true
-    email?: true
-    password?: true
+  export type Bus_ownersMinAggregateInputType = {
+    bus_owner_id?: true
+    full_name?: true
+    phone_number?: true
+    password_hash?: true
+    company_name?: true
+    is_email_verified?: true
+    email_verification_token?: true
+    email_verification_expiry?: true
     created_at?: true
+    updated_at?: true
   }
 
-  export type UserMaxAggregateInputType = {
-    id?: true
-    name?: true
-    email?: true
-    password?: true
+  export type Bus_ownersMaxAggregateInputType = {
+    bus_owner_id?: true
+    full_name?: true
+    phone_number?: true
+    password_hash?: true
+    company_name?: true
+    is_email_verified?: true
+    email_verification_token?: true
+    email_verification_expiry?: true
     created_at?: true
+    updated_at?: true
   }
 
-  export type UserCountAggregateInputType = {
-    id?: true
-    name?: true
-    email?: true
-    password?: true
+  export type Bus_ownersCountAggregateInputType = {
+    bus_owner_id?: true
+    full_name?: true
+    phone_number?: true
+    password_hash?: true
+    company_name?: true
+    is_email_verified?: true
+    email_verification_token?: true
+    email_verification_expiry?: true
     created_at?: true
+    updated_at?: true
     _all?: true
   }
 
-  export type UserAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Bus_ownersAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which user to aggregate.
+     * Filter which bus_owners to aggregate.
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of users to fetch.
+     * Determine the order of bus_owners to fetch.
      */
-    orderBy?: userOrderByWithRelationInput | userOrderByWithRelationInput[]
+    orderBy?: bus_ownersOrderByWithRelationInput | bus_ownersOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: userWhereUniqueInput
+    cursor?: bus_ownersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` users from the position of the cursor.
+     * Take `±n` bus_owners from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` users.
+     * Skip the first `n` bus_owners.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned users
+     * Count returned bus_owners
     **/
-    _count?: true | UserCountAggregateInputType
+    _count?: true | Bus_ownersCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: UserAvgAggregateInputType
+    _avg?: Bus_ownersAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: UserSumAggregateInputType
+    _sum?: Bus_ownersSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: UserMinAggregateInputType
+    _min?: Bus_ownersMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: UserMaxAggregateInputType
+    _max?: Bus_ownersMaxAggregateInputType
   }
 
-  export type GetUserAggregateType<T extends UserAggregateArgs> = {
-        [P in keyof T & keyof AggregateUser]: P extends '_count' | 'count'
+  export type GetBus_ownersAggregateType<T extends Bus_ownersAggregateArgs> = {
+        [P in keyof T & keyof AggregateBus_owners]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateUser[P]>
-      : GetScalarType<T[P], AggregateUser[P]>
+        : GetScalarType<T[P], AggregateBus_owners[P]>
+      : GetScalarType<T[P], AggregateBus_owners[P]>
   }
 
 
 
 
-  export type userGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: userWhereInput
-    orderBy?: userOrderByWithAggregationInput | userOrderByWithAggregationInput[]
-    by: UserScalarFieldEnum[] | UserScalarFieldEnum
-    having?: userScalarWhereWithAggregatesInput
+  export type bus_ownersGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: bus_ownersWhereInput
+    orderBy?: bus_ownersOrderByWithAggregationInput | bus_ownersOrderByWithAggregationInput[]
+    by: Bus_ownersScalarFieldEnum[] | Bus_ownersScalarFieldEnum
+    having?: bus_ownersScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: UserCountAggregateInputType | true
-    _avg?: UserAvgAggregateInputType
-    _sum?: UserSumAggregateInputType
-    _min?: UserMinAggregateInputType
-    _max?: UserMaxAggregateInputType
+    _count?: Bus_ownersCountAggregateInputType | true
+    _avg?: Bus_ownersAvgAggregateInputType
+    _sum?: Bus_ownersSumAggregateInputType
+    _min?: Bus_ownersMinAggregateInputType
+    _max?: Bus_ownersMaxAggregateInputType
   }
 
-  export type UserGroupByOutputType = {
-    id: number
-    name: string
-    email: string
-    password: string
-    created_at: Date | null
-    _count: UserCountAggregateOutputType | null
-    _avg: UserAvgAggregateOutputType | null
-    _sum: UserSumAggregateOutputType | null
-    _min: UserMinAggregateOutputType | null
-    _max: UserMaxAggregateOutputType | null
+  export type Bus_ownersGroupByOutputType = {
+    bus_owner_id: number
+    full_name: string
+    phone_number: string
+    password_hash: string
+    company_name: string | null
+    is_email_verified: boolean
+    email_verification_token: string | null
+    email_verification_expiry: Date | null
+    created_at: Date
+    updated_at: Date
+    _count: Bus_ownersCountAggregateOutputType | null
+    _avg: Bus_ownersAvgAggregateOutputType | null
+    _sum: Bus_ownersSumAggregateOutputType | null
+    _min: Bus_ownersMinAggregateOutputType | null
+    _max: Bus_ownersMaxAggregateOutputType | null
   }
 
-  type GetUserGroupByPayload<T extends userGroupByArgs> = Prisma.PrismaPromise<
+  type GetBus_ownersGroupByPayload<T extends bus_ownersGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<UserGroupByOutputType, T['by']> &
+      PickEnumerable<Bus_ownersGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof UserGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof Bus_ownersGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], UserGroupByOutputType[P]>
-            : GetScalarType<T[P], UserGroupByOutputType[P]>
+              : GetScalarType<T[P], Bus_ownersGroupByOutputType[P]>
+            : GetScalarType<T[P], Bus_ownersGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type userSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
+  export type bus_ownersSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    bus_owner_id?: boolean
+    full_name?: boolean
+    phone_number?: boolean
+    password_hash?: boolean
+    company_name?: boolean
+    is_email_verified?: boolean
+    email_verification_token?: boolean
+    email_verification_expiry?: boolean
     created_at?: boolean
-  }, ExtArgs["result"]["user"]>
+    updated_at?: boolean
+  }, ExtArgs["result"]["bus_owners"]>
 
-  export type userSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
+  export type bus_ownersSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    bus_owner_id?: boolean
+    full_name?: boolean
+    phone_number?: boolean
+    password_hash?: boolean
+    company_name?: boolean
+    is_email_verified?: boolean
+    email_verification_token?: boolean
+    email_verification_expiry?: boolean
     created_at?: boolean
-  }, ExtArgs["result"]["user"]>
+    updated_at?: boolean
+  }, ExtArgs["result"]["bus_owners"]>
 
-  export type userSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
+  export type bus_ownersSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    bus_owner_id?: boolean
+    full_name?: boolean
+    phone_number?: boolean
+    password_hash?: boolean
+    company_name?: boolean
+    is_email_verified?: boolean
+    email_verification_token?: boolean
+    email_verification_expiry?: boolean
     created_at?: boolean
-  }, ExtArgs["result"]["user"]>
+    updated_at?: boolean
+  }, ExtArgs["result"]["bus_owners"]>
 
-  export type userSelectScalar = {
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
+  export type bus_ownersSelectScalar = {
+    bus_owner_id?: boolean
+    full_name?: boolean
+    phone_number?: boolean
+    password_hash?: boolean
+    company_name?: boolean
+    is_email_verified?: boolean
+    email_verification_token?: boolean
+    email_verification_expiry?: boolean
     created_at?: boolean
+    updated_at?: boolean
   }
 
-  export type userOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "created_at", ExtArgs["result"]["user"]>
+  export type bus_ownersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"bus_owner_id" | "full_name" | "phone_number" | "password_hash" | "company_name" | "is_email_verified" | "email_verification_token" | "email_verification_expiry" | "created_at" | "updated_at", ExtArgs["result"]["bus_owners"]>
 
-  export type $userPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "user"
+  export type $bus_ownersPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "bus_owners"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
-      id: number
-      name: string
-      email: string
-      password: string
-      created_at: Date | null
-    }, ExtArgs["result"]["user"]>
+      bus_owner_id: number
+      full_name: string
+      phone_number: string
+      password_hash: string
+      company_name: string | null
+      is_email_verified: boolean
+      email_verification_token: string | null
+      email_verification_expiry: Date | null
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["bus_owners"]>
     composites: {}
   }
 
-  type userGetPayload<S extends boolean | null | undefined | userDefaultArgs> = $Result.GetResult<Prisma.$userPayload, S>
+  type bus_ownersGetPayload<S extends boolean | null | undefined | bus_ownersDefaultArgs> = $Result.GetResult<Prisma.$bus_ownersPayload, S>
 
-  type userCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<userFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: UserCountAggregateInputType | true
+  type bus_ownersCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<bus_ownersFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Bus_ownersCountAggregateInputType | true
     }
 
-  export interface userDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['user'], meta: { name: 'user' } }
+  export interface bus_ownersDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['bus_owners'], meta: { name: 'bus_owners' } }
     /**
-     * Find zero or one User that matches the filter.
-     * @param {userFindUniqueArgs} args - Arguments to find a User
+     * Find zero or one Bus_owners that matches the filter.
+     * @param {bus_ownersFindUniqueArgs} args - Arguments to find a Bus_owners
      * @example
-     * // Get one User
-     * const user = await prisma.user.findUnique({
+     * // Get one Bus_owners
+     * const bus_owners = await prisma.bus_owners.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends userFindUniqueArgs>(args: SelectSubset<T, userFindUniqueArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends bus_ownersFindUniqueArgs>(args: SelectSubset<T, bus_ownersFindUniqueArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one User that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Bus_owners that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {userFindUniqueOrThrowArgs} args - Arguments to find a User
+     * @param {bus_ownersFindUniqueOrThrowArgs} args - Arguments to find a Bus_owners
      * @example
-     * // Get one User
-     * const user = await prisma.user.findUniqueOrThrow({
+     * // Get one Bus_owners
+     * const bus_owners = await prisma.bus_owners.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends userFindUniqueOrThrowArgs>(args: SelectSubset<T, userFindUniqueOrThrowArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends bus_ownersFindUniqueOrThrowArgs>(args: SelectSubset<T, bus_ownersFindUniqueOrThrowArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first User that matches the filter.
+     * Find the first Bus_owners that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {userFindFirstArgs} args - Arguments to find a User
+     * @param {bus_ownersFindFirstArgs} args - Arguments to find a Bus_owners
      * @example
-     * // Get one User
-     * const user = await prisma.user.findFirst({
+     * // Get one Bus_owners
+     * const bus_owners = await prisma.bus_owners.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends userFindFirstArgs>(args?: SelectSubset<T, userFindFirstArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends bus_ownersFindFirstArgs>(args?: SelectSubset<T, bus_ownersFindFirstArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first User that matches the filter or
+     * Find the first Bus_owners that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {userFindFirstOrThrowArgs} args - Arguments to find a User
+     * @param {bus_ownersFindFirstOrThrowArgs} args - Arguments to find a Bus_owners
      * @example
-     * // Get one User
-     * const user = await prisma.user.findFirstOrThrow({
+     * // Get one Bus_owners
+     * const bus_owners = await prisma.bus_owners.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends userFindFirstOrThrowArgs>(args?: SelectSubset<T, userFindFirstOrThrowArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends bus_ownersFindFirstOrThrowArgs>(args?: SelectSubset<T, bus_ownersFindFirstOrThrowArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more Users that matches the filter.
+     * Find zero or more Bus_owners that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {userFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {bus_ownersFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Users
-     * const users = await prisma.user.findMany()
+     * // Get all Bus_owners
+     * const bus_owners = await prisma.bus_owners.findMany()
      * 
-     * // Get first 10 Users
-     * const users = await prisma.user.findMany({ take: 10 })
+     * // Get first 10 Bus_owners
+     * const bus_owners = await prisma.bus_owners.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
+     * // Only select the `bus_owner_id`
+     * const bus_ownersWithBus_owner_idOnly = await prisma.bus_owners.findMany({ select: { bus_owner_id: true } })
      * 
      */
-    findMany<T extends userFindManyArgs>(args?: SelectSubset<T, userFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends bus_ownersFindManyArgs>(args?: SelectSubset<T, bus_ownersFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a User.
-     * @param {userCreateArgs} args - Arguments to create a User.
+     * Create a Bus_owners.
+     * @param {bus_ownersCreateArgs} args - Arguments to create a Bus_owners.
      * @example
-     * // Create one User
-     * const User = await prisma.user.create({
+     * // Create one Bus_owners
+     * const Bus_owners = await prisma.bus_owners.create({
      *   data: {
-     *     // ... data to create a User
+     *     // ... data to create a Bus_owners
      *   }
      * })
      * 
      */
-    create<T extends userCreateArgs>(args: SelectSubset<T, userCreateArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends bus_ownersCreateArgs>(args: SelectSubset<T, bus_ownersCreateArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many Users.
-     * @param {userCreateManyArgs} args - Arguments to create many Users.
+     * Create many Bus_owners.
+     * @param {bus_ownersCreateManyArgs} args - Arguments to create many Bus_owners.
      * @example
-     * // Create many Users
-     * const user = await prisma.user.createMany({
+     * // Create many Bus_owners
+     * const bus_owners = await prisma.bus_owners.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends userCreateManyArgs>(args?: SelectSubset<T, userCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends bus_ownersCreateManyArgs>(args?: SelectSubset<T, bus_ownersCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many Users and returns the data saved in the database.
-     * @param {userCreateManyAndReturnArgs} args - Arguments to create many Users.
+     * Create many Bus_owners and returns the data saved in the database.
+     * @param {bus_ownersCreateManyAndReturnArgs} args - Arguments to create many Bus_owners.
      * @example
-     * // Create many Users
-     * const user = await prisma.user.createManyAndReturn({
+     * // Create many Bus_owners
+     * const bus_owners = await prisma.bus_owners.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many Users and only return the `id`
-     * const userWithIdOnly = await prisma.user.createManyAndReturn({
-     *   select: { id: true },
+     * // Create many Bus_owners and only return the `bus_owner_id`
+     * const bus_ownersWithBus_owner_idOnly = await prisma.bus_owners.createManyAndReturn({
+     *   select: { bus_owner_id: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -1263,28 +1303,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends userCreateManyAndReturnArgs>(args?: SelectSubset<T, userCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends bus_ownersCreateManyAndReturnArgs>(args?: SelectSubset<T, bus_ownersCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a User.
-     * @param {userDeleteArgs} args - Arguments to delete one User.
+     * Delete a Bus_owners.
+     * @param {bus_ownersDeleteArgs} args - Arguments to delete one Bus_owners.
      * @example
-     * // Delete one User
-     * const User = await prisma.user.delete({
+     * // Delete one Bus_owners
+     * const Bus_owners = await prisma.bus_owners.delete({
      *   where: {
-     *     // ... filter to delete one User
+     *     // ... filter to delete one Bus_owners
      *   }
      * })
      * 
      */
-    delete<T extends userDeleteArgs>(args: SelectSubset<T, userDeleteArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends bus_ownersDeleteArgs>(args: SelectSubset<T, bus_ownersDeleteArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one User.
-     * @param {userUpdateArgs} args - Arguments to update one User.
+     * Update one Bus_owners.
+     * @param {bus_ownersUpdateArgs} args - Arguments to update one Bus_owners.
      * @example
-     * // Update one User
-     * const user = await prisma.user.update({
+     * // Update one Bus_owners
+     * const bus_owners = await prisma.bus_owners.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -1294,30 +1334,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends userUpdateArgs>(args: SelectSubset<T, userUpdateArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends bus_ownersUpdateArgs>(args: SelectSubset<T, bus_ownersUpdateArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more Users.
-     * @param {userDeleteManyArgs} args - Arguments to filter Users to delete.
+     * Delete zero or more Bus_owners.
+     * @param {bus_ownersDeleteManyArgs} args - Arguments to filter Bus_owners to delete.
      * @example
-     * // Delete a few Users
-     * const { count } = await prisma.user.deleteMany({
+     * // Delete a few Bus_owners
+     * const { count } = await prisma.bus_owners.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends userDeleteManyArgs>(args?: SelectSubset<T, userDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends bus_ownersDeleteManyArgs>(args?: SelectSubset<T, bus_ownersDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Users.
+     * Update zero or more Bus_owners.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {userUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {bus_ownersUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Users
-     * const user = await prisma.user.updateMany({
+     * // Update many Bus_owners
+     * const bus_owners = await prisma.bus_owners.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -1327,14 +1367,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends userUpdateManyArgs>(args: SelectSubset<T, userUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends bus_ownersUpdateManyArgs>(args: SelectSubset<T, bus_ownersUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Users and returns the data updated in the database.
-     * @param {userUpdateManyAndReturnArgs} args - Arguments to update many Users.
+     * Update zero or more Bus_owners and returns the data updated in the database.
+     * @param {bus_ownersUpdateManyAndReturnArgs} args - Arguments to update many Bus_owners.
      * @example
-     * // Update many Users
-     * const user = await prisma.user.updateManyAndReturn({
+     * // Update many Bus_owners
+     * const bus_owners = await prisma.bus_owners.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -1343,9 +1383,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more Users and only return the `id`
-     * const userWithIdOnly = await prisma.user.updateManyAndReturn({
-     *   select: { id: true },
+     * // Update zero or more Bus_owners and only return the `bus_owner_id`
+     * const bus_ownersWithBus_owner_idOnly = await prisma.bus_owners.updateManyAndReturn({
+     *   select: { bus_owner_id: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -1357,56 +1397,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends userUpdateManyAndReturnArgs>(args: SelectSubset<T, userUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends bus_ownersUpdateManyAndReturnArgs>(args: SelectSubset<T, bus_ownersUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one User.
-     * @param {userUpsertArgs} args - Arguments to update or create a User.
+     * Create or update one Bus_owners.
+     * @param {bus_ownersUpsertArgs} args - Arguments to update or create a Bus_owners.
      * @example
-     * // Update or create a User
-     * const user = await prisma.user.upsert({
+     * // Update or create a Bus_owners
+     * const bus_owners = await prisma.bus_owners.upsert({
      *   create: {
-     *     // ... data to create a User
+     *     // ... data to create a Bus_owners
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the User we want to update
+     *     // ... the filter for the Bus_owners we want to update
      *   }
      * })
      */
-    upsert<T extends userUpsertArgs>(args: SelectSubset<T, userUpsertArgs<ExtArgs>>): Prisma__userClient<$Result.GetResult<Prisma.$userPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends bus_ownersUpsertArgs>(args: SelectSubset<T, bus_ownersUpsertArgs<ExtArgs>>): Prisma__bus_ownersClient<$Result.GetResult<Prisma.$bus_ownersPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of Users.
+     * Count the number of Bus_owners.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {userCountArgs} args - Arguments to filter Users to count.
+     * @param {bus_ownersCountArgs} args - Arguments to filter Bus_owners to count.
      * @example
-     * // Count the number of Users
-     * const count = await prisma.user.count({
+     * // Count the number of Bus_owners
+     * const count = await prisma.bus_owners.count({
      *   where: {
-     *     // ... the filter for the Users we want to count
+     *     // ... the filter for the Bus_owners we want to count
      *   }
      * })
     **/
-    count<T extends userCountArgs>(
-      args?: Subset<T, userCountArgs>,
+    count<T extends bus_ownersCountArgs>(
+      args?: Subset<T, bus_ownersCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], UserCountAggregateOutputType>
+          : GetScalarType<T['select'], Bus_ownersCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a User.
+     * Allows you to perform aggregations operations on a Bus_owners.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {Bus_ownersAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -1426,13 +1466,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): Prisma.PrismaPromise<GetUserAggregateType<T>>
+    aggregate<T extends Bus_ownersAggregateArgs>(args: Subset<T, Bus_ownersAggregateArgs>): Prisma.PrismaPromise<GetBus_ownersAggregateType<T>>
 
     /**
-     * Group by User.
+     * Group by Bus_owners.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {userGroupByArgs} args - Group by arguments.
+     * @param {bus_ownersGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -1447,14 +1487,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends userGroupByArgs,
+      T extends bus_ownersGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: userGroupByArgs['orderBy'] }
-        : { orderBy?: userGroupByArgs['orderBy'] },
+        ? { orderBy: bus_ownersGroupByArgs['orderBy'] }
+        : { orderBy?: bus_ownersGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -1503,20 +1543,20 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, userGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, bus_ownersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBus_ownersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the user model
+   * Fields of the bus_owners model
    */
-  readonly fields: userFieldRefs;
+  readonly fields: bus_ownersFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for user.
+   * The delegate class that acts as a "Promise-like" for bus_owners.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__userClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__bus_ownersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1544,377 +1584,382 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the user model
+   * Fields of the bus_owners model
    */
-  interface userFieldRefs {
-    readonly id: FieldRef<"user", 'Int'>
-    readonly name: FieldRef<"user", 'String'>
-    readonly email: FieldRef<"user", 'String'>
-    readonly password: FieldRef<"user", 'String'>
-    readonly created_at: FieldRef<"user", 'DateTime'>
+  interface bus_ownersFieldRefs {
+    readonly bus_owner_id: FieldRef<"bus_owners", 'Int'>
+    readonly full_name: FieldRef<"bus_owners", 'String'>
+    readonly phone_number: FieldRef<"bus_owners", 'String'>
+    readonly password_hash: FieldRef<"bus_owners", 'String'>
+    readonly company_name: FieldRef<"bus_owners", 'String'>
+    readonly is_email_verified: FieldRef<"bus_owners", 'Boolean'>
+    readonly email_verification_token: FieldRef<"bus_owners", 'String'>
+    readonly email_verification_expiry: FieldRef<"bus_owners", 'DateTime'>
+    readonly created_at: FieldRef<"bus_owners", 'DateTime'>
+    readonly updated_at: FieldRef<"bus_owners", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * user findUnique
+   * bus_owners findUnique
    */
-  export type userFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * Filter, which user to fetch.
+     * Filter, which bus_owners to fetch.
      */
-    where: userWhereUniqueInput
+    where: bus_ownersWhereUniqueInput
   }
 
   /**
-   * user findUniqueOrThrow
+   * bus_owners findUniqueOrThrow
    */
-  export type userFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * Filter, which user to fetch.
+     * Filter, which bus_owners to fetch.
      */
-    where: userWhereUniqueInput
+    where: bus_ownersWhereUniqueInput
   }
 
   /**
-   * user findFirst
+   * bus_owners findFirst
    */
-  export type userFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * Filter, which user to fetch.
+     * Filter, which bus_owners to fetch.
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of users to fetch.
+     * Determine the order of bus_owners to fetch.
      */
-    orderBy?: userOrderByWithRelationInput | userOrderByWithRelationInput[]
+    orderBy?: bus_ownersOrderByWithRelationInput | bus_ownersOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for users.
+     * Sets the position for searching for bus_owners.
      */
-    cursor?: userWhereUniqueInput
+    cursor?: bus_ownersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` users from the position of the cursor.
+     * Take `±n` bus_owners from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` users.
+     * Skip the first `n` bus_owners.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of users.
+     * Filter by unique combinations of bus_owners.
      */
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: Bus_ownersScalarFieldEnum | Bus_ownersScalarFieldEnum[]
   }
 
   /**
-   * user findFirstOrThrow
+   * bus_owners findFirstOrThrow
    */
-  export type userFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * Filter, which user to fetch.
+     * Filter, which bus_owners to fetch.
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of users to fetch.
+     * Determine the order of bus_owners to fetch.
      */
-    orderBy?: userOrderByWithRelationInput | userOrderByWithRelationInput[]
+    orderBy?: bus_ownersOrderByWithRelationInput | bus_ownersOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for users.
+     * Sets the position for searching for bus_owners.
      */
-    cursor?: userWhereUniqueInput
+    cursor?: bus_ownersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` users from the position of the cursor.
+     * Take `±n` bus_owners from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` users.
+     * Skip the first `n` bus_owners.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of users.
+     * Filter by unique combinations of bus_owners.
      */
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: Bus_ownersScalarFieldEnum | Bus_ownersScalarFieldEnum[]
   }
 
   /**
-   * user findMany
+   * bus_owners findMany
    */
-  export type userFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * Filter, which users to fetch.
+     * Filter, which bus_owners to fetch.
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of users to fetch.
+     * Determine the order of bus_owners to fetch.
      */
-    orderBy?: userOrderByWithRelationInput | userOrderByWithRelationInput[]
+    orderBy?: bus_ownersOrderByWithRelationInput | bus_ownersOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing users.
+     * Sets the position for listing bus_owners.
      */
-    cursor?: userWhereUniqueInput
+    cursor?: bus_ownersWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` users from the position of the cursor.
+     * Take `±n` bus_owners from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` users.
+     * Skip the first `n` bus_owners.
      */
     skip?: number
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: Bus_ownersScalarFieldEnum | Bus_ownersScalarFieldEnum[]
   }
 
   /**
-   * user create
+   * bus_owners create
    */
-  export type userCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * The data needed to create a user.
+     * The data needed to create a bus_owners.
      */
-    data: XOR<userCreateInput, userUncheckedCreateInput>
+    data: XOR<bus_ownersCreateInput, bus_ownersUncheckedCreateInput>
   }
 
   /**
-   * user createMany
+   * bus_owners createMany
    */
-  export type userCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many users.
+     * The data used to create many bus_owners.
      */
-    data: userCreateManyInput | userCreateManyInput[]
+    data: bus_ownersCreateManyInput | bus_ownersCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * user createManyAndReturn
+   * bus_owners createManyAndReturn
    */
-  export type userCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelectCreateManyAndReturn<ExtArgs> | null
+    select?: bus_ownersSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * The data used to create many users.
+     * The data used to create many bus_owners.
      */
-    data: userCreateManyInput | userCreateManyInput[]
+    data: bus_ownersCreateManyInput | bus_ownersCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * user update
+   * bus_owners update
    */
-  export type userUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * The data needed to update a user.
+     * The data needed to update a bus_owners.
      */
-    data: XOR<userUpdateInput, userUncheckedUpdateInput>
+    data: XOR<bus_ownersUpdateInput, bus_ownersUncheckedUpdateInput>
     /**
-     * Choose, which user to update.
+     * Choose, which bus_owners to update.
      */
-    where: userWhereUniqueInput
+    where: bus_ownersWhereUniqueInput
   }
 
   /**
-   * user updateMany
+   * bus_owners updateMany
    */
-  export type userUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update users.
+     * The data used to update bus_owners.
      */
-    data: XOR<userUpdateManyMutationInput, userUncheckedUpdateManyInput>
+    data: XOR<bus_ownersUpdateManyMutationInput, bus_ownersUncheckedUpdateManyInput>
     /**
-     * Filter which users to update
+     * Filter which bus_owners to update
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
-     * Limit how many users to update.
+     * Limit how many bus_owners to update.
      */
     limit?: number
   }
 
   /**
-   * user updateManyAndReturn
+   * bus_owners updateManyAndReturn
    */
-  export type userUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: bus_ownersSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * The data used to update users.
+     * The data used to update bus_owners.
      */
-    data: XOR<userUpdateManyMutationInput, userUncheckedUpdateManyInput>
+    data: XOR<bus_ownersUpdateManyMutationInput, bus_ownersUncheckedUpdateManyInput>
     /**
-     * Filter which users to update
+     * Filter which bus_owners to update
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
-     * Limit how many users to update.
+     * Limit how many bus_owners to update.
      */
     limit?: number
   }
 
   /**
-   * user upsert
+   * bus_owners upsert
    */
-  export type userUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * The filter to search for the user to update in case it exists.
+     * The filter to search for the bus_owners to update in case it exists.
      */
-    where: userWhereUniqueInput
+    where: bus_ownersWhereUniqueInput
     /**
-     * In case the user found by the `where` argument doesn't exist, create a new user with this data.
+     * In case the bus_owners found by the `where` argument doesn't exist, create a new bus_owners with this data.
      */
-    create: XOR<userCreateInput, userUncheckedCreateInput>
+    create: XOR<bus_ownersCreateInput, bus_ownersUncheckedCreateInput>
     /**
-     * In case the user was found with the provided `where` argument, update it with this data.
+     * In case the bus_owners was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<userUpdateInput, userUncheckedUpdateInput>
+    update: XOR<bus_ownersUpdateInput, bus_ownersUncheckedUpdateInput>
   }
 
   /**
-   * user delete
+   * bus_owners delete
    */
-  export type userDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
     /**
-     * Filter which user to delete.
+     * Filter which bus_owners to delete.
      */
-    where: userWhereUniqueInput
+    where: bus_ownersWhereUniqueInput
   }
 
   /**
-   * user deleteMany
+   * bus_owners deleteMany
    */
-  export type userDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which users to delete
+     * Filter which bus_owners to delete
      */
-    where?: userWhereInput
+    where?: bus_ownersWhereInput
     /**
-     * Limit how many users to delete.
+     * Limit how many bus_owners to delete.
      */
     limit?: number
   }
 
   /**
-   * user without action
+   * bus_owners without action
    */
-  export type userDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type bus_ownersDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the user
+     * Select specific fields to fetch from the bus_owners
      */
-    select?: userSelect<ExtArgs> | null
+    select?: bus_ownersSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the user
+     * Omit specific fields from the bus_owners
      */
-    omit?: userOmit<ExtArgs> | null
+    omit?: bus_ownersOmit<ExtArgs> | null
   }
 
 
@@ -1932,15 +1977,20 @@ export namespace Prisma {
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-  export const UserScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    email: 'email',
-    password: 'password',
-    created_at: 'created_at'
+  export const Bus_ownersScalarFieldEnum: {
+    bus_owner_id: 'bus_owner_id',
+    full_name: 'full_name',
+    phone_number: 'phone_number',
+    password_hash: 'password_hash',
+    company_name: 'company_name',
+    is_email_verified: 'is_email_verified',
+    email_verification_token: 'email_verification_token',
+    email_verification_expiry: 'email_verification_expiry',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
   };
 
-  export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+  export type Bus_ownersScalarFieldEnum = (typeof Bus_ownersScalarFieldEnum)[keyof typeof Bus_ownersScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -2001,6 +2051,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -2031,111 +2088,171 @@ export namespace Prisma {
    */
 
 
-  export type userWhereInput = {
-    AND?: userWhereInput | userWhereInput[]
-    OR?: userWhereInput[]
-    NOT?: userWhereInput | userWhereInput[]
-    id?: IntFilter<"user"> | number
-    name?: StringFilter<"user"> | string
-    email?: StringFilter<"user"> | string
-    password?: StringFilter<"user"> | string
-    created_at?: DateTimeNullableFilter<"user"> | Date | string | null
+  export type bus_ownersWhereInput = {
+    AND?: bus_ownersWhereInput | bus_ownersWhereInput[]
+    OR?: bus_ownersWhereInput[]
+    NOT?: bus_ownersWhereInput | bus_ownersWhereInput[]
+    bus_owner_id?: IntFilter<"bus_owners"> | number
+    full_name?: StringFilter<"bus_owners"> | string
+    phone_number?: StringFilter<"bus_owners"> | string
+    password_hash?: StringFilter<"bus_owners"> | string
+    company_name?: StringNullableFilter<"bus_owners"> | string | null
+    is_email_verified?: BoolFilter<"bus_owners"> | boolean
+    email_verification_token?: StringNullableFilter<"bus_owners"> | string | null
+    email_verification_expiry?: DateTimeNullableFilter<"bus_owners"> | Date | string | null
+    created_at?: DateTimeFilter<"bus_owners"> | Date | string
+    updated_at?: DateTimeFilter<"bus_owners"> | Date | string
   }
 
-  export type userOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    created_at?: SortOrderInput | SortOrder
+  export type bus_ownersOrderByWithRelationInput = {
+    bus_owner_id?: SortOrder
+    full_name?: SortOrder
+    phone_number?: SortOrder
+    password_hash?: SortOrder
+    company_name?: SortOrderInput | SortOrder
+    is_email_verified?: SortOrder
+    email_verification_token?: SortOrderInput | SortOrder
+    email_verification_expiry?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
-  export type userWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    email?: string
-    AND?: userWhereInput | userWhereInput[]
-    OR?: userWhereInput[]
-    NOT?: userWhereInput | userWhereInput[]
-    name?: StringFilter<"user"> | string
-    password?: StringFilter<"user"> | string
-    created_at?: DateTimeNullableFilter<"user"> | Date | string | null
-  }, "id" | "email">
+  export type bus_ownersWhereUniqueInput = Prisma.AtLeast<{
+    bus_owner_id?: number
+    phone_number?: string
+    AND?: bus_ownersWhereInput | bus_ownersWhereInput[]
+    OR?: bus_ownersWhereInput[]
+    NOT?: bus_ownersWhereInput | bus_ownersWhereInput[]
+    full_name?: StringFilter<"bus_owners"> | string
+    password_hash?: StringFilter<"bus_owners"> | string
+    company_name?: StringNullableFilter<"bus_owners"> | string | null
+    is_email_verified?: BoolFilter<"bus_owners"> | boolean
+    email_verification_token?: StringNullableFilter<"bus_owners"> | string | null
+    email_verification_expiry?: DateTimeNullableFilter<"bus_owners"> | Date | string | null
+    created_at?: DateTimeFilter<"bus_owners"> | Date | string
+    updated_at?: DateTimeFilter<"bus_owners"> | Date | string
+  }, "bus_owner_id" | "phone_number">
 
-  export type userOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    created_at?: SortOrderInput | SortOrder
-    _count?: userCountOrderByAggregateInput
-    _avg?: userAvgOrderByAggregateInput
-    _max?: userMaxOrderByAggregateInput
-    _min?: userMinOrderByAggregateInput
-    _sum?: userSumOrderByAggregateInput
+  export type bus_ownersOrderByWithAggregationInput = {
+    bus_owner_id?: SortOrder
+    full_name?: SortOrder
+    phone_number?: SortOrder
+    password_hash?: SortOrder
+    company_name?: SortOrderInput | SortOrder
+    is_email_verified?: SortOrder
+    email_verification_token?: SortOrderInput | SortOrder
+    email_verification_expiry?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: bus_ownersCountOrderByAggregateInput
+    _avg?: bus_ownersAvgOrderByAggregateInput
+    _max?: bus_ownersMaxOrderByAggregateInput
+    _min?: bus_ownersMinOrderByAggregateInput
+    _sum?: bus_ownersSumOrderByAggregateInput
   }
 
-  export type userScalarWhereWithAggregatesInput = {
-    AND?: userScalarWhereWithAggregatesInput | userScalarWhereWithAggregatesInput[]
-    OR?: userScalarWhereWithAggregatesInput[]
-    NOT?: userScalarWhereWithAggregatesInput | userScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"user"> | number
-    name?: StringWithAggregatesFilter<"user"> | string
-    email?: StringWithAggregatesFilter<"user"> | string
-    password?: StringWithAggregatesFilter<"user"> | string
-    created_at?: DateTimeNullableWithAggregatesFilter<"user"> | Date | string | null
+  export type bus_ownersScalarWhereWithAggregatesInput = {
+    AND?: bus_ownersScalarWhereWithAggregatesInput | bus_ownersScalarWhereWithAggregatesInput[]
+    OR?: bus_ownersScalarWhereWithAggregatesInput[]
+    NOT?: bus_ownersScalarWhereWithAggregatesInput | bus_ownersScalarWhereWithAggregatesInput[]
+    bus_owner_id?: IntWithAggregatesFilter<"bus_owners"> | number
+    full_name?: StringWithAggregatesFilter<"bus_owners"> | string
+    phone_number?: StringWithAggregatesFilter<"bus_owners"> | string
+    password_hash?: StringWithAggregatesFilter<"bus_owners"> | string
+    company_name?: StringNullableWithAggregatesFilter<"bus_owners"> | string | null
+    is_email_verified?: BoolWithAggregatesFilter<"bus_owners"> | boolean
+    email_verification_token?: StringNullableWithAggregatesFilter<"bus_owners"> | string | null
+    email_verification_expiry?: DateTimeNullableWithAggregatesFilter<"bus_owners"> | Date | string | null
+    created_at?: DateTimeWithAggregatesFilter<"bus_owners"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"bus_owners"> | Date | string
   }
 
-  export type userCreateInput = {
-    name: string
-    email: string
-    password: string
-    created_at?: Date | string | null
+  export type bus_ownersCreateInput = {
+    full_name: string
+    phone_number: string
+    password_hash: string
+    company_name?: string | null
+    is_email_verified?: boolean
+    email_verification_token?: string | null
+    email_verification_expiry?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
-  export type userUncheckedCreateInput = {
-    id?: number
-    name: string
-    email: string
-    password: string
-    created_at?: Date | string | null
+  export type bus_ownersUncheckedCreateInput = {
+    bus_owner_id?: number
+    full_name: string
+    phone_number: string
+    password_hash: string
+    company_name?: string | null
+    is_email_verified?: boolean
+    email_verification_token?: string | null
+    email_verification_expiry?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
-  export type userUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type bus_ownersUpdateInput = {
+    full_name?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    password_hash?: StringFieldUpdateOperationsInput | string
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    is_email_verified?: BoolFieldUpdateOperationsInput | boolean
+    email_verification_token?: NullableStringFieldUpdateOperationsInput | string | null
+    email_verification_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type userUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type bus_ownersUncheckedUpdateInput = {
+    bus_owner_id?: IntFieldUpdateOperationsInput | number
+    full_name?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    password_hash?: StringFieldUpdateOperationsInput | string
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    is_email_verified?: BoolFieldUpdateOperationsInput | boolean
+    email_verification_token?: NullableStringFieldUpdateOperationsInput | string | null
+    email_verification_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type userCreateManyInput = {
-    id?: number
-    name: string
-    email: string
-    password: string
-    created_at?: Date | string | null
+  export type bus_ownersCreateManyInput = {
+    bus_owner_id?: number
+    full_name: string
+    phone_number: string
+    password_hash: string
+    company_name?: string | null
+    is_email_verified?: boolean
+    email_verification_token?: string | null
+    email_verification_expiry?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
-  export type userUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type bus_ownersUpdateManyMutationInput = {
+    full_name?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    password_hash?: StringFieldUpdateOperationsInput | string
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    is_email_verified?: BoolFieldUpdateOperationsInput | boolean
+    email_verification_token?: NullableStringFieldUpdateOperationsInput | string | null
+    email_verification_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type userUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type bus_ownersUncheckedUpdateManyInput = {
+    bus_owner_id?: IntFieldUpdateOperationsInput | number
+    full_name?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    password_hash?: StringFieldUpdateOperationsInput | string
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    is_email_verified?: BoolFieldUpdateOperationsInput | boolean
+    email_verification_token?: NullableStringFieldUpdateOperationsInput | string | null
+    email_verification_expiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -2164,6 +2281,26 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -2175,41 +2312,67 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
-  export type userCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
+  export type bus_ownersCountOrderByAggregateInput = {
+    bus_owner_id?: SortOrder
+    full_name?: SortOrder
+    phone_number?: SortOrder
+    password_hash?: SortOrder
+    company_name?: SortOrder
+    is_email_verified?: SortOrder
+    email_verification_token?: SortOrder
+    email_verification_expiry?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
-  export type userAvgOrderByAggregateInput = {
-    id?: SortOrder
+  export type bus_ownersAvgOrderByAggregateInput = {
+    bus_owner_id?: SortOrder
   }
 
-  export type userMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
+  export type bus_ownersMaxOrderByAggregateInput = {
+    bus_owner_id?: SortOrder
+    full_name?: SortOrder
+    phone_number?: SortOrder
+    password_hash?: SortOrder
+    company_name?: SortOrder
+    is_email_verified?: SortOrder
+    email_verification_token?: SortOrder
+    email_verification_expiry?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
-  export type userMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
+  export type bus_ownersMinOrderByAggregateInput = {
+    bus_owner_id?: SortOrder
+    full_name?: SortOrder
+    phone_number?: SortOrder
+    password_hash?: SortOrder
+    company_name?: SortOrder
+    is_email_verified?: SortOrder
+    email_verification_token?: SortOrder
+    email_verification_expiry?: SortOrder
     created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
-  export type userSumOrderByAggregateInput = {
-    id?: SortOrder
+  export type bus_ownersSumOrderByAggregateInput = {
+    bus_owner_id?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -2246,6 +2409,32 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -2260,12 +2449,38 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -2301,6 +2516,25 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -2310,6 +2544,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -2356,6 +2601,42 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -2370,15 +2651,18 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
 

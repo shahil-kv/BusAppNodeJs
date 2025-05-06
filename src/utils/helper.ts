@@ -1,13 +1,13 @@
-import fs from 'fs';
-import logger from '../logger/winston.logger';
-import { Request } from 'express';
+import fs from "fs";
+import logger from "../logger/winston.logger";
+import { Request } from "express";
 
 export const filterObjectKeys = (fieldsArray: string[], objectArray) => {
   const filteredArray = structuredClone(objectArray).map((originalObj) => {
     const obj = {};
     structuredClone(fieldsArray)?.forEach((field) => {
       if (field?.trim() in originalObj) {
-        obj['field'] = originalObj[field];
+        obj["field"] = originalObj[field];
       }
     });
     if (Object.keys(obj).length > 0) return obj;
@@ -23,7 +23,7 @@ export const filterObjectKeys = (fieldsArray: string[], objectArray) => {
  * @description returns the file's static path from where the server is serving the static image
  */
 export const getStaticFilePath = (req: Request, fileName: string) => {
-  return `${req.protocol}://${req.get('host')}/images/${fileName}`;
+  return `${req.protocol}://${req.get("host")}/images/${fileName}`;
 };
 
 /**
@@ -42,9 +42,9 @@ export const getLocalPath = (fileName) => {
  */
 export const removeLocalFile = (localPath) => {
   fs.unlink(localPath, (err) => {
-    if (err) logger.error('Error while removing local files: ', err);
+    if (err) logger.error("Error while removing local files: ", err);
     else {
-      logger.info('Removed local: ', localPath);
+      logger.info("Removed local: ", localPath);
     }
   });
 };

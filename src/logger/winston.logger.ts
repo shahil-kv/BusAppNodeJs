@@ -1,4 +1,6 @@
-import * as winston from 'winston';
+import * as winston from "winston";
+import "winston-daily-rotate-file"; // Still need this transport
+
 // Define your severity levels.
 const levels = {
   error: 0,
@@ -8,58 +10,79 @@ const levels = {
   debug: 4,
 };
 
-// This method set the current severity based on
-// the current NODE_ENV: show all the log levels
-// if the server was run in development mode; otherwise,
-// if it was run in production, show only warn and error messages.
+// This method set the current severity based on NODE_ENV
 const level = () => {
-  const env = process.env.NODE_ENV || 'development';
-  const isDevelopment = env === 'development';
-  return isDevelopment ? 'debug' : 'warn';
+  const env = process.env.NODE_ENV || "development";
+  const isDevelopment = env === "development";
+  return isDevelopment ? "debug" : "info"; // Log info level and up in production files
 };
 
 // Define different colors for each level.
-// Colors make the log message more visible,
-// adding the ability to focus or ignore messages.
 const colors = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'blue',
-  http: 'magenta',
-  debug: 'white',
+  error: "red",
+  warn: "yellow",
+  info: "blue",
+  http: "magenta",
+  debug: "white",
 };
 
-// Tell winston that you want to link the colors
-// defined above to the severity levels.
 winston.addColors(colors);
 
-// Chose the aspect of your log customizing the log format.
-const format = winston.format.combine(
-  // Add the message timestamp with the preferred format
-  winston.format.timestamp({ format: 'DD MMM, YYYY - HH:mm:ss:ms' }),
-  // Tell Winston that the logs must be colored
-  winston.format.colorize({ all: true }),
-  // Define the format of the message showing the timestamp, the level and the message
-  winston.format.printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
+// Format for log files (no colors)
+const logFormat = winston.format.combine(
+  winston.format.timestamp({ format: "DD MMM, YYYY - HH:mm:ss:ms" }), // Corrected YYYY
+  winston.format.printf(
+    (info) => `[${info.timestamp}] ${info.level}: ${info.message}`
+  )
 );
 
-// Define which transports the logger must use to print out messages.
-// In this example, we are using three different transports
+// Format for the console (with colors)
+const consoleFormat = winston.format.combine(
+  winston.format.timestamp({ format: "DD MMM, YYYY - HH:mm:ss:ms" }), // Corrected YYYY
+  winston.format.colorize({ all: true }),
+  winston.format.printf(
+    (info) => `[${info.timestamp}] ${info.level}: ${info.message}`
+  )
+);
+
+// Define transports
 const transports = [
-  // Allow the use the console to print the messages
-  new winston.transports.Console(),
-  new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-  new winston.transports.File({ filename: 'logs/info.log', level: 'info' }),
-  new winston.transports.File({ filename: 'logs/http.log', level: 'http' }),
+  new winston.transports.Console({
+    format: consoleFormat,
+  }),
+
+  new winston.transports.DailyRotateFile({
+    level: "error",
+    filename: "logs/error.log", // Fixed filename, no %DATE%
+    zippedArchive: false, // Keep archives uncompressed
+    maxSize: "10m", // Rotate when file exceeds 10MB
+    maxFiles: 1, // Keep only the most recent 1 archive file (e.g., error.log.1)
+    format: logFormat,
+  }),
+  new winston.transports.DailyRotateFile({
+    level: "info", // Captures info, warn, error
+    filename: "logs/info.log",
+    zippedArchive: false,
+    maxSize: "20m", // Rotate info log at 20MB
+    maxFiles: 1, // Keep only info.log.1
+    format: logFormat,
+  }),
+  new winston.transports.DailyRotateFile({
+    level: "http",
+    filename: "logs/http.log",
+    zippedArchive: false,
+    maxSize: "50m", // Rotate http log at 50MB
+    maxFiles: 1, // Keep only http.log.1
+    format: logFormat,
+  }),
 ];
 
-// Create the logger instance that has to be exported
-// and used to log messages.
+// Create the logger instance
 const logger = winston.createLogger({
   level: level(),
   levels,
-  format,
   transports,
+  exitOnError: false,
 });
 
 export default logger;

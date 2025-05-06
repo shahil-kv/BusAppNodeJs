@@ -1,10 +1,10 @@
-import rateLimit from 'express-rate-limit';
-import { Request, Response } from 'express';
-import 'express';
+import rateLimit from "express-rate-limit";
+import { Request, Response } from "express";
+import "express";
 
 // src/types/express.d.ts (or any other global types file)
 
-declare module 'express' {
+declare module "express" {
   interface Request {
     clientIp?: string;
   }
@@ -18,12 +18,12 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 
   keyGenerator: (request: Request): string => {
-    return request.clientIp || request.ip || '';
+    return request.clientIp || request.ip || "";
   },
 
   handler: (req: Request, res: Response) => {
     return res.status(429).json({
-      status: 'error',
+      status: "error",
       message: `Too many requests. You are only allowed 5000 requests per 15 minutes.`,
     });
   },
