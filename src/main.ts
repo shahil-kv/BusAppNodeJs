@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8080;
 
 const startServer = () => {
   const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
-    // Store the server instance
+    // Store the server instancess
     logger.info(`📑 Visit the documentation at: http://localhost:${PORT}`);
     logger.info(`⚙️  Server is running on port: ${PORT}`);
     logger.info(`🌐 Server is accessible at: http://192.168.11.233:${PORT}`);
