@@ -101,8 +101,16 @@ class AuthService {
         // Clean phone number by removing whitespace
         const cleanedPhoneNumber = phoneNumber.replace(/\s+/g, '');
 
-        // Check if user already exists
+        // Check if user or pending registration already exists
         const existingUser = await prisma.users.findFirst({
+            where: {
+                OR: [
+                    { phone_number: cleanedPhoneNumber },
+                    { email: email }
+                ]
+            }
+        });
+        const pending = await prisma.pending_registrations.findFirst({
             where: {
                 OR: [
                     { phone_number: cleanedPhoneNumber },
@@ -115,6 +123,13 @@ class AuthService {
             throw new ApiError(409, 'User with this phone number or email already exists');
         }
 
+        // If a pending registration exists, delete it so user can retry registration
+        if (pending) {
+            await prisma.pending_registrations.delete({
+                where: { phone_number: cleanedPhoneNumber }
+            });
+        }
+
         // Hash password
         const hashedPassword = await this.hashPassword(password);
 
@@ -123,11 +138,8 @@ class AuthService {
         const otpExpiry = new Date();
         otpExpiry.setMinutes(otpExpiry.getMinutes() + this.OTP_EXPIRY_MINUTES);
 
-        // Send OTP via SMS
-        await this.sendOTP(cleanedPhoneNumber, otp);
-
-        // Create user
-        const user = await prisma.users.create({
+        // Store in pending_registrations
+        await prisma.pending_registrations.create({
             data: {
                 phone_number: cleanedPhoneNumber,
                 password_hash: hashedPassword,
@@ -139,38 +151,45 @@ class AuthService {
             }
         });
 
-        return user;
+        // Send OTP
+        await this.sendOTP(cleanedPhoneNumber, otp);
+
+        return { message: 'OTP sent to your phone number' };
     }
 
     // Verify phone number with OTP
     static async verifyPhoneNumber(phoneNumber: string, otp: string): Promise<boolean> {
-        const user = await prisma.users.findUnique({
+        const pending = await prisma.pending_registrations.findUnique({
             where: { phone_number: phoneNumber }
         });
 
-        if (!user) {
-            throw new ApiError(404, 'User not found');
+        if (!pending) {
+            throw new ApiError(404, 'No pending registration found');
         }
 
-        if (user.is_phone_verified) {
-            throw new ApiError(400, 'Phone number already verified');
-        }
-
-        if (user.phone_verification_otp !== otp) {
+        if (pending.phone_verification_otp !== otp) {
             throw new ApiError(400, 'Invalid OTP');
         }
 
-        if (user.phone_verification_expiry && user.phone_verification_expiry < new Date()) {
+        if (pending.phone_verification_expiry < new Date()) {
             throw new ApiError(400, 'OTP expired');
         }
 
-        await prisma.users.update({
-            where: { id: user.id },
+        // Create user in users table
+        await prisma.users.create({
             data: {
-                is_phone_verified: true,
-                phone_verification_otp: null,
-                phone_verification_expiry: null
+                phone_number: pending.phone_number,
+                password_hash: pending.password_hash,
+                full_name: pending.full_name,
+                email: pending.email,
+                role: pending.role,
+                is_phone_verified: true
             }
+        });
+
+        // Delete from pending_registrations
+        await prisma.pending_registrations.delete({
+            where: { phone_number: phoneNumber }
         });
 
         return true;
