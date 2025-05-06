@@ -13,6 +13,10 @@ import limiter from "./configs/limiter";
 import { errorHandler } from "./middleware/error.middleware";
 import router from "./routes/auth.routes";
 
+const BASE_URL = process.env.BASE_URL || "http://localhost";
+const PORT = process.env.PORT || 8080;
+const API_PREFIX = process.env.API_PREFIX || "/api/v1";
+
 // Swagger definition
 const swaggerOptions = {
   definition: {
@@ -24,9 +28,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `${process.env.BASE_URL || "http://localhost"}:${process.env.PORT || 8080
-          }${process.env.API_PREFIX || "/api/v1"}`,
-        description: "Development server",
+        url: `${BASE_URL}:${PORT}${API_PREFIX}`,
+        description: "API Server",
       },
     ],
   },
@@ -44,14 +47,18 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginOpenerPolicy: { policy: "unsafe-none" }
 })); // Use helmet for security headers
-app.use(
-  cors({
-    origin: true, // Allow all origins in development
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-  })
-);
+
+// Configure CORS based on environment
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? [BASE_URL] // In production, only allow requests from BASE_URL
+    : true, // In development, allow all origins
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+};
+
+app.use(cors(corsOptions));
 
 app.use(requestIp.mw());
 
@@ -66,8 +73,7 @@ app.use(cookieParser());
 app.use(morganMiddleware);
 
 //user route
-app.use("/api/v1/user", router);
-
+app.use(API_PREFIX + "/user", router);
 
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs

@@ -4,13 +4,14 @@ import logger from "./logger/winston.logger";
 // dotenv.config() is called in app.ts, no need to call it again here
 
 const PORT = process.env.PORT || 8080;
+const BASE_URL = process.env.BASE_URL || 'http://localhost';
 
 const startServer = () => {
   const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
-    // Store the server instancess
-    logger.info(`📑 Visit the documentation at: http://localhost:${PORT}`);
+    // Store the server instances
+    logger.info(`📑 Visit the documentation at: ${BASE_URL}`);
     logger.info(`⚙️  Server is running on port: ${PORT}`);
-    logger.info(`🔍 Server is running in local environment`);
+    logger.info(`🔍 Server is running at: ${BASE_URL}`);
   });
 
   const gracefulShutdown = (signal: string) => {
