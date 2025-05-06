@@ -16,9 +16,9 @@ const router = Router();
 
 /**
  * @swagger
- * /bus-owner/register-busowner:
+ * /bus-owner/register:
  *   post:
- *     summary: Register a new bus owner
+ *     summary: Register new bus owner
  *     tags: [BusOwner]
  *     requestBody:
  *       required: true
@@ -26,22 +26,13 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [phoneNumber, password, fullName]
  *             properties:
- *               # Define properties based on busOwnerRegisteration validator
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *               # Add other required fields...
- *     responses:
- *       201:
- *         description: Bus owner created successfully.
- *       400:
- *         description: Invalid input data.
- *       500:
- *         description: Internal server error
+ *               phoneNumber: { type: string, description: "User's phone number" }
+ *               password: { type: string, description: "Account password" }
+ *               fullName: { type: string, description: "User's full name" }
+ *               companyName: { type: string, description: "Optional company name" }
+ *               opsMode: { type: string, enum: [INSERT, UPDATE, DELETE] }
  */
 router
     .route("/register")
@@ -52,9 +43,9 @@ router
 
 /**
  * @swagger
- * /bus-owner/login-busowner:
+ * /bus-owner/login:
  *   post:
- *     summary: Login a bus owner
+ *     summary: Login bus owner
  *     tags: [BusOwner]
  *     requestBody:
  *       required: true
@@ -62,39 +53,94 @@ router
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [phoneNumber, password]
  *             properties:
- *               # Define properties based on busOwnerLoginValidator
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *     responses:
- *       200:
- *         description: Login successful, returns user info and tokens.
- *       400:
- *         description: Invalid credentials or input data.
- *       401:
- *         description: Unauthorized (wrong password).
- *       404:
- *         description: User not found.
- *       500:
- *         description: Internal server error
+ *               phoneNumber: { type: string, description: "Registered phone number" }
+ *               password: { type: string, description: "Account password" }
  */
 router
     .route("/login")
     .post(validateLoginUser, validate, loginUser);
+    
 // Public routes
+/**
+ * @swagger
+ * /bus-owner/verify-phone:
+ *   post:
+ *     summary: Verify phone with OTP
+ *     tags: [BusOwner]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [phoneNumber, otp]
+ *             properties:
+ *               phoneNumber: { type: string, description: "Phone to verify" }
+ *               otp: { type: string, description: "OTP from SMS" }
+ */
 router.post('/verify-phone', validateVerifyPhoneNumber, validate, verifyPhoneNumber);
 
 // Protected routes
+/**
+ * @swagger
+ * /bus-owner/refresh-token:
+ *   post:
+ *     summary: Get new access token
+ *     tags: [BusOwner]
+ *     security: [{ bearerAuth: [] }]
+ */
 router.post('/refresh-token', refreshAccessToken);
+
+/**
+ * @swagger
+ * /bus-owner/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [BusOwner]
+ *     security: [{ bearerAuth: [] }]
+ */
 router.post('/logout', verifyJWT, logoutUser);
+
+/**
+ * @swagger
+ * /bus-owner/upgrade-premium:
+ *   post:
+ *     summary: Upgrade to premium
+ *     tags: [BusOwner]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [durationMonths]
+ *             properties:
+ *               durationMonths: { type: integer, minimum: 1, maximum: 12 }
+ */
 router.post('/upgrade-premium', verifyJWT, validateUpgradeToPremium, upgradeToPremium);
+
+/**
+ * @swagger
+ * /bus-owner/premium-status:
+ *   get:
+ *     summary: Check premium status
+ *     tags: [BusOwner]
+ *     security: [{ bearerAuth: [] }]
+ */
 router.get('/premium-status', verifyJWT, checkPremiumStatus);
 
 // Admin routes
+/**
+ * @swagger
+ * /bus-owner/admin/users:
+ *   get:
+ *     summary: List all users (Admin)
+ *     tags: [BusOwner]
+ *     security: [{ bearerAuth: [] }]
+ */
 router.get('/admin/users', verifyJWT, verifyRole(['ADMIN']), (req, res) => {
     // TODO: Implement admin user list endpoint
     res.json({ message: 'Admin user list endpoint' });
