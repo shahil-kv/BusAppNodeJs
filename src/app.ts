@@ -13,6 +13,8 @@ import limiter from "./configs/limiter";
 import { errorHandler } from "./middleware/error.middleware";
 import authRouter from "./routes/auth.routes";
 import groupRouter from "./routes/group.routes";
+import callRouter from './routes/call.routes'
+import HomeRouter from './routes/home.routes'
 
 const BASE_URL = process.env.BASE_URL || "http://localhost";
 const PORT = process.env.PORT || 8080;
@@ -76,7 +78,8 @@ app.use(morganMiddleware);
 //user route
 app.use(API_PREFIX + "/user", authRouter);
 app.use(API_PREFIX + '/group', groupRouter)
-
+app.use(API_PREFIX + '/call', callRouter)
+app.use(API_PREFIX + '/home', HomeRouter)
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs
 app.use(
