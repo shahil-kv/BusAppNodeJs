@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../validators/validate';
-import { validateManageGroup } from '../validators/group.validators';
-import { getGroup, manageGroup } from '../controllers/group.controller';
+import { validateCall } from '../validators/call.validators';
+import { handleCall } from '../controllers/call.controller';
 
 const router = Router();
 
@@ -24,9 +24,7 @@ const router = Router();
  *               members: { type: array, items: { type: string } }
  */
 router
-    .route("/manage-group")
-    .post(validateManageGroup, validate, manageGroup);
-
-router.route("/get-groups").get(validate, getGroup)
+    .route("/call_list")
+    .post(validateCall, validate, handleCall);
 
 export default router;

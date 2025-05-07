@@ -3,6 +3,9 @@ import { ApiResponse } from '../utils/ApiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
 import prisma from '../lib/prisma';
 import { OpsModeEnum } from '../constant';
+import { PrismaClient } from '@prisma/client';
+
+const prismaNoTr = new PrismaClient();
 
 const manageGroup = asyncHandler(async (req: Request, res: Response) => {
   const { userId, groupName, description, contacts, opsMode, groupId } = req.body;
@@ -31,6 +34,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
               user_id: numericUserId,
               group_name: groupName,
               description,
+              group_type: "USER_DEFINED"
             },
           });
 
@@ -75,6 +79,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
             data: {
               group_name: groupName,
               description,
+              group_type: "USER_DEFINED"
             },
           });
 
@@ -145,4 +150,24 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
   return res.status(200).json(new ApiResponse(200, result, message));
 });
 
-export { manageGroup };
+const getGroup = asyncHandler(async (req: Request, res: Response) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId is required" });
+  }
+
+  const result = await prismaNoTr.groups.findMany({
+    where: {
+      user_id: Number(userId), // Ensure it's a number if needed
+    },
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+
+export { manageGroup, getGroup };

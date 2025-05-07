@@ -16,32 +16,19 @@ const authRouter = Router();
 
 /**
  * @swagger
- * /bus-owner/register-busowner:
+ * /auth/register:
  *   post:
- *     summary: Register a new bus owner
- *     tags: [BusOwner]
+ *     tags: [Auth]
+ *     summary: Register new user
  *     requestBody:
- *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               # Define properties based on busOwnerRegisteration validator
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *               # Add other required fields...
- *     responses:
- *       201:
- *         description: Bus owner created successfully.
- *       400:
- *         description: Invalid input data.
- *       500:
- *         description: Internal server error
+ *               email: { type: string }
+ *               password: { type: string }
+ *               phone: { type: string }
  */
 authRouter
     .route("/register")
@@ -51,51 +38,106 @@ authRouter
 
 /**
  * @swagger
- * /bus-owner/login-busowner:
+ * /auth/login:
  *   post:
- *     summary: Login a bus owner
- *     tags: [BusOwner]
+ *     tags: [Auth]
+ *     summary: Login user
  *     requestBody:
- *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               # Define properties based on busOwnerLoginValidator
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *     responses:
- *       200:
- *         description: Login successful, returns user info and tokens.
- *       400:
- *         description: Invalid credentials or input data.
- *       401:
- *         description: Unauthorized (wrong password).
- *       404:
- *         description: User not found.
- *       500:
- *         description: Internal server error
+ *               email: { type: string }
+ *               password: { type: string }
  */
 authRouter
     .route("/login")
     .post(validateLoginUser, validate, loginUser);
-// Public routes
+
+/**
+ * @swagger
+ * /auth/verify-phone:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Verify phone number
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone: { type: string }
+ *               code: { type: string }
+ */
 authRouter.post('/verify-phone', validateVerifyPhoneNumber, validate, verifyPhoneNumber);
 
-// Protected routes
+/**
+ * @swagger
+ * /auth/refresh-token:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Refresh access token
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken: { type: string }
+ */
 authRouter.post('/refresh-token', refreshAccessToken);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Logout user
+ *     security:
+ *       - bearerAuth: []
+ */
 authRouter.post('/logout', verifyJWT, logoutUser);
+
+/**
+ * @swagger
+ * /auth/upgrade-premium:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Upgrade to premium
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paymentMethod: { type: string }
+ */
 authRouter.post('/upgrade-premium', verifyJWT, validateUpgradeToPremium, upgradeToPremium);
+
+/**
+ * @swagger
+ * /auth/premium-status:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Check premium status
+ *     security:
+ *       - bearerAuth: []
+ */
 authRouter.get('/premium-status', verifyJWT, checkPremiumStatus);
 
-// Admin routes
+/**
+ * @swagger
+ * /auth/admin/users:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Get admin users list
+ *     security:
+ *       - bearerAuth: []
+ */
 authRouter.get('/admin/users', verifyJWT, verifyRole(['ADMIN']), (req, res) => {
-    // TODO: Implement admin user list endpoint
     res.json({ message: 'Admin user list endpoint' });
 });
 
