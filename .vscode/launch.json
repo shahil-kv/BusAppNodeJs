@@ -12,7 +12,8 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "runtimeExecutable": "/Users/shahil/.nvm/versions/node/v18.20.8/bin/node"
     }
   ]
 }

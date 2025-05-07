@@ -12,7 +12,7 @@ import { validateRegisterUser, validateVerifyPhoneNumber, validateLoginUser, val
 import { verifyJWT, verifyRole } from '../middleware/auth.middleware';
 import { validate } from '../validators/validate';
 
-const router = Router();
+const authRouter = Router();
 
 /**
  * @swagger
@@ -43,10 +43,9 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router
+authRouter
     .route("/register")
     .post((req, res, next) => {
-        console.log('Register route hit:', req.body);
         next();
     }, validateRegisterUser, validate, registerUser);
 
@@ -82,22 +81,22 @@ router
  *       500:
  *         description: Internal server error
  */
-router
+authRouter
     .route("/login")
     .post(validateLoginUser, validate, loginUser);
 // Public routes
-router.post('/verify-phone', validateVerifyPhoneNumber, validate, verifyPhoneNumber);
+authRouter.post('/verify-phone', validateVerifyPhoneNumber, validate, verifyPhoneNumber);
 
 // Protected routes
-router.post('/refresh-token', refreshAccessToken);
-router.post('/logout', verifyJWT, logoutUser);
-router.post('/upgrade-premium', verifyJWT, validateUpgradeToPremium, upgradeToPremium);
-router.get('/premium-status', verifyJWT, checkPremiumStatus);
+authRouter.post('/refresh-token', refreshAccessToken);
+authRouter.post('/logout', verifyJWT, logoutUser);
+authRouter.post('/upgrade-premium', verifyJWT, validateUpgradeToPremium, upgradeToPremium);
+authRouter.get('/premium-status', verifyJWT, checkPremiumStatus);
 
 // Admin routes
-router.get('/admin/users', verifyJWT, verifyRole(['ADMIN']), (req, res) => {
+authRouter.get('/admin/users', verifyJWT, verifyRole(['ADMIN']), (req, res) => {
     // TODO: Implement admin user list endpoint
     res.json({ message: 'Admin user list endpoint' });
 });
 
-export default router; 
+export default authRouter; 

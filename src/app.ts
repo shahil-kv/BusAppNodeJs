@@ -11,7 +11,8 @@ import * as swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import limiter from "./configs/limiter";
 import { errorHandler } from "./middleware/error.middleware";
-import router from "./routes/auth.routes";
+import authRouter from "./routes/auth.routes";
+import groupRouter from "./routes/group.routes";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost";
 const PORT = process.env.PORT || 8080;
@@ -73,7 +74,8 @@ app.use(cookieParser());
 app.use(morganMiddleware);
 
 //user route
-app.use(API_PREFIX + "/user", router);
+app.use(API_PREFIX + "/user", authRouter);
+app.use(API_PREFIX + '/group', groupRouter)
 
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs

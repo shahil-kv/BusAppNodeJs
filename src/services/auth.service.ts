@@ -74,16 +74,13 @@ class AuthService {
     // Send OTP via SMS
     private static async sendOTP(phoneNumber: string, otp: string): Promise<void> {
         try {
-            console.log('Sending OTP to:', phoneNumber);
-            console.log('Using Twilio number:', process.env.TWILIO_PHONE_NUMBER);
 
-            const message = await twilioClient.messages.create({
+            await twilioClient.messages.create({
                 body: `Your OTP for Verification Code For ${process.env.APP_NAME} is: ${otp}. Valid for 5 minutes.`,
                 from: process.env.TWILIO_PHONE_NUMBER,
                 to: phoneNumber
             });
 
-            console.log('OTP sent successfully:', message.sid);
         } catch (error) {
             console.error('Failed to send OTP:', error);
             throw new ApiError(500, 'Failed to send OTP. Please try again later.');
