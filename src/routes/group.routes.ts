@@ -7,32 +7,21 @@ const router = Router();
 
 /**
  * @swagger
- * /bus-owner/register-busowner:
+ * /group/manage-group:
  *   post:
- *     summary: Register a new bus owner
- *     tags: [BusOwner]
+ *     tags: [Group]
+ *     summary: Manage group
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
- *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               # Define properties based on busOwnerRegisteration validator
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *               # Add other required fields...
- *     responses:
- *       201:
- *         description: Bus owner created successfully.
- *       400:
- *         description: Invalid input data.
- *       500:
- *         description: Internal server error
+ *               name: { type: string }
+ *               description: { type: string }
+ *               members: { type: array, items: { type: string } }
  */
 router
     .route("/manage-group")
