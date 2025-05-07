@@ -42,15 +42,40 @@ Thumbs.db
 .nx/cache
 .nx/workspace-data
 # Logs
-logs/ # Ignore the logs directory at the root
-logs/info.log.2025-04-14
+logs/
+*.log
+*.log.*
+error.log.*
+http.log.*
+info.log.*
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
 .gitignore
+logs/info.log.2025-04-14
 logs/error.log.2025-04-14
 logs/http.log.2025-04-14
 logs/.f5032361bfe2291541fbb4e1d81d3966e1de68a3-audit.json
-.gitignore
 logs/.5e863d02b1050ac6769b1a1b0364549a96e24b36-audit.json
-.gitignore
-.gitignore
 logs/.afbf1c0427fab218cea968405280b98b23abc44a-audit.json
 logs/http.log.2025-04-15
