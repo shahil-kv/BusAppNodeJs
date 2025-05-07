@@ -19,7 +19,7 @@ const authRouter = Router();
  * /auth/register:
  *   post:
  *     tags: [Auth]
- *     summary: Register new user
+ *     summary: Register newss user
  *     requestBody:
  *       content:
  *         application/json:
