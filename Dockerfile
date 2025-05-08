@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build:prod
 
 RUN npm install prisma --save
 
@@ -24,4 +24,4 @@ RUN npx prisma generate
 EXPOSE 3000
 
 # Define the command to run the application
-CMD ["npm", "run", "cloud"]
+CMD ["node", "dist/Node_NX/main.js"]
