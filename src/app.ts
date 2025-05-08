@@ -1,6 +1,5 @@
 import { createServer } from "http";
-import dotenv from "dotenv";
-dotenv.config();
+import { environment } from "./environments/environment";
 import cookieParser from "cookie-parser";
 import morganMiddleware from "./logger/morgan.logger";
 import requestIp from "request-ip";
@@ -16,9 +15,9 @@ import groupRouter from "./routes/group.routes";
 import callRouter from './routes/call.routes'
 import HomeRouter from './routes/home.routes'
 
-const BASE_URL = process.env.BASE_URL || "http://localhost";
-const PORT = process.env.PORT || 8080;
-const API_PREFIX = process.env.API_PREFIX || "/api/v1";
+const BASE_URL = environment.API_URL;
+const PORT = environment.PORT;
+const API_PREFIX = environment.API_PREFIX;
 
 // Swagger definition
 const swaggerOptions = {
@@ -53,7 +52,7 @@ app.use(helmet({
 
 // Configure CORS based on environment
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
+  origin: environment.NODE_ENV === 'production'
     ? [BASE_URL] // In production, only allow requests from BASE_URL
     : true, // In development, allow all origins
   credentials: true,
