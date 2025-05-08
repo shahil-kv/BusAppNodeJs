@@ -31,7 +31,7 @@
     ]
   },
   "dependencies": {
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "6.7.0",
     "@types/socket.io": "^3.0.1",
     "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
@@ -84,7 +84,7 @@
     "lint-staged": "^15.4.3",
     "nx": "20.4.2",
     "prettier": "^2.6.2",
-    "prisma": "^6.5.0",
+    "prisma": "6.7.0",
     "ts-jest": "^29.1.0",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
