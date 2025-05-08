@@ -81,3 +81,4 @@ logs/.afbf1c0427fab218cea968405280b98b23abc44a-audit.json
 logs/http.log.2025-04-15
 logs/
 .env.cloud
+.env.dev
