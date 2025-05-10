@@ -40,10 +40,11 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
 
           // Create contacts separately for better error control
           await tx.contacts.createMany({
-            data: contacts.map((contact: { name: string; phoneNumber: string }) => ({
+            data: contacts.map((contact: { name: string; phoneNumber: string, contactId: string }) => ({
               group_id: newGroup.id,
               name: contact.name,
               phone_number: contact.phoneNumber,
+              contact_id: contact.contactId
             })),
           });
 
@@ -90,10 +91,11 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
 
           // Add new contacts
           await tx.contacts.createMany({
-            data: contacts.map((contact: { name: string; phoneNumber: string }) => ({
+            data: contacts.map((contact: { name: string; phoneNumber: string, contactId: string }) => ({
               group_id: numberGroupId,
               name: contact.name,
               phone_number: contact.phoneNumber,
+              contact_id: contact.contactId
             })),
           });
 
@@ -149,25 +151,29 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
 
   return res.status(200).json(new ApiResponse(200, result, message));
 });
-
-const getGroup = asyncHandler(async (req: Request, res: Response) => {
-  const { userId } = req.body;
+const getGroup = asyncHandler(async (req, res) => {
+  // Get userId from query parameters
+  const { userId } = req.query;
 
   if (!userId) {
-    return res.status(400).json({ message: "userId is required" });
+    return res.status(400).json(new ApiResponse(400, null, "userId is required as a query parameter"));
+  }
+
+  // Convert userId to number and validate
+  const numericUserId = parseInt(userId as string, 10);
+  if (isNaN(numericUserId)) {
+    return res.status(400).json(new ApiResponse(400, null, "Invalid userId format"));
   }
 
   const result = await prismaNoTr.groups.findMany({
     where: {
-      user_id: Number(userId), // Ensure it's a number if needed
+      user_id: numericUserId,
     },
+    include: {
+      contacts: true // Include contacts in the response
+    }
   });
 
-  return res.status(200).json({
-    success: true,
-    data: result,
-  });
+  return res.status(200).json(new ApiResponse(200, result, "Groups retrieved successfully"));
 });
-
-
 export { manageGroup, getGroup };

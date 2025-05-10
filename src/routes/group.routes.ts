@@ -27,6 +27,6 @@ router
     .route("/manage-group")
     .post(validateManageGroup, validate, manageGroup);
 
-router.route("/get-groups").get(validate, getGroup)
+router.route("/get-groups").get(getGroup)
 
 export default router;
