@@ -25,7 +25,7 @@ const router = Router();
  */
 router
     .route("/manage-group")
-    .post(validateManageGroup, validate, manageGroup);
+    .post(manageGroup);
 
 router.route("/get-groups").get(getGroup)
 
