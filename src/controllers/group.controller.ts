@@ -57,7 +57,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
   // Normalize contacts (only for INSERT and UPDATE)
   let normalizedContacts;
   if (opsMode === OpsModeEnum.INSERT || opsMode === OpsModeEnum.UPDATE) {
-    normalizedContacts = contacts.map((contact: any) => {
+    normalizedContacts = contacts.map((contact) => {
       const phone =
         contact.phoneNumber ||
         contact.phone_number ||
@@ -78,6 +78,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
         phone_number: normalizedPhone,
         country_code: normalizedPhone.split(" ")[0] || "",
         raw_contact: contact,
+        is_contact_from_device: contact.isContactFromDevice ?? true, // New field
       };
     });
   }
@@ -95,7 +96,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
             },
           });
 
-          const contactsToInsert = normalizedContacts.map((contact: any) => ({
+          const contactsToInsert = normalizedContacts.map((contact) => ({
             ...contact,
             group_id: newGroup.id,
           }));
@@ -112,7 +113,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
         });
 
         message = "Group created successfully.";
-      } catch (error: any) {
+      } catch (error) {
         console.error("Transaction error:", error);
         if (error.code === "P2002") {
           return res
@@ -166,7 +167,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
             where: { group_id: numericGroupId },
           });
 
-          const contactsToInsert = normalizedContacts.map((contact: any) => ({
+          const contactsToInsert = normalizedContacts.map((contact) => ({
             ...contact,
             group_id: numericGroupId,
           }));
@@ -182,7 +183,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
         });
 
         message = "Group updated successfully.";
-      } catch (error: any) {
+      } catch (error) {
         console.error("Transaction error:", error);
         if (error.code === "P2002") {
           return res
