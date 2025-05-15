@@ -88,15 +88,41 @@ model groups {
 }
 
 model call_history {
-  id              Int       @id @default(autoincrement())
-  user_id         Int?
+  id              Int          @id @default(autoincrement())
+  session_id      Int
+  user_id         Int
   group_id        Int?
   contact_id      Int?
-  contact_phone   String?   @db.VarChar(20)
-  status          String?   @db.VarChar(32)
-  call_sid        String?   @db.VarChar(64)
-  attempt         Int?
+  contact_phone   String       @db.VarChar(50)
+  status          String       @default("pending")
+  call_sid        String?      @db.VarChar(255)
+  attempt         Int          @default(1)
   message_content String?
-  called_at       DateTime? @default(now()) @db.Timestamp(6)
-  contacts        contacts? @relation(fields: [contact_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_contact")
+  called_at       DateTime?
+  ended_at        DateTime?
+  duration        Int?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime
+  contacts        contacts?    @relation(fields: [contact_id], references: [id])
+  call_session    call_session @relation(fields: [session_id], references: [id])
+
+  @@index([call_sid])
+  @@index([contact_id])
+  @@index([session_id])
+  @@index([user_id])
+}
+
+model call_session {
+  id            Int            @id @default(autoincrement())
+  user_id       Int
+  group_id      Int?
+  contacts      Json
+  current_index Int            @default(0)
+  status        String         @default("in_progress")
+  created_at    DateTime       @default(now())
+  updated_at    DateTime
+  call_history  call_history[]
+
+  @@index([group_id])
+  @@index([user_id])
 }

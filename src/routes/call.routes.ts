@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { validate } from '../validators/validate';
-import { validateCall } from '../validators/call.validators';
-import { handleCall } from '../controllers/call.controller';
+import { Router } from "express";
+import { validate } from "../validators/validate";
+import { validateCall } from "../validators/call.validators";
+import { startCalls } from "../controllers/call.controller";
 
 const router = Router();
 
@@ -23,8 +23,6 @@ const router = Router();
  *               description: { type: string }
  *               members: { type: array, items: { type: string } }
  */
-router
-    .route("/call_list")
-    .post(validateCall, validate, handleCall);
+router.route("/call_list").post(validateCall, validate, startCalls);
 
 export default router;
