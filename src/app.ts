@@ -12,8 +12,8 @@ import limiter from "./configs/limiter";
 import { errorHandler } from "./middleware/error.middleware";
 import authRouter from "./routes/auth.routes";
 import groupRouter from "./routes/group.routes";
-import callRouter from './routes/call.routes'
-import HomeRouter from './routes/home.routes'
+import callRouter from "./routes/call.routes";
+import HomeRouter from "./routes/home.routes";
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -45,19 +45,27 @@ const app = express();
 const httpServer = createServer(app);
 
 // global middlewares
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginOpenerPolicy: { policy: "unsafe-none" }
-})); // Use helmet for security headers
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "unsafe-none" },
+  })
+); // Use helmet for security headers
 
 // Configure CORS based on environment
 const corsOptions = {
-  origin: environment.NODE_ENV === 'production'
-    ? [BASE_URL] // In production, only allow requests from BASE_URL
-    : true, // In development, allow all origins
+  origin:
+    environment.NODE_ENV === "production"
+      ? [BASE_URL] // In production, only allow requests from BASE_URL
+      : true, // In development, allow all origins
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+  ],
 };
 
 app.use(cors(corsOptions));
@@ -67,7 +75,7 @@ app.use(requestIp.mw());
 // Apply the rate limiting middleware to all requests
 app.use(limiter);
 
-app.use(express.json({ limit: "16kb" }));
+app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public")); // configure static file to save images locally
 app.use(cookieParser());
@@ -76,9 +84,9 @@ app.use(morganMiddleware);
 
 //user route
 app.use(API_PREFIX + "/user", authRouter);
-app.use(API_PREFIX + '/group', groupRouter)
-app.use(API_PREFIX + '/call', callRouter)
-app.use(API_PREFIX + '/home', HomeRouter)
+app.use(API_PREFIX + "/group", groupRouter);
+app.use(API_PREFIX + "/call", callRouter);
+app.use(API_PREFIX + "/home", HomeRouter);
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs
 app.use(
