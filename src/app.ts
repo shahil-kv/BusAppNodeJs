@@ -15,6 +15,7 @@ import groupRouter from "./routes/group.routes";
 import callRouter from "./routes/call.routes";
 import HomeRouter from "./routes/home.routes";
 import { callStatusHandler, voiceHandler } from "./controllers/call.controller";
+import { Server } from "socket.io";
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -44,6 +45,13 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", // Allow all origins (for development); restrict in production
+    methods: ["GET", "POST"],
+  },
+});
 
 // global middlewares
 app.use(
@@ -82,7 +90,7 @@ app.use(express.static("public")); // configure static file to save images local
 app.use(cookieParser());
 
 app.use(morganMiddleware);
-
+app.set("io", io);
 //user route
 app.use(API_PREFIX + "/user", authRouter);
 app.use(API_PREFIX + "/group", groupRouter);
@@ -91,6 +99,15 @@ app.use(API_PREFIX + "/home", HomeRouter);
 //for calling purpose from twilio api
 app.post("/voice", voiceHandler);
 app.post("/call-status", callStatusHandler);
+
+// Socket.IO connection handler
+io.on("connection", (socket) => {
+  console.log("A client connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("A client disconnected:", socket.id);
+  });
+});
 
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs

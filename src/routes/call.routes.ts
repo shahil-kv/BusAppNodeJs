@@ -62,7 +62,7 @@ const router = Router();
  *       404:
  *         description: User or group not found
  */
-router.route("/call_list").post(validateCall, validate, startCalls);
+router.route("/call_list").post(startCalls);
 
 /**
  * @swagger

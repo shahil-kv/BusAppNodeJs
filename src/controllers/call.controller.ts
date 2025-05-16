@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import twilio from "twilio";
 import { ApiResponse } from "../utils/ApiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
-import { CallStatusEnum, SessionStatusEnum } from "src/constant";
+import { CallStatusEnum, SessionStatusEnum } from "../constant";
 
 const prisma = new PrismaClient();
 const client = twilio(
@@ -11,17 +11,12 @@ const client = twilio(
   process.env.TWILIO_AUTH_TOKEN
 );
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
-const CALL_TIMEOUT_SECONDS = 60; // Timeout for calls in seconds
+const CALL_TIMEOUT_SECONDS = 60;
 
-// Base ngrok URL from your ngrok output
-// get server url
 const NGROK_BASE_URL = "https://6811-103-165-167-98.ngrok-free.app";
-// const NGROK_BASE_URL = process.env.API_URL;
 
-// Initiates a new call session
 const startCalls = asyncHandler(async (req: Request, res: Response) => {
   const { userId, groupId, groupType, contacts, messageContent } = req.body;
-  // Validate inputs
   const numericUserId = parseInt(userId, 10);
   const numericGroupId = groupId != null ? parseInt(groupId, 10) : null;
   if (isNaN(numericUserId)) {
@@ -47,43 +42,39 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
 
   let contactsToCall: { id?: string; name: string; phoneNumber: string }[] = [];
   let targetGroupId: number | null = numericGroupId;
+  let group = null;
 
-  // Handle group-based or manual contacts
   if (numericGroupId === 0 && groupType === "MANUAL") {
-    const manualGroup = await prisma.groups.create({
+    group = await prisma.groups.create({
       data: {
         user_id: numericUserId,
         group_name: `Manual Call - ${new Date().toISOString()}`,
         group_type: "MANUAL",
         description: "Manual call group created for one-time call session",
         contacts: {
-          create: contacts.map(
-            (contact: { name: string; phoneNumber: string }) => ({
-              name: contact.name,
-              phone_number: contact.phoneNumber,
-            })
-          ),
+          create: contacts.map(({ name, phoneNumber }) => ({
+            name,
+            phone_number: phoneNumber,
+          })),
         },
       },
       include: { contacts: true },
     });
-    targetGroupId = manualGroup.id;
-    contactsToCall = manualGroup.contacts.map((c) => ({
-      id: c.id.toString(),
-      name: c.name,
-      phoneNumber: c.phone_number,
-    }));
   } else if (numericGroupId && numericGroupId > 0) {
-    const group = await prisma.groups.findUnique({
+    group = await prisma.groups.findUnique({
       where: { id: numericGroupId },
       include: { contacts: true },
     });
+
     if (!group) {
       return res
         .status(404)
         .json(new ApiResponse(404, null, "Group not found"));
     }
-    targetGroupId = numericGroupId;
+  }
+
+  if (group) {
+    targetGroupId = group.id;
     contactsToCall = group.contacts.map((c) => ({
       id: c.id.toString(),
       name: c.name,
@@ -98,7 +89,6 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     targetGroupId = numericGroupId;
   }
 
-  // Check premium limit
   const user = await prisma.users.findUnique({
     where: { id: numericUserId },
   });
@@ -121,7 +111,6 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
       );
   }
 
-  // Create call session
   const session = await prisma.call_session.create({
     data: {
       user_id: numericUserId,
@@ -134,7 +123,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
       updated_at: new Date(),
     },
   });
-  // Create call history for each contact
+
   for (const contact of contactsToCall) {
     await prisma.call_history.create({
       data: {
@@ -153,7 +142,6 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Initiate first call
   await initiateNextCall(session.id);
   return res
     .status(200)
@@ -162,7 +150,6 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     );
 });
 
-// Stops an ongoing call session
 const stopSession = asyncHandler(async (req: Request, res: Response) => {
   const { sessionId } = req.body;
   const numericSessionId = parseInt(sessionId, 10);
@@ -189,10 +176,16 @@ const stopSession = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
+  // Emit Socket.IO event
+  const io = req.app.get("io");
+  io.emit("callStatusUpdate", {
+    sessionId: numericSessionId,
+    status: SessionStatusEnum.STOPPED,
+  });
+
   return res.status(200).json(new ApiResponse(200, null, "Session stopped"));
 });
 
-// Fetches call history for analytics
 const getCallHistory = asyncHandler(async (req: Request, res: Response) => {
   const { sessionId } = req.query;
   const numericSessionId = parseInt(sessionId as string, 10);
@@ -212,7 +205,6 @@ const getCallHistory = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, history, "Call history retrieved"));
 });
 
-// Generates TwiML for call flow
 const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
   const twiml = new twilio.twiml.VoiceResponse();
   const { messageContent } = req.query;
@@ -228,7 +220,6 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
   res.send(twiml.toString());
 });
 
-// Handles Twilio status callbacks
 const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
   const { CallSid, CallStatus, CallDuration, AnsweredBy } = req.body;
 
@@ -270,7 +261,6 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       mappedStatus = CallStatusEnum.FAILED;
   }
 
-  // Update call history
   await prisma.call_history.update({
     where: { id: callHistory.id },
     data: {
@@ -282,7 +272,6 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  // Update session stats
   await prisma.call_session.update({
     where: { id: callHistory.session_id },
     data: {
@@ -292,7 +281,15 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  // Retry logic for missed calls
+  // Emit Socket.IO event
+  const io = req.app.get("io");
+  io.emit("callStatusUpdate", {
+    sessionId: callHistory.session_id,
+    status: callHistory.call_session.status,
+    currentIndex: callHistory.call_session.current_index,
+    totalCalls: callHistory.call_session.total_calls,
+  });
+
   if (
     CallStatus === "no-answer" &&
     callHistory.attempt < callHistory.max_attempts
@@ -326,6 +323,14 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
           updated_at: new Date(),
         },
       });
+
+      // Emit Socket.IO event for retry
+      io.emit("callStatusUpdate", {
+        sessionId: callHistory.session_id,
+        status: callHistory.call_session.status,
+        currentIndex: callHistory.call_session.current_index,
+        totalCalls: callHistory.call_session.total_calls,
+      });
     } catch (error) {
       await prisma.call_history.update({
         where: { id: callHistory.id },
@@ -338,7 +343,6 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       await initiateNextCall(callHistory.session_id);
     }
   } else {
-    // Proceed to next call if session is still in progress
     if (callHistory.call_session.status === SessionStatusEnum.IN_PROGRESS) {
       await prisma.call_session.update({
         where: { id: callHistory.session_id },
@@ -349,7 +353,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       });
       await initiateNextCall(callHistory.session_id);
     }
-    // Check if all calls are complete
+
     const session = await prisma.call_session.findUnique({
       where: { id: callHistory.session_id },
     });
@@ -361,12 +365,19 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
           updated_at: new Date(),
         },
       });
+
+      // Emit Socket.IO event for session completion
+      io.emit("callStatusUpdate", {
+        sessionId: callHistory.session_id,
+        status: SessionStatusEnum.COMPLETED,
+        currentIndex: session.current_index,
+        totalCalls: session.total_calls,
+      });
     }
   }
   res.sendStatus(200);
 });
 
-// Helper function to initiate the next call in sequence
 const initiateNextCall = async (sessionId: number) => {
   const session = await prisma.call_session.findUnique({
     where: { id: sessionId },
@@ -397,7 +408,6 @@ const initiateNextCall = async (sessionId: number) => {
     return;
   }
   const contact = contacts[currentIndex];
-  // Find the call_history record for this contact
   const callHistory = await prisma.call_history.findFirst({
     where: {
       session_id: sessionId,
@@ -407,7 +417,6 @@ const initiateNextCall = async (sessionId: number) => {
   });
 
   if (!callHistory) {
-    // Increment index and try the next contact
     await prisma.call_session.update({
       where: { id: sessionId },
       data: {
@@ -419,7 +428,6 @@ const initiateNextCall = async (sessionId: number) => {
     return;
   }
 
-  // If the call is already in progress, set a timeout to mark it as failed if no callback is received
   if (callHistory.status === CallStatusEnum.IN_PROGRESS) {
     const callStartTime = new Date(callHistory.called_at).getTime();
     const currentTime = new Date().getTime();
@@ -441,7 +449,6 @@ const initiateNextCall = async (sessionId: number) => {
           updated_at: new Date(),
         },
       });
-      // Proceed to the next contact
       await prisma.call_session.update({
         where: { id: sessionId },
         data: {
@@ -496,7 +503,6 @@ const initiateNextCall = async (sessionId: number) => {
       },
     });
 
-    // Proceed to the next contact
     await prisma.call_session.update({
       where: { id: sessionId },
       data: {
