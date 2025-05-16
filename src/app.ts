@@ -14,6 +14,7 @@ import authRouter from "./routes/auth.routes";
 import groupRouter from "./routes/group.routes";
 import callRouter from "./routes/call.routes";
 import HomeRouter from "./routes/home.routes";
+import { callStatusHandler, voiceHandler } from "./controllers/call.controller";
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -76,7 +77,7 @@ app.use(requestIp.mw());
 app.use(limiter);
 
 app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.static("public")); // configure static file to save images locally
 app.use(cookieParser());
 
@@ -87,6 +88,10 @@ app.use(API_PREFIX + "/user", authRouter);
 app.use(API_PREFIX + "/group", groupRouter);
 app.use(API_PREFIX + "/call", callRouter);
 app.use(API_PREFIX + "/home", HomeRouter);
+//for calling purpose from twilio api
+app.post("/voice", voiceHandler);
+app.post("/call-status", callStatusHandler);
+
 // * API DOCS
 // ? Serve the dynamically generated Swagger docs
 app.use(
