@@ -11,6 +11,23 @@ const client = twilio(
 );
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 
+// Enum for call statuses
+const CallStatusEnum = {
+  PENDING: "pending",
+  IN_PROGRESS: "in_progress",
+  ACCEPTED: "accepted",
+  MISSED: "missed",
+  DECLINED: "declined",
+  FAILED: "failed",
+};
+
+// Enum for session statuses
+const SessionStatusEnum = {
+  IN_PROGRESS: "in_progress",
+  STOPPED: "stopped",
+  COMPLETED: "completed",
+};
+
 // Initiates a new call session
 const startCalls = asyncHandler(async (req: Request, res: Response) => {
   const { userId, groupId, contacts, messageContent } = req.body;
@@ -60,13 +77,39 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     }));
   }
 
+  // Check premium limit
+  const user = await prisma.users.findUnique({
+    where: { id: numericUserId },
+  });
+  if (!user) {
+    return res.status(404).json(new ApiResponse(404, null, "User not found"));
+  }
+  const isPremium = user.is_premium ?? false;
+  const contactLimit = isPremium ? 500 : 50;
+  if (contactsToCall.length > contactLimit) {
+    return res
+      .status(400)
+      .json(
+        new ApiResponse(
+          400,
+          null,
+          `Contact limit exceeded. ${
+            isPremium ? "Premium" : "Free"
+          } users can call up to ${contactLimit} contacts.`
+        )
+      );
+  }
+
   // Create call session
   const session = await prisma.call_session.create({
     data: {
       user_id: numericUserId,
       group_id: targetGroupId,
       contacts: contactsToCall,
-      status: "in_progress",
+      status: SessionStatusEnum.IN_PROGRESS,
+      total_calls: contactsToCall.length,
+      successful_calls: 0,
+      failed_calls: 0,
     } as any,
   });
 
@@ -79,9 +122,10 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
         group_id: targetGroupId,
         contact_id: contact.id ? parseInt(contact.id) : null,
         contact_phone: contact.phoneNumber,
-        status: "pending",
+        status: CallStatusEnum.PENDING,
         attempt: 1,
-        message_content: "",
+        max_attempts: 2,
+        message_content: messageContent,
         called_at: new Date(),
       } as any,
     });
@@ -118,7 +162,7 @@ const stopSession = asyncHandler(async (req: Request, res: Response) => {
 
   await prisma.call_session.update({
     where: { id: numericSessionId },
-    data: { status: "stopped" },
+    data: { status: SessionStatusEnum.STOPPED },
   });
 
   return res.status(200).json(new ApiResponse(200, null, "Session stopped"));
@@ -162,7 +206,7 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
 
 // Handles Twilio status callbacks
 const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
-  const { CallSid, CallStatus, CallDuration } = req.body;
+  const { CallSid, CallStatus, CallDuration, AnsweredBy } = req.body;
 
   const callHistory = await prisma.call_history.findFirst({
     where: { call_sid: CallSid },
@@ -174,32 +218,50 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
   }
 
   let mappedStatus;
+  let isSuccessful = false;
   switch (CallStatus) {
     case "completed":
-      mappedStatus = "accepted";
+      mappedStatus = CallStatusEnum.ACCEPTED;
+      isSuccessful = true;
       break;
     case "no-answer":
-      mappedStatus = "no_answer";
+      mappedStatus = CallStatusEnum.MISSED;
       break;
     case "busy":
+      mappedStatus = CallStatusEnum.DECLINED;
+      break;
     case "failed":
-      mappedStatus = "failed";
+      mappedStatus = CallStatusEnum.FAILED;
       break;
     default:
-      mappedStatus = CallStatus;
+      mappedStatus = CallStatusEnum.FAILED;
   }
 
+  // Update call history
   await prisma.call_history.update({
     where: { id: callHistory.id },
     data: {
       status: mappedStatus,
+      answered_at: AnsweredBy ? new Date() : null,
       ended_at: new Date(),
       duration: CallDuration ? parseInt(CallDuration) : null,
     },
   });
 
-  // Retry logic for no-answer (up to 2 attempts)
-  if (CallStatus === "no-answer" && callHistory.attempt < 2) {
+  // Update session stats
+  await prisma.call_session.update({
+    where: { id: callHistory.session_id },
+    data: {
+      successful_calls: { increment: isSuccessful ? 1 : 0 },
+      failed_calls: { increment: !isSuccessful ? 1 : 0 },
+    },
+  });
+
+  // Retry logic for missed calls
+  if (
+    CallStatus === "no-answer" &&
+    callHistory.attempt < callHistory.max_attempts
+  ) {
     const newAttempt = callHistory.attempt + 1;
     try {
       const newCall = await client.calls.create({
@@ -219,9 +281,10 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
           group_id: callHistory.group_id,
           contact_id: callHistory.contact_id,
           contact_phone: callHistory.contact_phone,
-          status: "in_progress",
+          status: CallStatusEnum.IN_PROGRESS,
           call_sid: newCall.sid,
           attempt: newAttempt,
+          max_attempts: callHistory.max_attempts,
           message_content: callHistory.message_content,
           called_at: new Date(),
         } as any,
@@ -231,23 +294,33 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
         `Error retrying call to ${callHistory.contact_phone}:`,
         error
       );
+      await prisma.call_history.update({
+        where: { id: callHistory.id },
+        data: {
+          status: CallStatusEnum.FAILED,
+          error_message: error.message || "Failed to retry call",
+        },
+      });
       await initiateNextCall(callHistory.session_id);
     }
   } else {
     // Proceed to next call if session is still in progress
-    if (callHistory.call_session.status === "in_progress") {
+    if (callHistory.call_session.status === SessionStatusEnum.IN_PROGRESS) {
       await prisma.call_session.update({
         where: { id: callHistory.session_id },
         data: { current_index: { increment: 1 } },
       });
       await initiateNextCall(callHistory.session_id);
-      // } else if (
-      //   callHistory.call_session.currentIndex >=
-      //   (callHistory.call_session.contacts).length - 1
-      // ) {
+    }
+
+    // Check if all calls are complete
+    const session = await prisma.call_session.findUnique({
+      where: { id: callHistory.session_id },
+    });
+    if (session.current_index >= session.total_calls - 1) {
       await prisma.call_session.update({
         where: { id: callHistory.session_id },
-        data: { status: "completed" },
+        data: { status: SessionStatusEnum.COMPLETED },
       });
     }
   }
@@ -261,7 +334,7 @@ const initiateNextCall = async (sessionId: number) => {
     where: { id: sessionId },
   });
 
-  if (!session || session.status !== "in_progress") {
+  if (!session || session.status !== SessionStatusEnum.IN_PROGRESS) {
     return;
   }
 
@@ -275,7 +348,7 @@ const initiateNextCall = async (sessionId: number) => {
   if (currentIndex >= contacts.length) {
     await prisma.call_session.update({
       where: { id: sessionId },
-      data: { status: "completed" },
+      data: { status: SessionStatusEnum.COMPLETED },
     });
     return;
   }
@@ -283,9 +356,9 @@ const initiateNextCall = async (sessionId: number) => {
   const contact = contacts[currentIndex];
   const callHistory = await prisma.call_history.findFirst({
     where: {
-      session_id: 0,
+      session_id: sessionId,
       contact_phone: contact.phoneNumber,
-      status: "pending",
+      status: CallStatusEnum.PENDING,
     },
   });
 
@@ -313,7 +386,7 @@ const initiateNextCall = async (sessionId: number) => {
       where: { id: callHistory.id },
       data: {
         call_sid: call.sid,
-        status: "in_progress",
+        status: CallStatusEnum.IN_PROGRESS,
         called_at: new Date(),
       },
     });
@@ -321,7 +394,14 @@ const initiateNextCall = async (sessionId: number) => {
     console.error(`Error initiating call to ${contact.phoneNumber}:`, error);
     await prisma.call_history.update({
       where: { id: callHistory.id },
-      data: { status: "failed" },
+      data: {
+        status: CallStatusEnum.FAILED,
+        error_message: error.message || "Failed to initiate call",
+      },
+    });
+    await prisma.call_session.update({
+      where: { id: sessionId },
+      data: { failed_calls: { increment: 1 } },
     });
     await prisma.call_session.update({
       where: { id: sessionId },
