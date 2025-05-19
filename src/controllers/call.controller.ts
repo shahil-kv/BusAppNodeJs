@@ -4,21 +4,24 @@ import twilio from "twilio";
 import { ApiResponse } from "../utils/ApiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
 import { CallStatusEnum, SessionStatusEnum } from "../constant";
+import { Server } from "socket.io";
 
 const prisma = new PrismaClient();
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  process.env.TWILIO_AUTH_TOKEN,
+  { lazyLoading: true } // Enable lazy loading to reduce initial connection overhead
 );
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 const CALL_TIMEOUT_SECONDS = 60;
 
-const NGROK_BASE_URL = "https://6811-103-165-167-98.ngrok-free.app";
+const NGROK_BASE_URL = "https://6811-103-165-167-98.ngrok-free.app"; // Replace with your actual Ngrok URL
 
 const startCalls = asyncHandler(async (req: Request, res: Response) => {
   const { userId, groupId, groupType, contacts, messageContent } = req.body;
   const numericUserId = parseInt(userId, 10);
   const numericGroupId = groupId != null ? parseInt(groupId, 10) : null;
+
   if (isNaN(numericUserId)) {
     return res
       .status(400)
@@ -124,25 +127,24 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  for (const contact of contactsToCall) {
-    await prisma.call_history.create({
-      data: {
-        session_id: session.id,
-        user_id: numericUserId,
-        group_id: targetGroupId,
-        contact_id: contact.id ? parseInt(contact.id) : null,
-        contact_phone: contact.phoneNumber,
-        status: CallStatusEnum.PENDING,
-        attempt: 1,
-        max_attempts: 2,
-        message_content: messageContent,
-        called_at: new Date(),
-        updated_at: new Date(),
-      },
-    });
-  }
+  // Batch create call history entries to reduce database round-trips
+  await prisma.call_history.createMany({
+    data: contactsToCall.map((contact) => ({
+      session_id: session.id,
+      user_id: numericUserId,
+      group_id: targetGroupId,
+      contact_id: contact.id ? parseInt(contact.id) : null,
+      contact_phone: contact.phoneNumber,
+      status: CallStatusEnum.PENDING,
+      attempt: 1,
+      max_attempts: 2,
+      message_content: messageContent,
+      called_at: new Date(),
+      updated_at: new Date(),
+    })),
+  });
 
-  await initiateNextCall(session.id);
+  await initiateNextCall(session.id, req);
   return res
     .status(200)
     .json(
@@ -168,6 +170,31 @@ const stopSession = asyncHandler(async (req: Request, res: Response) => {
       .json(new ApiResponse(404, null, "Session not found"));
   }
 
+  const activeCalls = await prisma.call_history.findMany({
+    where: {
+      session_id: numericSessionId,
+      status: CallStatusEnum.IN_PROGRESS,
+    },
+  });
+
+  for (const call of activeCalls) {
+    if (call.call_sid) {
+      try {
+        await client.calls(call.call_sid).update({ status: "completed" });
+        await prisma.call_history.update({
+          where: { id: call.id },
+          data: {
+            status: CallStatusEnum.DECLINED,
+            ended_at: new Date(),
+            updated_at: new Date(),
+          },
+        });
+      } catch (error) {
+        console.error(`Failed to terminate call ${call.call_sid}:`, error);
+      }
+    }
+  }
+
   await prisma.call_session.update({
     where: { id: numericSessionId },
     data: {
@@ -176,11 +203,14 @@ const stopSession = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  // Emit Socket.IO event
-  const io = req.app.get("io");
+  const io = req.app.get("io") as Server;
   io.emit("callStatusUpdate", {
     sessionId: numericSessionId,
     status: SessionStatusEnum.STOPPED,
+    currentIndex: session.current_index,
+    totalCalls: session.total_calls,
+    currentContact: null,
+    attempt: 0,
   });
 
   return res.status(200).json(new ApiResponse(200, null, "Session stopped"));
@@ -224,6 +254,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
   const { CallSid, CallStatus, CallDuration, AnsweredBy } = req.body;
 
   if (!req.body || Object.keys(req.body).length === 0) {
+    console.error("Empty body received in callStatusHandler");
     return res.status(400).json({
       message: "Empty body received. Check express.urlencoded() middleware.",
     });
@@ -281,13 +312,39 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  // Emit Socket.IO event
-  const io = req.app.get("io");
+  const session = await prisma.call_session.findUnique({
+    where: { id: callHistory.session_id },
+  });
+
+  const contacts = session.contacts as {
+    id?: string;
+    name: string;
+    phoneNumber: string;
+  }[];
+  const currentContact = contacts[session.current_index] || null;
+
+  const io = req.app.get("io") as Server;
   io.emit("callStatusUpdate", {
     sessionId: callHistory.session_id,
-    status: callHistory.call_session.status,
-    currentIndex: callHistory.call_session.current_index,
-    totalCalls: callHistory.call_session.total_calls,
+    status: session.status,
+    currentIndex: session.current_index,
+    totalCalls: session.total_calls,
+    currentContact: currentContact
+      ? { name: currentContact.name, phoneNumber: currentContact.phoneNumber }
+      : null,
+    attempt: callHistory.attempt,
+  });
+
+  io.emit("callHistoryUpdate", {
+    sessionId: callHistory.session_id,
+    callHistory: {
+      id: callHistory.id,
+      contact_phone: callHistory.contact_phone,
+      status: mappedStatus,
+      attempt: callHistory.attempt,
+      duration: CallDuration ? parseInt(CallDuration) : null,
+      ended_at: new Date().toISOString(),
+    },
   });
 
   if (
@@ -305,6 +362,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
         from: twilioNumber,
         statusCallback: statusCallbackUrl,
         statusCallbackMethod: "POST",
+        timeout: 120, // Increase Twilio timeout to 120 seconds
       });
 
       await prisma.call_history.create({
@@ -324,14 +382,21 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
         },
       });
 
-      // Emit Socket.IO event for retry
       io.emit("callStatusUpdate", {
         sessionId: callHistory.session_id,
-        status: callHistory.call_session.status,
-        currentIndex: callHistory.call_session.current_index,
-        totalCalls: callHistory.call_session.total_calls,
+        status: session.status,
+        currentIndex: session.current_index,
+        totalCalls: session.total_calls,
+        currentContact: currentContact
+          ? {
+              name: currentContact.name,
+              phoneNumber: currentContact.phoneNumber,
+            }
+          : null,
+        attempt: newAttempt,
       });
     } catch (error) {
+      console.error("Failed to retry call:", error);
       await prisma.call_history.update({
         where: { id: callHistory.id },
         data: {
@@ -340,10 +405,10 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
           updated_at: new Date(),
         },
       });
-      await initiateNextCall(callHistory.session_id);
+      await initiateNextCall(callHistory.session_id, req);
     }
   } else {
-    if (callHistory.call_session.status === SessionStatusEnum.IN_PROGRESS) {
+    if (session.status === SessionStatusEnum.IN_PROGRESS) {
       await prisma.call_session.update({
         where: { id: callHistory.session_id },
         data: {
@@ -351,13 +416,35 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
           updated_at: new Date(),
         },
       });
-      await initiateNextCall(callHistory.session_id);
+      await initiateNextCall(callHistory.session_id, req);
     }
 
-    const session = await prisma.call_session.findUnique({
-      where: { id: callHistory.session_id },
-    });
     if (session.current_index >= session.total_calls - 1) {
+      const activeCalls = await prisma.call_history.findMany({
+        where: {
+          session_id: callHistory.session_id,
+          status: CallStatusEnum.IN_PROGRESS,
+        },
+      });
+
+      for (const call of activeCalls) {
+        if (call.call_sid) {
+          try {
+            await client.calls(call.call_sid).update({ status: "completed" });
+            await prisma.call_history.update({
+              where: { id: call.id },
+              data: {
+                status: CallStatusEnum.DECLINED,
+                ended_at: new Date(),
+                updated_at: new Date(),
+              },
+            });
+          } catch (error) {
+            console.error(`Failed to terminate call ${call.call_sid}:`, error);
+          }
+        }
+      }
+
       await prisma.call_session.update({
         where: { id: callHistory.session_id },
         data: {
@@ -366,28 +453,31 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
         },
       });
 
-      // Emit Socket.IO event for session completion
       io.emit("callStatusUpdate", {
         sessionId: callHistory.session_id,
         status: SessionStatusEnum.COMPLETED,
-        currentIndex: session.current_index,
+        currentIndex: session.current_index + 1,
         totalCalls: session.total_calls,
+        currentContact: null,
+        attempt: 0,
       });
     }
   }
   res.sendStatus(200);
 });
 
-const initiateNextCall = async (sessionId: number) => {
+const initiateNextCall = async (sessionId: number, req: Request) => {
   const session = await prisma.call_session.findUnique({
     where: { id: sessionId },
   });
 
   if (!session) {
+    console.error(`initiateNextCall: Session ${sessionId} not found`);
     return;
   }
 
   if (session.status !== SessionStatusEnum.IN_PROGRESS) {
+    console.log(`initiateNextCall: Session ${sessionId} is not in progress`);
     return;
   }
 
@@ -398,6 +488,31 @@ const initiateNextCall = async (sessionId: number) => {
   }[];
   const currentIndex = session.current_index;
   if (currentIndex >= contacts.length) {
+    const activeCalls = await prisma.call_history.findMany({
+      where: {
+        session_id: sessionId,
+        status: CallStatusEnum.IN_PROGRESS,
+      },
+    });
+
+    for (const call of activeCalls) {
+      if (call.call_sid) {
+        try {
+          await client.calls(call.call_sid).update({ status: "completed" });
+          await prisma.call_history.update({
+            where: { id: call.id },
+            data: {
+              status: CallStatusEnum.DECLINED,
+              ended_at: new Date(),
+              updated_at: new Date(),
+            },
+          });
+        } catch (error) {
+          console.error(`Failed to terminate call ${call.call_sid}:`, error);
+        }
+      }
+    }
+
     await prisma.call_session.update({
       where: { id: sessionId },
       data: {
@@ -405,8 +520,19 @@ const initiateNextCall = async (sessionId: number) => {
         updated_at: new Date(),
       },
     });
+
+    const io = req.app.get("io") as Server;
+    io.emit("callStatusUpdate", {
+      sessionId,
+      status: SessionStatusEnum.COMPLETED,
+      currentIndex,
+      totalCalls: session.total_calls,
+      currentContact: null,
+      attempt: 0,
+    });
     return;
   }
+
   const contact = contacts[currentIndex];
   const callHistory = await prisma.call_history.findFirst({
     where: {
@@ -417,6 +543,9 @@ const initiateNextCall = async (sessionId: number) => {
   });
 
   if (!callHistory) {
+    console.warn(
+      `initiateNextCall: No call history found for contact ${contact.phoneNumber}`
+    );
     await prisma.call_session.update({
       where: { id: sessionId },
       data: {
@@ -424,7 +553,7 @@ const initiateNextCall = async (sessionId: number) => {
         updated_at: new Date(),
       },
     });
-    await initiateNextCall(sessionId);
+    await initiateNextCall(sessionId, req);
     return;
   }
 
@@ -434,6 +563,9 @@ const initiateNextCall = async (sessionId: number) => {
     const elapsedSeconds = (currentTime - callStartTime) / 1000;
 
     if (elapsedSeconds > CALL_TIMEOUT_SECONDS) {
+      console.error(
+        `initiateNextCall: Call ${callHistory.id} timed out after ${elapsedSeconds}s`
+      );
       await prisma.call_history.update({
         where: { id: callHistory.id },
         data: {
@@ -456,7 +588,7 @@ const initiateNextCall = async (sessionId: number) => {
           updated_at: new Date(),
         },
       });
-      await initiateNextCall(sessionId);
+      await initiateNextCall(sessionId, req);
     }
     return;
   }
@@ -471,6 +603,7 @@ const initiateNextCall = async (sessionId: number) => {
       from: twilioNumber,
       statusCallback: statusCallbackUrl,
       statusCallbackMethod: "POST",
+      timeout: 120, // Increase Twilio timeout to 120 seconds
     });
 
     await prisma.call_history.update({
@@ -481,6 +614,19 @@ const initiateNextCall = async (sessionId: number) => {
         called_at: new Date(),
         updated_at: new Date(),
       },
+    });
+
+    const io = req.app.get("io") as Server;
+    io.emit("callStatusUpdate", {
+      sessionId,
+      status: session.status,
+      currentIndex: session.current_index,
+      totalCalls: session.total_calls,
+      currentContact: {
+        name: contact.name,
+        phoneNumber: contact.phoneNumber,
+      },
+      attempt: callHistory.attempt,
     });
   } catch (error) {
     console.error(
@@ -503,14 +649,7 @@ const initiateNextCall = async (sessionId: number) => {
       },
     });
 
-    await prisma.call_session.update({
-      where: { id: sessionId },
-      data: {
-        current_index: { increment: 1 },
-        updated_at: new Date(),
-      },
-    });
-    await initiateNextCall(sessionId);
+    await initiateNextCall(sessionId, req);
   }
 };
 

@@ -271,7 +271,7 @@ const getGroup = asyncHandler(async (req: Request, res: Response) => {
 
   try {
     const groups = await prisma.groups.findMany({
-      where: { user_id: numericUserId },
+      where: { user_id: numericUserId, group_type: "USER_DEFINED" },
       include: { contacts: true },
       orderBy: { created_at: "desc" },
     });
