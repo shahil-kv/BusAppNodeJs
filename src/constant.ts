@@ -10,19 +10,19 @@ export enum OpsModeEnum {
 
 // Enum for call statuses
 const CallStatusEnum = {
-  PENDING: "pending",
-  IN_PROGRESS: "in_progress",
-  ACCEPTED: "accepted",
-  MISSED: "missed",
-  DECLINED: "declined",
-  FAILED: "failed",
+  PENDING: "PENDING",
+  IN_PROGRESS: "IN_PROGRESS",
+  ACCEPTED: "ACCEPTED",
+  MISSED: "MISSED",
+  DECLINED: "DECLINED",
+  FAILED: "FAILED",
 };
 
 // Enum for session statuses
 const SessionStatusEnum = {
-  IN_PROGRESS: "in_progress",
-  STOPPED: "stopped",
-  COMPLETED: "completed",
+  IN_PROGRESS: "IN_PROGRESS",
+  STOPPED: "STOPPED",
+  COMPLETED: "COMPLETED",
 };
 
 export { CallStatusEnum, SessionStatusEnum };

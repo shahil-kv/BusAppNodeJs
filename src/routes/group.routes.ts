@@ -1,7 +1,5 @@
-import { Router } from 'express';
-import { validate } from '../validators/validate';
-import { validateManageGroup } from '../validators/group.validators';
-import { getGroup, manageGroup } from '../controllers/group.controller';
+import { Router } from "express";
+import { getGroup, manageGroup } from "../controllers/group.controller";
 
 const router = Router();
 
@@ -23,10 +21,8 @@ const router = Router();
  *               description: { type: string }
  *               members: { type: array, items: { type: string } }
  */
-router
-    .route("/manage-group")
-    .post(manageGroup);
+router.route("/manage-group").post(manageGroup);
 
-router.route("/get-groups").get(getGroup)
+router.route("/get-groups").get(getGroup);
 
 export default router;
