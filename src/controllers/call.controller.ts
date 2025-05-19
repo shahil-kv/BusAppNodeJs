@@ -339,6 +339,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
+  // if session is still pending then go for another person call
   if (session.status === SessionStatusEnum.IN_PROGRESS) {
     await prisma.call_session.update({
       where: { id: callHistory.session_id },
