@@ -16,7 +16,7 @@ const client = twilio(
 );
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 const CALL_TIMEOUT_SECONDS = 60;
-const NGROK_BASE_URL = "https://6811-103-165-167-98.ngrok-free.app"; // Replace with production URL
+const NGROK_BASE_URL = "https://busappnodejs.onrender.com"; // Replace with production URL
 
 // Start a call session
 const startCalls = asyncHandler(async (req: Request, res: Response) => {
