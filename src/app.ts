@@ -12,6 +12,7 @@ import limiter from "./configs/limiter";
 import { errorHandler } from "./middleware/error.middleware";
 import authRouter from "./routes/auth.routes";
 import groupRouter from "./routes/group.routes";
+import reportRouter from "./routes/report.routes";
 import callRouter from "./routes/call.routes";
 import HomeRouter from "./routes/home.routes";
 import { callStatusHandler, voiceHandler } from "./controllers/call.controller";
@@ -96,6 +97,7 @@ app.use(API_PREFIX + "/user", authRouter);
 app.use(API_PREFIX + "/group", groupRouter);
 app.use(API_PREFIX + "/call", callRouter);
 app.use(API_PREFIX + "/home", HomeRouter);
+app.use(API_PREFIX + "/report", reportRouter);
 //for calling purpose from twilio api
 app.post("/voice", voiceHandler);
 app.post("/call-status", callStatusHandler);
