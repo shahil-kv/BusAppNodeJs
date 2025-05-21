@@ -160,4 +160,174 @@ const getContacts = asyncHandler(async (req: Request, res: Response) => {
       )
     );
 });
-export { getHistory, getSessions, getContacts };
+
+const getCompleteOverview = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { userId } = req.query;
+
+    // Validate userId
+    if (!userId) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(400, null, "userId is required as a query parameter")
+        );
+    }
+
+    const numericUserId = parseInt(userId as string, 10);
+    if (isNaN(numericUserId)) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Invalid userId format"));
+    }
+
+    try {
+      const lastMonthStart = new Date();
+      lastMonthStart.setMonth(lastMonthStart.getMonth());
+      lastMonthStart.setDate(1);
+      lastMonthStart.setHours(0, 0, 0, 0);
+
+      const lastMonthCalls = await prisma.call_history.count({
+        where: {
+          user_id: numericUserId,
+          created_at: { lt: lastMonthStart },
+        },
+      });
+
+      const totalCalls = await prisma.call_history.count({
+        where: {
+          user_id: numericUserId,
+        },
+      });
+
+      // calculate percentage
+      const callsChangePercent =
+        lastMonthCalls > 0
+          ? ((totalCalls - lastMonthCalls) / lastMonthCalls) * 100
+          : 0;
+
+      console.log(callsChangePercent);
+
+      // Total unique recipients (distinct contact_phone numbers)
+      const uniqueRecipients = await prisma.call_history.findMany({
+        where: {
+          user_id: numericUserId,
+        },
+        distinct: ["contact_phone"],
+        select: {
+          contact_phone: true,
+        },
+      });
+      const totalRecipients = uniqueRecipients.length;
+
+      // Last month's recipients for comparison
+      const lastMonthUniqueRecipients = await prisma.call_history.findMany({
+        where: {
+          user_id: numericUserId,
+          created_at: { lt: lastMonthStart },
+        },
+        distinct: ["contact_phone"],
+        select: {
+          contact_phone: true,
+        },
+      });
+      const lastMonthRecipients = lastMonthUniqueRecipients.length;
+
+      // Calculate percentage change in recipients
+      const recipientsChangePercent =
+        lastMonthRecipients > 0
+          ? ((totalRecipients - lastMonthRecipients) / lastMonthRecipients) *
+            100
+          : 0;
+
+      // Weekly activity (calls per day for the last 7 days)
+      const today = new Date();
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - 6); // Last 7 days including today
+      weekStart.setHours(0, 0, 0, 0);
+
+      const weeklyActivityRaw = await prisma.call_history.groupBy({
+        by: ["created_at"],
+        where: {
+          user_id: numericUserId,
+          created_at: { gte: weekStart },
+        },
+        _count: {
+          id: true,
+        },
+      });
+
+      // Map to days of the week
+      const weeklyActivity = Array(7).fill(0);
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      weeklyActivityRaw.forEach((entry) => {
+        const dayIndex = (new Date(entry.created_at).getDay() + 6) % 7; // Adjust for Mon start
+        weeklyActivity[dayIndex] = entry._count.id;
+      });
+
+      // Call status percentages
+      const callStatusRaw = await prisma.call_history.groupBy({
+        by: ["status"],
+        where: {
+          user_id: numericUserId,
+          created_at: { gte: lastMonthStart },
+        },
+        _count: {
+          id: true,
+        },
+      });
+
+      const totalStatusCalls = callStatusRaw.reduce(
+        (sum, entry) => sum + entry._count.id,
+        0
+      );
+      let callStatus = { answered: 0, failed: 0, missed: 0 };
+      callStatusRaw.forEach((entry) => {
+        if (entry.status === "ANSWERED") {
+          callStatus.answered = (entry._count.id / totalStatusCalls) * 100;
+        } else if (entry.status === "FAILED") {
+          callStatus.failed = (entry._count.id / totalStatusCalls) * 100;
+        } else if (entry.status === "MISSED") {
+          callStatus.missed = (entry._count.id / totalStatusCalls) * 100;
+        }
+      });
+
+      // Round percentages to nearest integer
+      callStatus = {
+        answered: Math.round(callStatus.answered),
+        failed: Math.round(callStatus.failed),
+        missed: Math.round(callStatus.missed),
+      };
+
+      // Construct the response
+      const analyticsData = {
+        overview: {
+          totalCalls,
+          callsChangePercent: Math.round(callsChangePercent),
+          totalRecipients,
+          recipientsChangePercent: Math.round(recipientsChangePercent),
+        },
+        weeklyActivity: weeklyActivity.map((count, index) => ({
+          label: days[index],
+          value: count,
+        })),
+        callStatus,
+      };
+
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            analyticsData,
+            "Overview data retrieved successfully"
+          )
+        );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(new ApiResponse(500, null, `Internal server error ${error}`));
+    }
+  }
+);
+export { getHistory, getSessions, getContacts, getCompleteOverview };
