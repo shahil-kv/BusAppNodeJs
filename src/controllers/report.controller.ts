@@ -160,7 +160,6 @@ const getContacts = asyncHandler(async (req: Request, res: Response) => {
       )
     );
 });
-
 const getCompleteOverview = asyncHandler(
   async (req: Request, res: Response) => {
     const { userId } = req.query;
@@ -182,33 +181,51 @@ const getCompleteOverview = asyncHandler(
     }
 
     try {
+      // Define date ranges for last month (April 2025 if today is May 2025)
       const lastMonthStart = new Date();
-      lastMonthStart.setMonth(lastMonthStart.getMonth());
+      lastMonthStart.setMonth(lastMonthStart.getMonth() - 1); // Set to April 2025
       lastMonthStart.setDate(1);
       lastMonthStart.setHours(0, 0, 0, 0);
 
+      const lastMonthEnd = new Date(lastMonthStart);
+      lastMonthEnd.setMonth(lastMonthEnd.getMonth() + 1); // Start of May 2025
+      lastMonthEnd.setDate(1);
+      lastMonthEnd.setHours(0, 0, 0, 0);
+
+      // Total calls last month (April 2025)
       const lastMonthCalls = await prisma.call_history.count({
         where: {
           user_id: numericUserId,
-          created_at: { lt: lastMonthStart },
+          created_at: {
+            gte: lastMonthStart,
+            lt: lastMonthEnd,
+          },
         },
       });
 
+      // Total calls overall
       const totalCalls = await prisma.call_history.count({
         where: {
           user_id: numericUserId,
         },
       });
 
-      // calculate percentage
+      // Calculate percentage change in calls
       const callsChangePercent =
         lastMonthCalls > 0
           ? ((totalCalls - lastMonthCalls) / lastMonthCalls) * 100
           : 0;
 
-      console.log(callsChangePercent);
+      console.log(
+        "Total calls:",
+        totalCalls,
+        "Last month calls:",
+        lastMonthCalls,
+        "Change %:",
+        callsChangePercent
+      );
 
-      // Total unique recipients (distinct contact_phone numbers)
+      // Total unique recipients
       const uniqueRecipients = await prisma.call_history.findMany({
         where: {
           user_id: numericUserId,
@@ -220,11 +237,14 @@ const getCompleteOverview = asyncHandler(
       });
       const totalRecipients = uniqueRecipients.length;
 
-      // Last month's recipients for comparison
+      // Last month's unique recipients
       const lastMonthUniqueRecipients = await prisma.call_history.findMany({
         where: {
           user_id: numericUserId,
-          created_at: { lt: lastMonthStart },
+          created_at: {
+            gte: lastMonthStart,
+            lt: lastMonthEnd,
+          },
         },
         distinct: ["contact_phone"],
         select: {
@@ -240,7 +260,16 @@ const getCompleteOverview = asyncHandler(
             100
           : 0;
 
-      // Weekly activity (calls per day for the last 7 days)
+      console.log(
+        "Total recipients:",
+        totalRecipients,
+        "Last month recipients:",
+        lastMonthRecipients,
+        "Change %:",
+        recipientsChangePercent
+      );
+
+      // Weekly activity (last 7 days)
       const today = new Date();
       const weekStart = new Date(today);
       weekStart.setDate(today.getDate() - 6); // Last 7 days including today
@@ -257,13 +286,15 @@ const getCompleteOverview = asyncHandler(
         },
       });
 
-      // Map to days of the week
       const weeklyActivity = Array(7).fill(0);
       const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
       weeklyActivityRaw.forEach((entry) => {
         const dayIndex = (new Date(entry.created_at).getDay() + 6) % 7; // Adjust for Mon start
         weeklyActivity[dayIndex] = entry._count.id;
       });
+
+      console.log("Weekly activity raw:", weeklyActivityRaw);
+      console.log("Weekly activity mapped:", weeklyActivity);
 
       // Call status percentages
       const callStatusRaw = await prisma.call_history.groupBy({
@@ -283,21 +314,25 @@ const getCompleteOverview = asyncHandler(
       );
       let callStatus = { answered: 0, failed: 0, missed: 0 };
       callStatusRaw.forEach((entry) => {
-        if (entry.status === "ANSWERED") {
+        const status = entry.status.toUpperCase(); // Normalize to uppercase
+        if (status === "ANSWERED" || status === "ACCEPTED") {
           callStatus.answered = (entry._count.id / totalStatusCalls) * 100;
-        } else if (entry.status === "FAILED") {
+        } else if (status === "FAILED") {
           callStatus.failed = (entry._count.id / totalStatusCalls) * 100;
-        } else if (entry.status === "MISSED") {
+        } else if (status === "MISSED") {
           callStatus.missed = (entry._count.id / totalStatusCalls) * 100;
         }
       });
 
-      // Round percentages to nearest integer
       callStatus = {
         answered: Math.round(callStatus.answered),
         failed: Math.round(callStatus.failed),
         missed: Math.round(callStatus.missed),
       };
+
+      console.log("Call status raw:", callStatusRaw);
+      console.log("Total status calls:", totalStatusCalls);
+      console.log("Call status calculated:", callStatus);
 
       // Construct the response
       const analyticsData = {
