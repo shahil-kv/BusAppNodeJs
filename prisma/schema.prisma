@@ -126,7 +126,7 @@ model call_session {
   successful_calls Int            @default(0)
   failed_calls     Int            @default(0)
   created_at       DateTime       @default(now())
-  updated_at       DateTime
+  updated_at       DateTime       @default(now())
   call_history     call_history[]
 
   @@index([group_id])

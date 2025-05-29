@@ -7,8 +7,11 @@ import { environment } from "./environments/environment";
 const PORT = environment.PORT;
 const BASE_URL = environment.API_URL;
 
+console.log(BASE_URL);
+console.log(PORT);
+
 const startServer = () => {
-  const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
+  const server = httpServer.listen(Number(PORT), "0.0.0.0", () => {
     // Store the server instances
     logger.info(`🔍 Server is running at: ${BASE_URL}`);
     logger.info(`  Server is running on port: ${PORT}`);
