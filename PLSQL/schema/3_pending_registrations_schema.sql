@@ -1,9 +1,9 @@
-CREATE TABLE IF NOT EXISTS refresh_tokens (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token VARCHAR(255) NOT NULL UNIQUE,
-    expires_at TIMESTAMPTZ NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+CREATE TABLE IF NOT EXISTS pending_registrations (id SERIAL PRIMARY KEY,
+                                                            phone_number VARCHAR(15) NOT NULL UNIQUE,
+                                                                                              password_hash VARCHAR(255) NOT NULL,
+                                                                                                                         full_name VARCHAR(255) NOT NULL,
+                                                                                                                                                email VARCHAR(255),
+                                                                                                                                                      role VARCHAR(200) DEFAULT 'USER',
+                                                                                                                                                                                phone_verification_otp VARCHAR(10) NOT NULL,
+                                                                                                                                                                                                                   phone_verification_expiry TIMESTAMP NOT NULL,
+                                                                                                                                                                                                                                                       created_at TIMESTAMPTZ DEFAULT NOW());
