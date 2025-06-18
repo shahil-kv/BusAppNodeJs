@@ -1,14 +1,19 @@
-# Use the official Node.js 18 Alpine image as the base
-FROM node:18-alpine
+# Use a Debian-based Node.js image
+FROM node:18
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
+
+# Copy Prisma and scripts
+COPY prisma ./prisma
+COPY scripts ./scripts
+
+# Generate Prisma Client using your custom script
+RUN npm run prisma:generate
 
 # Copy the rest of the application code
 COPY . .
@@ -16,12 +21,8 @@ COPY . .
 # Build the application
 RUN npm run build:prod
 
-RUN npm install prisma --save
-
-RUN npx prisma generate
-
-# Expose the port the app runs on
+# Expose the port
 EXPOSE 3000
 
-# Define the command to run the application
+# Start the application
 CMD ["node", "dist/Node_NX/main.js"]
