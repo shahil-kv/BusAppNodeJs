@@ -113,6 +113,10 @@ model call_history {
   @@index([contact_id])
   @@index([session_id])
   @@index([user_id])
+  @@index([call_sid], map: "idx_call_history_call_sid")
+  @@index([contact_id], map: "idx_call_history_contact_id")
+  @@index([session_id], map: "idx_call_history_session_id")
+  @@index([user_id], map: "idx_call_history_user_id")
 }
 
 model call_session {
@@ -131,4 +135,6 @@ model call_session {
 
   @@index([group_id])
   @@index([user_id])
+  @@index([group_id], map: "idx_call_session_group_id")
+  @@index([user_id], map: "idx_call_session_user_id")
 }
