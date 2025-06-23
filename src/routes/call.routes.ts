@@ -1,13 +1,13 @@
-import { Router } from "express";
-import { validate } from "../validators/validate";
-import { validateCall } from "../validators/call.validators";
+import { Router } from 'express';
+import { validate } from '../validators/validate';
+import { validateCall } from '../validators/call.validators';
 import {
   startCalls,
   stopSession,
   getCallHistory,
   voiceHandler,
   callStatusHandler,
-} from "../controllers/call.controller";
+} from '../controllers/call.controller';
 
 const router = Router();
 
@@ -62,7 +62,7 @@ const router = Router();
  *       404:
  *         description: User or group not found
  */
-router.route("/call_list").post(startCalls);
+router.route('/call_list').post(startCalls);
 
 /**
  * @swagger
@@ -87,7 +87,7 @@ router.route("/call_list").post(startCalls);
  *       404:
  *         description: Session not found
  */
-router.route("/stop").post(validate, stopSession);
+router.route('/stop').post(validate, stopSession);
 
 /**
  * @swagger
@@ -140,7 +140,7 @@ router.route("/stop").post(validate, stopSession);
  *       400:
  *         description: Invalid session ID
  */
-router.route("/history").get(validate, getCallHistory);
+router.route('/history').get(validate, getCallHistory);
 
 /**
  * @swagger
@@ -162,7 +162,7 @@ router.route("/history").get(validate, getCallHistory);
  *             schema:
  *               type: string
  */
-router.route("/voice").get(voiceHandler);
+router.route('/voice-update').get(voiceHandler);
 
 /**
  * @swagger
@@ -184,6 +184,6 @@ router.route("/voice").get(voiceHandler);
  *       200:
  *         description: Status callback processed
  */
-router.route("/call-status").post(callStatusHandler);
+router.route('/call-status').post(callStatusHandler);
 
 export default router;

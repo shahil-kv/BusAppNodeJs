@@ -15,8 +15,15 @@ const normalizePhoneNumber = (phone: string): string => {
 };
 
 const manageGroup = asyncHandler(async (req: Request, res: Response) => {
-  const { userId, groupName, description, contacts, opsMode, groupId } =
-    req.body;
+  const {
+    userId,
+    groupName,
+    description,
+    contacts,
+    opsMode,
+    groupId,
+    workflowId,
+  } = req.body;
   let result;
   let message;
 
@@ -93,6 +100,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
               group_name: groupName,
               description,
               group_type: "USER_DEFINED",
+              workflow_id: workflowId ?? null, // <-- add this line
             },
           });
 
@@ -159,6 +167,7 @@ const manageGroup = asyncHandler(async (req: Request, res: Response) => {
               group_name: groupName,
               description,
               group_type: "USER_DEFINED",
+              workflow_id: workflowId ?? null, // <-- add this line
               updated_at: new Date(),
             },
           });
@@ -272,7 +281,7 @@ const getGroup = asyncHandler(async (req: Request, res: Response) => {
   try {
     const groups = await prisma.groups.findMany({
       where: { user_id: numericUserId, group_type: "USER_DEFINED" },
-      include: { contacts: true },
+      include: { contacts: true, workflows: true }, // <-- add workflow if you want details
       orderBy: { created_at: "desc" },
     });
 

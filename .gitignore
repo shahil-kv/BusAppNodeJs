@@ -82,3 +82,4 @@ logs/http.log.2025-04-15
 logs/
 .env.cloud
 .env.dev
+google-credentials.json

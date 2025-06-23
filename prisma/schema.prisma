@@ -80,7 +80,9 @@ model groups {
   group_type  String     @default("USER_DEFINED") @db.VarChar(20)
   created_at  DateTime?  @default(now()) @db.Timestamp(6)
   updated_at  DateTime?  @default(now()) @db.Timestamp(6)
+  workflow_id Int?
   contacts    contacts[]
+  workflows   workflows? @relation(fields: [workflow_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_workflow")
   users       users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, group_name], map: "unique_group_name_per_user")
@@ -106,6 +108,8 @@ model call_history {
   error_message   String?
   created_at      DateTime     @default(now())
   updated_at      DateTime
+  current_step    Int?         @default(0)
+  transcription   String?      @db.VarChar(400000)
   contacts        contacts?    @relation(fields: [contact_id], references: [id])
   call_session    call_session @relation(fields: [session_id], references: [id])
 
@@ -120,21 +124,32 @@ model call_history {
 }
 
 model call_session {
-  id               Int            @id @default(autoincrement())
-  user_id          Int
-  group_id         Int?
-  contacts         Json
-  current_index    Int            @default(0)
-  status           String         @default("in_progress")
-  total_calls      Int            @default(0)
-  successful_calls Int            @default(0)
-  failed_calls     Int            @default(0)
-  created_at       DateTime       @default(now())
-  updated_at       DateTime       @default(now())
-  call_history     call_history[]
+  id                Int            @id @default(autoincrement())
+  user_id           Int
+  group_id          Int?
+  contacts          Json
+  current_index     Int            @default(0)
+  status            String         @default("in_progress")
+  total_calls       Int            @default(0)
+  successful_calls  Int            @default(0)
+  failed_calls      Int            @default(0)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now())
+  workflow_snapshot Json?
+  call_history      call_history[]
 
   @@index([group_id])
   @@index([user_id])
   @@index([group_id], map: "idx_call_session_group_id")
   @@index([user_id], map: "idx_call_session_user_id")
+}
+
+model workflows {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  description String?
+  steps       Json
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  groups      groups[]
 }
