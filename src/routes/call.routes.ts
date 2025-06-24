@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { validate } from '../validators/validate';
-import { validateCall } from '../validators/call.validators';
 import {
   startCalls,
   stopSession,

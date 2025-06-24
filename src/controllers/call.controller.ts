@@ -454,12 +454,10 @@ const initiateNextCall = async (
 
 // Handle voice interaction
 const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
-  console.log('adhil');
+  console.log('voice handler triggered');
 
   const twiml = new twilio.twiml.VoiceResponse();
   try {
-    console.log('asdfasdf');
-
     const { sessionId, contactId } = req.query;
     if (!sessionId || !contactId) {
       console.error('Missing sessionId or contactId in voice handler');
@@ -530,103 +528,101 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
 
 // Handle voice response
 const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) => {
-  console.log('voice response handler');
+  const twiml = new twilio.twiml.VoiceResponse();
+  try {
+    const { sessionId, contactId } = req.query;
+    if (!sessionId || !contactId) {
+      console.error('Missing sessionId or contactId in voice response handler');
+      twiml.say('Sorry, there was an error. Goodbye.');
+      return res.type('text/xml').send(twiml.toString());
+    }
 
-  // const twiml = new twilio.twiml.VoiceResponse();
-  // try {
-  //   const { sessionId, contactId } = req.query;
-  //   if (!sessionId || !contactId) {
-  //     console.error('Missing sessionId or contactId in voice response handler');
-  //     twiml.say('Sorry, there was an error. Goodbye.');
-  //     return res.type('text/xml').send(twiml.toString());
-  //   }
+    const session = await prisma.call_session.findUnique({
+      where: { id: Number(sessionId) },
+      include: { call_history: true },
+    });
 
-  //   const session = await prisma.call_session.findUnique({
-  //     where: { id: Number(sessionId) },
-  //     include: { call_history: true },
-  //   });
+    if (!session) {
+      console.error('Session not found:', sessionId);
+      twiml.say('Sorry, session not found. Goodbye.');
+      return res.type('text/xml').send(twiml.toString());
+    }
 
-  //   if (!session) {
-  //     console.error('Session not found:', sessionId);
-  //     twiml.say('Sorry, session not found. Goodbye.');
-  //     return res.type('text/xml').send(twiml.toString());
-  //   }
+    const callHistory = session.call_history.find(
+      (ch) => ch.contact_id === Number(contactId),
+    );
 
-  //   const callHistory = session.call_history.find(
-  //     (ch) => ch.contact_id === Number(contactId),
-  //   );
+    if (!callHistory) {
+      console.error('Call history not found for contact:', contactId);
+      twiml.say('Sorry, call record not found. Goodbye.');
+      return res.type('text/xml').send(twiml.toString());
+    }
 
-  //   if (!callHistory) {
-  //     console.error('Call history not found for contact:', contactId);
-  //     twiml.say('Sorry, call record not found. Goodbye.');
-  //     return res.type('text/xml').send(twiml.toString());
-  //   }
+    const recordingUrl = req.body.RecordingUrl;
+    if (!recordingUrl) {
+      console.error('No recording URL provided');
+      twiml.say('Sorry, no response recorded. Goodbye.');
+      twiml.hangup();
+      return res.type('text/xml').send(twiml.toString());
+    }
 
-  //   const recordingUrl = req.body.RecordingUrl;
-  //   if (!recordingUrl) {
-  //     console.error('No recording URL provided');
-  //     twiml.say('Sorry, no response recorded. Goodbye.');
-  //     twiml.hangup();
-  //     return res.type('text/xml').send(twiml.toString());
-  //   }
+    const audioBuffer = await fetchAudioBuffer(recordingUrl);
+    const userResponse = await transcribeAudio(audioBuffer);
 
-  //   const audioBuffer = await fetchAudioBuffer(recordingUrl);
-  //   const userResponse = await transcribeAudio(audioBuffer);
+    await prisma.call_history.update({
+      where: { id: callHistory.id },
+      data: { transcription: userResponse, updated_at: new Date() },
+    });
 
-  //   await prisma.call_history.update({
-  //     where: { id: callHistory.id },
-  //     data: { transcription: userResponse, updated_at: new Date() },
-  //   });
+    const groupKey = session.group_id ? `group${session.group_id}` : 'group1';
+    const workflow = defaultWorkflows[groupKey] || defaultWorkflows['group1'];
+    const currentStepIndex = callHistory.current_step || 0;
+    const currentStep = workflow[currentStepIndex] || workflow[0];
 
-  //   const groupKey = session.group_id ? `group${session.group_id}` : 'group1';
-  //   const workflow = defaultWorkflows[groupKey] || defaultWorkflows['group1'];
-  //   const currentStepIndex = callHistory.current_step || 0;
-  //   const currentStep = workflow[currentStepIndex] || workflow[0];
+    const { nextQuestion, shouldEnd, nextStepIndex } = await generateNextStep(
+      currentStep.malayalam || currentStep.question,
+      userResponse,
+      workflow,
+    );
 
-  //   const { nextQuestion, shouldEnd, nextStepIndex } = await generateNextStep(
-  //     currentStep.malayalam || currentStep.question,
-  //     userResponse,
-  //     workflow,
-  //   );
+    if (shouldEnd) {
+      twiml.say({ voice: 'alice', language: 'ml-IN' }, nextQuestion);
+      twiml.hangup();
+      await prisma.call_history.update({
+        where: { id: callHistory.id },
+        data: {
+          status: CallStatusEnum.ACCEPTED,
+          ended_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+    } else {
+      const audioPath = await generateSpeech(nextQuestion);
+      await prisma.call_history.update({
+        where: { id: callHistory.id },
+        data: {
+          current_step: nextStepIndex,
+          updated_at: new Date(),
+        },
+      });
 
-  //   if (shouldEnd) {
-  //     twiml.say({ voice: 'alice', language: 'ml-IN' }, nextQuestion);
-  //     twiml.hangup();
-  //     await prisma.call_history.update({
-  //       where: { id: callHistory.id },
-  //       data: {
-  //         status: CallStatusEnum.ACCEPTED,
-  //         ended_at: new Date(),
-  //         updated_at: new Date(),
-  //       },
-  //     });
-  //   } else {
-  //     const audioPath = await generateSpeech(nextQuestion);
-  //     await prisma.call_history.update({
-  //       where: { id: callHistory.id },
-  //       data: {
-  //         current_step: nextStepIndex,
-  //         updated_at: new Date(),
-  //       },
-  //     });
+      twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+      twiml.record({
+        action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+        method: 'POST',
+        maxLength: 30,
+        playBeep: true,
+        timeout: 5,
+      });
+    }
 
-  //     twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-  //     twiml.record({
-  //       action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-  //       method: 'POST',
-  //       maxLength: 30,
-  //       playBeep: true,
-  //       timeout: 5,
-  //     });
-  //   }
-
-  //   res.type('text/xml').send(twiml.toString());
-  // } catch (error) {
-  //   console.error('Error in voice response handler:', error);
-  //   twiml.say('Sorry, there was an error. Goodbye.');
-  //   twiml.hangup();
-  //   res.type('text/xml').send(twiml.toString());
-  // }
+    res.type('text/xml').send(twiml.toString());
+  } catch (error) {
+    console.error('Error in voice response handler:', error);
+    twiml.say('Sorry, there was an error. Goodbye.');
+    twiml.hangup();
+    res.type('text/xml').send(twiml.toString());
+  }
 });
 
 // Stop a call session
