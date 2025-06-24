@@ -16,12 +16,11 @@ import reportRouter from './routes/report.routes';
 import callRouter from './routes/call.routes';
 import HomeRouter from './routes/home.routes';
 import WorkflowRouter from './routes/workflow.routes';
+import { voiceHandler, voiceResponseHandler } from './controllers/voice.controller';
 import {
   callStatusHandler,
   recordingStatusHandler,
-  voiceHandler,
-  voiceResponseHandler,
-} from './controllers/call.controller';
+} from './controllers/status.controller';
 import { Server } from 'socket.io';
 import path from 'path';
 
