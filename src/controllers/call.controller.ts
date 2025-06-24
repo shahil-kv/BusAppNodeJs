@@ -3,25 +3,34 @@ import { PrismaClient } from '@prisma/client';
 import twilio from 'twilio';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
-import { Server } from 'socket.io';
+import { Server as SocketIOServer } from 'socket.io';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
-import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import { SpeechClient } from '@google-cloud/speech';
+import { createClient } from '@deepgram/sdk';
+import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
+import crypto from 'crypto';
+import { Readable } from 'stream';
 
-// Initialize Prisma and Twilio clients
+// Initialize Prisma client
 const prisma = new PrismaClient();
+
+// Initialize Twilio client
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN, {
   lazyLoading: true,
 });
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 const NGROK_BASE_URL = process.env.NGROK_BASE_URL;
 
-// Initialize Google Cloud clients
-const ttsClient = new TextToSpeechClient();
-const sttClient = new SpeechClient();
+// Initialize Deepgram for STT
+const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+
+// Initialize ElevenLabs for TTS
+// See: https://www.npmjs.com/package/@elevenlabs/elevenlabs-js
+const elevenLabs = new ElevenLabsClient({
+  apiKey: process.env.ELEVENLABS_API_KEY || 'your-elevenlabs-api-key',
+});
 
 // Ensure temp directory exists
 const tempDir = path.join(__dirname, '../../temp');
@@ -42,7 +51,8 @@ setInterval(() => {
     }
   });
 }, 600000);
-// 1. Fix the default workflow to have proper progression
+
+// Default workflow
 const defaultWorkflows = {
   group1: [
     {
@@ -50,20 +60,20 @@ const defaultWorkflows = {
       question: 'Hello! Are you interested in data science? Please say yes or no.',
       malayalam: 'നിനക്ക് ഡാറ്റാ സയൻസ് താല്പര്യമുണ്ടോ? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।',
       yes_next: 2,
-      no_next: 3, // Add a "no" response step
+      no_next: 3,
     },
     {
       step_id: 2,
       question: 'Great! When would you like to start? This week or next week?',
       malayalam: 'നല്ലത്! എപ്പോൾ തുടങ്ങണം? ഈ ആഴ്ച അതോ അടുത്ത ആഴ്ച?',
-      yes_next: 4, // Add next steps
+      yes_next: 4,
       no_next: 5,
     },
     {
       step_id: 3,
       question: 'Thank you for your time. Have a great day!',
       malayalam: 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. നല്ല ദിവസം!',
-      yes_next: null, // End conversation
+      yes_next: null,
       no_next: null,
     },
     {
@@ -82,6 +92,37 @@ const defaultWorkflows = {
     },
   ],
 };
+
+// System prompt for Gemini
+const malayalamPhrases = {
+  yes: ['അതെ', 'ഉണ്ട്', 'വേണം'],
+  no: ['ഇല്ല', 'ellaa', 'വേണ്ട', 'താല്പര്യമില്ല'],
+  thisWeek: ['ഈ ആഴ്ച'],
+  nextWeek: ['അടുത്ത ആഴ്ച'],
+};
+
+const systemPrompt = `
+You are a conversational AI agent for a call system. Your role is to guide users through a predefined workflow while understanding natural language responses in English and Malayalam. The workflow is as follows:
+
+Workflow Steps:
+${JSON.stringify(defaultWorkflows.group1, null, 2)}
+
+Common Malayalam phrases:
+Yes: ${malayalamPhrases.yes.join(', ')}
+No: ${malayalamPhrases.no.join(', ')}
+This week: ${malayalamPhrases.thisWeek.join(', ')}
+Next week: ${malayalamPhrases.nextWeek.join(', ')}
+
+Instructions:
+- Ask questions based on the workflow steps, starting from step_id 1.
+- Understand user responses in English (e.g., "yes", "no", "this week") and Malayalam (e.g., "അതെ" for yes, "ഇല്ല" or "ellaa" for no).
+- If the response is unclear, politely ask for clarification in the user's language (e.g., "Could you please say yes or no clearly?" or "ദയവായി വ്യക്തമായി അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।").
+- Respond naturally, like a human, in Malayalam or English based on user input.
+- Keep responses concise and conversational.
+- Move to the next step based on the user's response (yes_next or no_next).
+- If no next step exists, end the conversation politely with "Thank you for your time. Have a great day!" or its Malayalam equivalent.
+- Return responses in JSON format: { nextStep: WorkflowStep | null, shouldEnd: boolean }.
+`;
 
 // Interface for workflow steps
 interface WorkflowStep {
@@ -134,23 +175,40 @@ async function getWorkflowSteps(group): Promise<WorkflowStep[]> {
   return defaultWorkflows['group1'];
 }
 
-// 2. Improve the generateNextStep function with better response detection
+// Generate next step using Gemini API
 async function generateNextStep(
   currentStep: WorkflowStep,
   userResponse: string,
   workflow: WorkflowStep[],
 ): Promise<NextStepResponse> {
   try {
+    const prompt = `
+${systemPrompt}
+
+Current Step: ${JSON.stringify(currentStep)}
+User Response: ${userResponse}
+Workflow: ${JSON.stringify(workflow)}
+Determine the next step based on the user's response. Return a JSON object with { nextStep, shouldEnd }.
+`;
+
+    // Dynamic import for Google GenAI (ES Module)
+    const { GoogleGenAI } = await import('@google/genai');
+    const genAI = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY || 'your-gemini-api-key',
+    });
+
+    const response = await genAI.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const result = JSON.parse(text);
+    return result;
+  } catch (error) {
+    console.error('Error with Gemini API:', error);
+    // Fallback to original logic
     const response = userResponse.toLowerCase().trim();
-    console.log(
-      `Processing user response: "${response}" for step ${currentStep.step_id}`,
-    );
-
     let nextStepId: number | string | undefined;
-    let isYesResponse = false;
-    let isNoResponse = false;
-
-    // Enhanced response detection
     const yesKeywords = [
       'yes',
       'yeah',
@@ -158,36 +216,34 @@ async function generateNextStep(
       'sure',
       'okay',
       'ok',
-      'അതെ',
-      'ഉണ്ട്',
-      'വേണം',
+      ...malayalamPhrases.yes,
     ];
-    const noKeywords = ['no', 'nope', 'not', 'ഇല്ല', 'വേണ്ട', 'താല്പര്യമില്ല'];
+    const noKeywords = ['no', 'nope', 'not', ...malayalamPhrases.no];
 
-    // Check for yes responses
-    isYesResponse = yesKeywords.some((keyword) => response.includes(keyword));
+    const isYesResponse = yesKeywords.some((keyword) => response.includes(keyword));
+    const isNoResponse = noKeywords.some((keyword) => response.includes(keyword));
 
-    // Check for no responses
-    isNoResponse = noKeywords.some((keyword) => response.includes(keyword));
-
-    // Handle this week/next week responses for step 2
     if (currentStep.step_id === 2) {
-      if (response.includes('this week') || response.includes('ഈ ആഴ്ച')) {
-        isYesResponse = true;
-      } else if (response.includes('next week') || response.includes('അടുത്ത ആഴ്ച')) {
-        isNoResponse = true;
+      if (
+        malayalamPhrases.thisWeek.some((kw) => response.includes(kw)) ||
+        response.includes('this week')
+      ) {
+        nextStepId = currentStep.yes_next;
+      } else if (
+        malayalamPhrases.nextWeek.some((kw) => response.includes(kw)) ||
+        response.includes('next week')
+      ) {
+        nextStepId = currentStep.no_next;
       }
+    } else {
+      nextStepId = isYesResponse
+        ? currentStep.yes_next
+        : isNoResponse
+        ? currentStep.no_next
+        : undefined;
     }
 
-    if (isYesResponse && currentStep.yes_next !== undefined) {
-      nextStepId = currentStep.yes_next;
-      console.log(`YES response detected, moving to step: ${nextStepId}`);
-    } else if (isNoResponse && currentStep.no_next !== undefined) {
-      nextStepId = currentStep.no_next;
-      console.log(`NO response detected, moving to step: ${nextStepId}`);
-    } else {
-      // If response is unclear, ask for clarification but don't repeat indefinitely
-      console.log(`Unclear response: "${response}". Asking for clarification.`);
+    if (!nextStepId) {
       const clarificationStep: WorkflowStep = {
         step_id: `${currentStep.step_id}_clarify`,
         question: "I didn't understand your response. Please say yes or no clearly.",
@@ -199,84 +255,96 @@ async function generateNextStep(
       return { nextStep: clarificationStep, shouldEnd: false };
     }
 
-    // Find the next step
-    if (nextStepId !== undefined && nextStepId !== null) {
-      const nextStep = workflow.find((s) => s.step_id === nextStepId);
-      if (nextStep) {
-        console.log(`Found next step: ${nextStep.step_id}`);
-        return { nextStep, shouldEnd: false };
-      } else {
-        console.log(`Next step ${nextStepId} not found in workflow, ending conversation`);
-        return { nextStep: null, shouldEnd: true };
-      }
-    }
-
-    // If nextStepId is null, end the conversation
-    console.log('No next step defined, ending conversation');
-    return { nextStep: null, shouldEnd: true };
-  } catch (error) {
-    console.error('Error in generateNextStep:', error);
-    return { nextStep: null, shouldEnd: true };
+    const nextStep = workflow.find((s) => s.step_id === nextStepId);
+    return { nextStep: nextStep || null, shouldEnd: !nextStep };
   }
 }
 
-// Generate audio using Google TTS
+// Hash function for caching TTS
+function hash(text: string): string {
+  return crypto.createHash('md5').update(text).digest('hex');
+}
+
+// Generate audio using ElevenLabs with caching
 async function generateSpeech(text: string): Promise<string> {
   try {
-    console.log('Generating speech for:', text);
-    const [response] = await ttsClient.synthesizeSpeech({
-      input: { text },
-      voice: { languageCode: 'ml-IN', ssmlGender: 'FEMALE' },
-      audioConfig: { audioEncoding: 'MP3', speakingRate: 0.9, pitch: 0.0 },
-    });
-
-    if (!response.audioContent) {
-      throw new Error('No audio content received from TTS');
+    const audioPath = path.join(tempDir, `tts_${hash(text)}.mp3`);
+    if (fs.existsSync(audioPath)) {
+      return audioPath;
     }
 
-    const audioPath = path.join(tempDir, `output_${Date.now()}.mp3`);
-    fs.writeFileSync(audioPath, response.audioContent, 'binary');
-    console.log('Audio file created:', audioPath);
+    // Use a real ElevenLabs voice ID - you can get this from your ElevenLabs dashboard
+    // For now, using a placeholder - replace with your actual voice ID
+    // To get voice IDs: https://elevenlabs.io/voice-library or API: GET /v1/voices
+    const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'; // Default to Rachel voice
 
+    const stream = await elevenLabs.textToSpeech.convert(
+      voiceId, // Use real voice ID
+      {
+        text: text,
+        modelId: 'eleven_multilingual_v2',
+        outputFormat: 'mp3_44100_128',
+        optimizeStreamingLatency: 1,
+      },
+    );
+    const chunks: Buffer[] = [];
+    // Handle web ReadableStream
+    const reader = stream.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(Buffer.from(value));
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    // Fix Buffer type error for Buffer.concat
+    const audioBuffer = Buffer.concat(chunks as any);
+    // Fix Buffer type error for fs.writeFileSync
+    fs.writeFileSync(audioPath, audioBuffer as any);
     return audioPath;
-  } catch (error) {
-    console.error('TTS Error:', error);
+  } catch (error: unknown) {
+    console.error('ElevenLabs TTS Error:', error);
     const fallbackPath = path.join(tempDir, `fallback_${Date.now()}.txt`);
     fs.writeFileSync(fallbackPath, text);
-    console.log('Created fallback text file:', fallbackPath);
-    throw new Error(`Failed to generate speech: ${error.message}`);
+    throw new Error(`Failed to generate speech: ${(error as Error).message}`);
   }
 }
-
-// Transcribe audio using Google STT
 async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
   try {
     console.log('Transcribing audio, buffer size:', audioBuffer.length);
-    const [response] = await sttClient.recognize({
-      audio: { content: audioBuffer.toString('base64') },
-      config: {
-        encoding: 'MP3',
-        languageCode: 'ml-IN',
-        alternativeLanguageCodes: ['en-IN'],
-        sampleRateHertz: 16000,
-        enableAutomaticPunctuation: true,
-      },
+
+    const response = await deepgram.listen.prerecorded.transcribeFile(audioBuffer, {
+      model: 'general', // Available on free plan
+      tier: 'base', // Default tier for free plan
+      language: 'en', // English, widely supported
+      punctuate: true,
+      smart_format: true,
+      diarize: false,
     });
 
-    const transcript = response.results?.[0]?.alternatives?.[0]?.transcript || '';
+    // Updated to match the full response structure: response.results.channels[0].alternatives[0].transcript
+    const transcript =
+      response.result.results?.channels?.[0]?.alternatives?.[0]?.transcript || '';
     console.log('Transcription result:', transcript);
     return transcript;
   } catch (error) {
-    console.error('STT Error:', error);
+    console.error('Deepgram STT Error:', JSON.stringify(error, null, 2));
+    if (error.status === 403) {
+      console.error(
+        'Insufficient permissions: Check your Deepgram plan for access to the requested model/tier/language.',
+      );
+    }
     return '';
   }
 }
 
-// Update fetchAudioBuffer to use Twilio Basic Auth
+// Fetch audio buffer with Twilio Basic Auth
 async function fetchAudioBuffer(url: string): Promise<Buffer> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // Reduced timeout for speed
     const auth = Buffer.from(
       `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`,
     ).toString('base64');
@@ -296,9 +364,22 @@ async function fetchAudioBuffer(url: string): Promise<Buffer> {
   }
 }
 
+// Helper to get io from req.app
+function getIO(req: Request): SocketIOServer | undefined {
+  return req.app?.get('io');
+}
+
+// Helper to get body/query with fallback for any type
+function getBody<T = unknown>(req: Request): T {
+  return req.body ? (req.body as T) : ({} as T);
+}
+function getQuery<T = unknown>(req: Request): T {
+  return req.query ? (req.query as T) : ({} as T);
+}
+
 // Start a call session
 const startCalls = asyncHandler(async (req: Request, res: Response) => {
-  const { userId, groupId, groupType, contacts } = req.body;
+  const { userId, groupId, groupType, contacts } = getBody<any>(req);
 
   if (!userId) {
     return res.status(400).json(new ApiResponse(400, null, 'User ID is required'));
@@ -318,17 +399,12 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
   if (
     !process.env.TWILIO_ACCOUNT_SID ||
     !process.env.TWILIO_AUTH_TOKEN ||
-    !twilioNumber
+    !twilioNumber ||
+    !NGROK_BASE_URL
   ) {
     return res
       .status(500)
-      .json(new ApiResponse(500, null, 'Twilio configuration missing'));
-  }
-
-  if (!NGROK_BASE_URL || NGROK_BASE_URL.includes('your-ngrok-url')) {
-    return res
-      .status(500)
-      .json(new ApiResponse(500, null, 'NGROK_BASE_URL not configured'));
+      .json(new ApiResponse(500, null, 'Required environment variables missing'));
   }
 
   let contactsToCall: { id?: string; name: string; phoneNumber: string }[] = [];
@@ -344,7 +420,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
           group_type: 'MANUAL',
           description: 'Manual call group',
           contacts: {
-            create: contacts.map(({ name, phoneNumber }) => ({
+            create: contacts.map(({ name, phoneNumber }: any) => ({
               name,
               phone_number: phoneNumber,
             })),
@@ -364,7 +440,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
 
     if (group) {
       targetGroupId = group.id;
-      contactsToCall = group.contacts.map((c) => ({
+      contactsToCall = group.contacts.map((c: any) => ({
         id: c.id.toString(),
         name: c.name,
         phoneNumber: c.phone_number,
@@ -434,7 +510,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
           'Call session started successfully',
         ),
       );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error starting call session:', error);
     return res
       .status(500)
@@ -442,7 +518,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-// Initiate next call with 1s delay
+// Initiate next call
 const initiateNextCall = async (
   sessionId: number,
   req: Request,
@@ -465,7 +541,7 @@ const initiateNextCall = async (
       where: { id: sessionId },
       data: { status: SessionStatusEnum.COMPLETED, updated_at: new Date() },
     });
-    const io = req.app.get('io') as Server;
+    const io = getIO(req);
     io.emit('callStatusUpdate', {
       sessionId,
       status: SessionStatusEnum.COMPLETED,
@@ -487,7 +563,7 @@ const initiateNextCall = async (
       where: { id: sessionId },
       data: { current_index: { increment: 1 }, updated_at: new Date() },
     });
-    await new Promise((res) => setTimeout(res, 1000));
+    await new Promise((res) => setTimeout(res, 500)); // Reduced delay for speed
     await initiateNextCall(sessionId, req, workflow);
     return;
   }
@@ -511,7 +587,7 @@ const initiateNextCall = async (
       },
     });
 
-    const io = req.app.get('io') as Server;
+    const io = getIO(req);
     io.emit('callStatusUpdate', {
       sessionId,
       status: session.status,
@@ -540,22 +616,16 @@ const initiateNextCall = async (
 
 // Handle voice interaction
 const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
-  console.log('voice handler triggered');
-
   const twiml = new twilio.twiml.VoiceResponse();
 
   try {
-    const { sessionId, contactId } = req.query;
+    const { sessionId, contactId } = getQuery<any>(req);
 
     if (!sessionId || !contactId) {
       console.error('Missing sessionId or contactId in voice handler');
       twiml.say('Sorry, there was an error. Goodbye.');
       return res.type('text/xml').send(twiml.toString());
     }
-
-    console.log(
-      `Processing voice request for session: ${sessionId}, contact: ${contactId}`,
-    );
 
     const session = await prisma.call_session.findUnique({
       where: { id: Number(sessionId) },
@@ -596,21 +666,16 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
       return res.type('text/xml').send(twiml.toString());
     }
 
+    const questionText = currentStep.malayalam || currentStep.question;
     try {
-      const questionText = currentStep.malayalam || currentStep.question;
-      console.log(`Generating speech for: ${questionText}`);
       const audioPath = await generateSpeech(questionText);
       if (!fs.existsSync(audioPath))
         throw new Error(`Audio file not found at: ${audioPath}`);
       const audioUrl = `${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`;
-      console.log(`Serving audio from: ${audioUrl}`);
       twiml.play(audioUrl);
-    } catch (ttsError) {
-      console.error('TTS failed, falling back to Twilio say:', ttsError);
-      twiml.say(
-        { voice: 'alice', language: 'en-IN' },
-        currentStep.question || 'Hello, please respond to continue.',
-      );
+    } catch (error) {
+      console.error('TTS failed, falling back to Twilio say:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
     }
 
     twiml.record({
@@ -624,7 +689,6 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
       recordingStatusCallbackMethod: 'POST',
     });
 
-    console.log('TwiML response generated successfully');
     res.type('text/xml').send(twiml.toString());
   } catch (error) {
     console.error('Error in voice handler:', error);
@@ -634,15 +698,14 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-// 3. Improved voice response handler with better error handling and logging
+// Handle voice response
 const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) => {
   const twiml = new twilio.twiml.VoiceResponse();
 
   try {
-    const { sessionId, contactId } = req.query;
+    const { sessionId, contactId } = getQuery<any>(req);
     console.log(`=== Voice Response Handler Started ===`);
     console.log(`Session ID: ${sessionId}, Contact ID: ${contactId}`);
-    console.log(`Request body:`, req.body);
 
     if (!sessionId || !contactId) {
       console.error('Missing sessionId or contactId in voice response handler');
@@ -650,7 +713,6 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
       return res.type('text/xml').send(twiml.toString());
     }
 
-    // Get session and call history
     const session = await prisma.call_session.findUnique({
       where: { id: Number(sessionId) },
       include: { call_history: true },
@@ -671,146 +733,116 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
       return res.type('text/xml').send(twiml.toString());
     }
 
-    // Check if recording URL is provided
     const recordingUrl = req.body.RecordingUrl;
-    console.log(`Recording URL: ${recordingUrl}`);
-
     if (!recordingUrl) {
-      console.error('No recording URL provided - user may not have spoken');
+      console.error('No recording URL provided');
       return await handleNoResponse(req, res, session, callHistory, twiml);
     }
 
-    // Process the recording
-    try {
-      console.log('Fetching audio buffer...');
-      const audioBuffer = await fetchAudioBuffer(recordingUrl);
-      console.log(`Audio buffer size: ${audioBuffer.length} bytes`);
+    const audioBuffer = await fetchAudioBuffer(recordingUrl);
+    const userResponse = await transcribeAudio(audioBuffer);
+    if (!userResponse || userResponse.trim().length === 0) {
+      console.error('Transcription returned empty result');
+      return await handleNoResponse(req, res, session, callHistory, twiml);
+    }
 
-      console.log('Transcribing audio...');
-      const userResponse = await transcribeAudio(audioBuffer);
-      console.log(`Transcription result: "${userResponse}"`);
+    await prisma.call_history.update({
+      where: { id: callHistory.id },
+      data: { transcription: userResponse, updated_at: new Date() },
+    });
 
-      if (!userResponse || userResponse.trim().length === 0) {
-        console.error('Transcription returned empty result');
-        return await handleNoResponse(req, res, session, callHistory, twiml);
+    const group = session.group_id
+      ? await prisma.groups.findUnique({
+          where: { id: session.group_id },
+          include: { workflows: true },
+        })
+      : null;
+    const workflow = await getWorkflowSteps(group);
+    const currentStepObj = parseCurrentStep(callHistory.current_step);
+    const currentStep = workflow.find(
+      (s) => s.step_id === (currentStepObj?.step_id || 1),
+    );
+
+    if (!currentStep) {
+      console.error('Current step not found in workflow');
+      twiml.say('Thank you for your time. Goodbye.');
+      twiml.hangup();
+      return res.type('text/xml').send(twiml.toString());
+    }
+
+    const { nextStep, shouldEnd } = await generateNextStep(
+      currentStep,
+      userResponse,
+      workflow,
+    );
+
+    if (shouldEnd || !nextStep) {
+      const endMessage = 'Thank you for your time. Have a great day!';
+      const endMessageMalayalam = 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. നല്ല ദിവസം!';
+      try {
+        const audioPath = await generateSpeech(endMessageMalayalam);
+        twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+      } catch (error) {
+        console.error('TTS failed for end message:', error);
+        twiml.say({ voice: 'alice', language: 'en-IN' }, endMessage);
       }
+      twiml.hangup();
 
-      // Save the transcription
       await prisma.call_history.update({
         where: { id: callHistory.id },
-        data: { transcription: userResponse, updated_at: new Date() },
+        data: {
+          status: CallStatusEnum.ACCEPTED,
+          ended_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+    } else {
+      await prisma.call_history.update({
+        where: { id: callHistory.id },
+        data: {
+          current_step: JSON.stringify({
+            workflow_id: group?.workflows?.id || null,
+            step_id: nextStep.step_id,
+          }),
+          updated_at: new Date(),
+        },
       });
 
-      // Process the workflow
-      const group = session.group_id
-        ? await prisma.groups.findUnique({
-            where: { id: session.group_id },
-            include: { workflows: true },
-          })
-        : null;
-
-      const workflow = await getWorkflowSteps(group);
-      const currentStepObj = parseCurrentStep(callHistory.current_step);
-      const currentStep = workflow.find(
-        (s) => s.step_id === (currentStepObj?.step_id || 1),
-      );
-
-      if (!currentStep) {
-        console.error('Current step not found in workflow');
-        twiml.say('Thank you for your time. Goodbye.');
-        twiml.hangup();
-        return res.type('text/xml').send(twiml.toString());
+      const questionText = nextStep.malayalam || nextStep.question;
+      try {
+        const audioPath = await generateSpeech(questionText);
+        twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+      } catch (error) {
+        console.error('TTS failed:', error);
+        twiml.say({ voice: 'alice', language: 'en-IN' }, nextStep.question);
       }
 
-      console.log(`Current step: ${currentStep.step_id}`);
-      const { nextStep, shouldEnd } = await generateNextStep(
-        currentStep,
-        userResponse,
-        workflow,
-      );
-
-      if (shouldEnd || !nextStep) {
-        console.log('Ending conversation');
-        const endMessage = 'Thank you for your time. Have a great day!';
-        const endMessageMalayalam = 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. നല്ല ദിവസം!';
-
-        try {
-          const audioPath = await generateSpeech(endMessageMalayalam);
-          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-        } catch (ttsError) {
-          console.error('TTS failed for end message:', ttsError);
-          twiml.say({ voice: 'alice', language: 'en-IN' }, endMessage);
-        }
-
-        twiml.hangup();
-
-        await prisma.call_history.update({
-          where: { id: callHistory.id },
-          data: {
-            status: CallStatusEnum.ACCEPTED,
-            ended_at: new Date(),
-            updated_at: new Date(),
-          },
-        });
-      } else {
-        console.log(`Moving to next step: ${nextStep.step_id}`);
-
-        // Update current step
-        await prisma.call_history.update({
-          where: { id: callHistory.id },
-          data: {
-            current_step: JSON.stringify({
-              workflow_id: group?.workflows?.id || null,
-              step_id: nextStep.step_id,
-            }),
-            updated_at: new Date(),
-          },
-        });
-
-        // Play next question
-        const questionText = nextStep.malayalam || nextStep.question;
-        console.log(`Playing next question: "${questionText}"`);
-
-        try {
-          const audioPath = await generateSpeech(questionText);
-          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-        } catch (ttsError) {
-          console.error('TTS failed, using Twilio say:', ttsError);
-          twiml.say({ voice: 'alice', language: 'en-IN' }, nextStep.question);
-        }
-
-        // Record next response
-        twiml.record({
-          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-          method: 'POST',
-          maxLength: 30,
-          playBeep: true,
-          timeout: 10,
-          transcribe: false,
-        });
-      }
-
-      console.log('=== Voice Response Handler Completed Successfully ===');
-      res.type('text/xml').send(twiml.toString());
-    } catch (processingError) {
-      console.error('Error processing audio/transcription:', processingError);
-      return await handleNoResponse(req, res, session, callHistory, twiml);
+      twiml.record({
+        action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+        method: 'POST',
+        maxLength: 30,
+        playBeep: true,
+        timeout: 10,
+        transcribe: false,
+      });
     }
+
+    res.type('text/xml').send(twiml.toString());
   } catch (error) {
-    console.error('Critical error in voice response handler:', error);
-    twiml.say('Sorry, there was a technical error. Goodbye.');
+    console.error('Error in voice response handler:', error);
+    twiml.say('Sorry, there was a technical error. Please try again later. Goodbye.');
     twiml.hangup();
     res.type('text/xml').send(twiml.toString());
   }
 });
 
-// Helper function to handle cases where no response is detected
+// Handle no response
 async function handleNoResponse(
   req: Request,
   res: Response,
-  session,
-  callHistory,
-  twiml,
+  session: any,
+  callHistory: any,
+  twiml: any,
 ) {
   console.log('Handling no response case');
 
@@ -827,19 +859,18 @@ async function handleNoResponse(
 
   if (currentStep) {
     twiml.say("I didn't hear your response. Let me repeat the question.");
-
     try {
-      const audioPath = await generateSpeech(
-        currentStep.malayalam || currentStep.question,
-      );
+      const responseText = currentStep.malayalam || currentStep.question;
+      const audioPath = await generateSpeech(responseText);
       twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-    } catch (ttsError) {
-      console.error('TTS failed in handleNoResponse:', ttsError);
+    } catch (error) {
+      console.error('TTS failed in handleNoResponse:', error);
       twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
     }
 
+    const { sessionId, contactId } = getQuery<any>(req);
     twiml.record({
-      action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${req.query.sessionId}&contactId=${req.query.contactId}`,
+      action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
       method: 'POST',
       maxLength: 30,
       playBeep: true,
@@ -854,7 +885,7 @@ async function handleNoResponse(
   return res.type('text/xml').send(twiml.toString());
 }
 
-// Optional: Add a recording status callback handler
+// Recording status callback
 const recordingStatusHandler = asyncHandler(async (req: Request, res: Response) => {
   console.log('Recording status callback:', req.body);
   res.status(200).send('OK');
@@ -862,7 +893,7 @@ const recordingStatusHandler = asyncHandler(async (req: Request, res: Response) 
 
 // Stop a call session
 const stopSession = asyncHandler(async (req: Request, res: Response) => {
-  const { sessionId } = req.body;
+  const { sessionId } = getBody<any>(req);
   const numericSessionId = parseInt(sessionId, 10);
   if (isNaN(numericSessionId)) {
     return res.status(400).json(new ApiResponse(400, null, 'Invalid session ID'));
@@ -902,7 +933,7 @@ const stopSession = asyncHandler(async (req: Request, res: Response) => {
     data: { status: SessionStatusEnum.STOPPED, updated_at: new Date() },
   });
 
-  const io = req.app.get('io') as Server;
+  const io = getIO(req);
   io.emit('callStatusUpdate', {
     sessionId: numericSessionId,
     status: SessionStatusEnum.STOPPED,
@@ -912,12 +943,12 @@ const stopSession = asyncHandler(async (req: Request, res: Response) => {
     attempt: 0,
   });
 
-  return res.status(200).json(new ApiResponse(200, null, 'Session stopped'));
+  return res.status(200).json(new ApiResponse(200, null, 'Session stopped successfully'));
 });
 
 // Get call history
 const getCallHistory = asyncHandler(async (req: Request, res: Response) => {
-  const { sessionId } = req.query;
+  const { sessionId } = getQuery<any>(req);
   const numericSessionId = parseInt(sessionId as string, 10);
   if (isNaN(numericSessionId)) {
     return res.status(400).json(new ApiResponse(400, null, 'Invalid session ID'));
@@ -933,7 +964,7 @@ const getCallHistory = asyncHandler(async (req: Request, res: Response) => {
 
 // Handle call status updates
 const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
-  const { CallSid, CallStatus, CallDuration, AnsweredBy } = req.body;
+  const { CallSid, CallStatus, CallDuration } = getBody<any>(req);
   if (!req.body || Object.keys(req.body).length === 0) {
     console.error('Empty body in callStatusHandler');
     return res.status(400).json({ message: 'Empty body received' });
@@ -949,18 +980,12 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     return res.sendStatus(200);
   }
 
-  let mappedStatus,
-    isSuccessful = false;
+  let mappedStatus = '';
+  let isSuccessful = false;
   switch (CallStatus) {
     case 'completed':
       mappedStatus = CallStatusEnum.ACCEPTED;
       isSuccessful = true;
-      break;
-    case 'no-answer':
-      mappedStatus = CallStatusEnum.MISSED;
-      break;
-    case 'busy':
-      mappedStatus = CallStatusEnum.DECLINED;
       break;
     case 'failed':
       mappedStatus = CallStatusEnum.FAILED;
@@ -973,7 +998,6 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     where: { id: callHistory.id },
     data: {
       status: mappedStatus,
-      answered_at: AnsweredBy ? new Date() : null,
       ended_at: new Date(),
       duration: CallDuration ? parseInt(CallDuration) : null,
       updated_at: new Date(),
@@ -997,7 +1021,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
   }[];
   const currentContact = contacts[session.current_index] || null;
 
-  const io = req.app.get('io') as Server;
+  const io = getIO(req);
   io.emit('callStatusUpdate', {
     sessionId: callHistory.session_id,
     status: session.status,
@@ -1039,7 +1063,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  res.sendStatus(200);
+  // res.sendStatus(200);
 });
 
 export {
