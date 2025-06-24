@@ -16,8 +16,14 @@ import reportRouter from './routes/report.routes';
 import callRouter from './routes/call.routes';
 import HomeRouter from './routes/home.routes';
 import WorkflowRouter from './routes/workflow.routes';
-import { callStatusHandler, voiceHandler } from './controllers/call.controller';
+import {
+  callStatusHandler,
+  recordingStatusHandler,
+  voiceHandler,
+  voiceResponseHandler,
+} from './controllers/call.controller';
 import { Server } from 'socket.io';
+import path from 'path';
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -87,6 +93,8 @@ app.use(express.static('public')); // configure static file to save images local
 app.use(cookieParser());
 
 app.use(morganMiddleware);
+// Serve static audio files (add this to your app.ts)
+app.use('/audio', express.static(path.join(__dirname, '../temp')));
 app.set('io', io);
 //user route
 app.use(API_PREFIX + '/user', authRouter);
@@ -98,6 +106,8 @@ app.use(API_PREFIX + '/workflow', WorkflowRouter);
 //for calling purpose from twilio api
 app.post('/call-status', callStatusHandler);
 app.post('/voice-update', voiceHandler);
+app.post('/voice-update/response', voiceResponseHandler);
+app.post('/recording-status', recordingStatusHandler);
 
 // Socket.IO connection handler
 io.on('connection', (socket) => {

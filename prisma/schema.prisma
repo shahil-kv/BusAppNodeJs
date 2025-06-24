@@ -108,7 +108,7 @@ model call_history {
   error_message   String?
   created_at      DateTime     @default(now())
   updated_at      DateTime
-  current_step    Int?         @default(0)
+  current_step    Json?        @default("{}")
   transcription   String?      @db.VarChar(400000)
   contacts        contacts?    @relation(fields: [contact_id], references: [id])
   call_session    call_session @relation(fields: [session_id], references: [id])

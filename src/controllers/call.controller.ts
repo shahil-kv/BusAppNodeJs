@@ -30,111 +30,123 @@ if (!fs.existsSync(tempDir)) {
   console.log('Created temp directory:', tempDir);
 }
 
-// Group-specific workflows
+// Clean up temp files older than 1 hour every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  fs.readdirSync(tempDir).forEach((file) => {
+    const filePath = path.join(tempDir, file);
+    const stats = fs.statSync(filePath);
+    if (now - stats.mtimeMs > 3600000) {
+      fs.unlinkSync(filePath);
+      console.log(`Deleted old temp file: ${filePath}`);
+    }
+  });
+}, 600000);
+
+// Default workflows (fallback)
 const defaultWorkflows = {
   group1: [
     {
-      step: 1,
-      question: 'Hello! Are you interested in Data Science? Please say yes or no.',
+      step_id: 1,
+      question: 'Hello! Are you ? Please say yes or no.',
       malayalam: 'നിനക്ക് ഡാറ്റാ സയൻസ് താല്പര്യമുണ്ടോ? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।',
+      yes_next: 2,
+      no_next: null,
     },
     {
-      step: 2,
+      step_id: 2,
       question: 'Great! When would you like to start? This week or next week?',
       malayalam: 'നല്ലത്! എപ്പോൾ തുടങ്ങണം? ഈ ആഴ്ച അതോ അടുത്ത ആഴ്ച?',
-    },
-  ],
-  group2: [
-    {
-      step: 1,
-      question: 'Hello! Are you interested in Web Development? Please say yes or no.',
-      malayalam:
-        'നിനക്ക് വെബ് ഡെവലപ്മെന്റ് താല്പര്യമുണ്ടോ? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।',
-    },
-    {
-      step: 2,
-      question: 'Excellent! Would you like more details about our course?',
-      malayalam: 'നല്ലത്! കൂടുതൽ വിവരങ്ങൾ വേണോ?',
+      yes_next: null,
+      no_next: null,
     },
   ],
 };
 
 // Interface for workflow steps
 interface WorkflowStep {
-  step: number;
+  step_id: number | string;
   question: string;
   malayalam?: string;
+  yes_next?: number | string | null;
+  no_next?: number | string | null;
 }
 
-// Interface for generateNextStep response
 interface NextStepResponse {
-  nextQuestion: string;
+  nextStep: WorkflowStep | null;
   shouldEnd: boolean;
-  nextStepIndex: number;
 }
 
-// Improved Gemini integration (placeholder for actual API)
+// Helper to parse current_step as JSON object
+function parseCurrentStep(current_step): { workflow_id; step_id } | null {
+  if (!current_step) return null;
+  if (typeof current_step === 'string') {
+    try {
+      return JSON.parse(current_step);
+    } catch {
+      return null;
+    }
+  }
+  if (typeof current_step === 'object' && current_step.step_id !== undefined) {
+    return current_step;
+  }
+  return null;
+}
+
+// Helper to fetch workflow steps from DB or fallback
+async function getWorkflowSteps(group): Promise<WorkflowStep[]> {
+  if (group?.workflows?.steps) {
+    try {
+      const steps = Array.isArray(group.workflows.steps)
+        ? group.workflows.steps
+        : JSON.parse(group.workflows.steps);
+      return steps.map((step) => ({
+        step_id: step.step_id || step.id,
+        question: step.question,
+        malayalam: step.malayalam,
+        yes_next: step.yes_next || step.branch?.yes,
+        no_next: step.no_next || step.branch?.no,
+      }));
+    } catch (e) {
+      console.error('Failed to parse workflow steps from DB:', e);
+    }
+  }
+  return defaultWorkflows['group1'];
+}
+
 async function generateNextStep(
-  currentStep: string,
+  currentStep: WorkflowStep,
   userResponse: string,
   workflow: WorkflowStep[],
 ): Promise<NextStepResponse> {
   try {
-    const response = userResponse.toLowerCase();
-    const currentStepIndex = workflow.findIndex(
-      (step) => step.question === currentStep || step.malayalam === currentStep,
-    );
+    const response = userResponse.toLowerCase().trim();
+    let nextStepId: number | string | undefined;
 
-    // Handle positive responses
     if (
       response.includes('yes') ||
       response.includes('അതെ') ||
       response.includes('okay') ||
       response.includes('sure')
     ) {
-      if (currentStepIndex >= 0 && currentStepIndex < workflow.length - 1) {
-        const nextStep = workflow[currentStepIndex + 1];
-        return {
-          nextQuestion: nextStep.malayalam || nextStep.question,
-          shouldEnd: false,
-          nextStepIndex: currentStepIndex + 1,
-        };
-      } else {
-        return {
-          nextQuestion: 'Thank you for your time! We will contact you soon. നന്ദി!',
-          shouldEnd: true,
-          nextStepIndex: -1,
-        };
-      }
-    }
-    // Handle negative responses
-    else if (
+      nextStepId = currentStep.yes_next;
+    } else if (
       response.includes('no') ||
       response.includes('ഇല്ല') ||
       response.includes('not interested')
     ) {
-      return {
-        nextQuestion: 'Thank you for your time. Have a great day! നന്ദി, നല്ല ദിവസം!',
-        shouldEnd: true,
-        nextStepIndex: -1,
-      };
+      nextStepId = currentStep.no_next;
     }
-    // Handle unclear responses
-    else {
-      return {
-        nextQuestion:
-          "I didn't understand. Could you please say yes or no? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।",
-        shouldEnd: false,
-        nextStepIndex: currentStepIndex,
-      };
+
+    if (nextStepId !== undefined) {
+      const nextStep = workflow.find((s) => s.step_id === nextStepId);
+      return { nextStep: nextStep || null, shouldEnd: !nextStep };
     }
+    // Repeat current step on unclear response
+    return { nextStep: currentStep, shouldEnd: false };
   } catch (error) {
     console.error('Error in generateNextStep:', error);
-    return {
-      nextQuestion: 'Sorry, there was an error. Goodbye. നന്ദി!',
-      shouldEnd: true,
-      nextStepIndex: -1,
-    };
+    return { nextStep: null, shouldEnd: true };
   }
 }
 
@@ -190,27 +202,24 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
   }
 }
 
-// Fetch audio buffer with timeout
+// Update fetchAudioBuffer to use Twilio Basic Auth
 async function fetchAudioBuffer(url: string): Promise<Buffer> {
   try {
-    console.log('Fetching audio from:', url);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-
+    const auth = Buffer.from(
+      `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`,
+    ).toString('base64');
     const response = await fetch(url, {
       signal: controller.signal,
-      headers: { 'User-Agent': 'TwilioRecordingBot/1.0' },
+      headers: {
+        'User-Agent': 'TwilioRecordingBot/1.0',
+        Authorization: `Basic ${auth}`,
+      },
     });
-
     clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    console.log('Audio buffer fetched, size:', buffer.length);
-    return buffer;
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    return Buffer.from(await response.arrayBuffer());
   } catch (error) {
     console.error('Error fetching audio buffer:', error);
     throw new Error(`Failed to fetch audio: ${error.message}`);
@@ -271,7 +280,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
             })),
           },
         },
-        include: { contacts: true },
+        include: { contacts: true, workflows: true },
       });
     } else if (numericGroupId && numericGroupId > 0) {
       group = await prisma.groups.findUnique({
@@ -321,6 +330,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
       },
     });
 
+    const workflow = await getWorkflowSteps(group);
     await prisma.call_history.createMany({
       data: contactsToCall.map((contact) => ({
         session_id: session.id,
@@ -331,13 +341,18 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
         status: CallStatusEnum.PENDING,
         attempt: 1,
         max_attempts: 3,
-        current_step: 0,
+        current_step:
+          workflow.length > 0
+            ? JSON.stringify({
+                workflow_id: group?.workflows?.id || null,
+                step_id: workflow[0].step_id,
+              })
+            : null,
         called_at: new Date(),
         updated_at: new Date(),
       })),
     });
 
-    const workflow = group?.workflows?.[0] || defaultWorkflows['group1'];
     await initiateNextCall(session.id, req, workflow);
 
     return res
@@ -357,7 +372,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-// Initiate the next call
+// Initiate next call with 1s delay
 const initiateNextCall = async (
   sessionId: number,
   req: Request,
@@ -402,6 +417,7 @@ const initiateNextCall = async (
       where: { id: sessionId },
       data: { current_index: { increment: 1 }, updated_at: new Date() },
     });
+    await new Promise((res) => setTimeout(res, 1000));
     await initiateNextCall(sessionId, req, workflow);
     return;
   }
@@ -457,13 +473,19 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
   console.log('voice handler triggered');
 
   const twiml = new twilio.twiml.VoiceResponse();
+
   try {
     const { sessionId, contactId } = req.query;
+
     if (!sessionId || !contactId) {
       console.error('Missing sessionId or contactId in voice handler');
       twiml.say('Sorry, there was an error. Goodbye.');
       return res.type('text/xml').send(twiml.toString());
     }
+
+    console.log(
+      `Processing voice request for session: ${sessionId}, contact: ${contactId}`,
+    );
 
     const session = await prisma.call_session.findUnique({
       where: { id: Number(sessionId) },
@@ -479,20 +501,26 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
     const callHistory = session.call_history.find(
       (ch) => ch.contact_id === Number(contactId),
     );
-
     if (!callHistory) {
       console.error('Call history not found for contact:', contactId);
       twiml.say('Sorry, call record not found. Goodbye.');
       return res.type('text/xml').send(twiml.toString());
     }
 
-    const groupKey = session.group_id ? `group${session.group_id}` : 'group1';
-    const workflow = defaultWorkflows[groupKey] || defaultWorkflows['group1'];
-    const currentStepIndex = callHistory.current_step || 0;
-    const currentStep = workflow[currentStepIndex];
+    const group = session.group_id
+      ? await prisma.groups.findUnique({
+          where: { id: session.group_id },
+          include: { workflows: true },
+        })
+      : null;
+    const workflow = await getWorkflowSteps(group);
+    const currentStepObj = parseCurrentStep(callHistory.current_step);
+    const currentStep = workflow.find(
+      (s) => s.step_id === (currentStepObj?.step_id || 1),
+    );
 
     if (!currentStep) {
-      console.error('No step found for index:', currentStepIndex);
+      console.error('No step found for step_id:', currentStepObj?.step_id);
       twiml.say('Thank you for your time. Goodbye.');
       twiml.hangup();
       return res.type('text/xml').send(twiml.toString());
@@ -500,12 +528,19 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
 
     try {
       const questionText = currentStep.malayalam || currentStep.question;
+      console.log(`Generating speech for: ${questionText}`);
       const audioPath = await generateSpeech(questionText);
+      if (!fs.existsSync(audioPath))
+        throw new Error(`Audio file not found at: ${audioPath}`);
       const audioUrl = `${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`;
+      console.log(`Serving audio from: ${audioUrl}`);
       twiml.play(audioUrl);
     } catch (ttsError) {
       console.error('TTS failed, falling back to Twilio say:', ttsError);
-      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+      twiml.say(
+        { voice: 'alice', language: 'en-IN' },
+        currentStep.question || 'Hello, please respond to continue.',
+      );
     }
 
     twiml.record({
@@ -515,12 +550,15 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
       playBeep: true,
       timeout: 10,
       transcribe: false,
+      recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
+      recordingStatusCallbackMethod: 'POST',
     });
 
+    console.log('TwiML response generated successfully');
     res.type('text/xml').send(twiml.toString());
   } catch (error) {
     console.error('Error in voice handler:', error);
-    twiml.say('Sorry, there was an error. Goodbye.');
+    twiml.say('Sorry, there was a technical error. Please try again later. Goodbye.');
     twiml.hangup();
     res.type('text/xml').send(twiml.toString());
   }
@@ -529,13 +567,20 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
 // Handle voice response
 const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) => {
   const twiml = new twilio.twiml.VoiceResponse();
+
   try {
     const { sessionId, contactId } = req.query;
+
     if (!sessionId || !contactId) {
       console.error('Missing sessionId or contactId in voice response handler');
       twiml.say('Sorry, there was an error. Goodbye.');
       return res.type('text/xml').send(twiml.toString());
     }
+
+    console.log(
+      `Processing voice response for session: ${sessionId}, contact: ${contactId}`,
+    );
+    console.log('Request body:', req.body);
 
     const session = await prisma.call_session.findUnique({
       where: { id: Number(sessionId) },
@@ -551,7 +596,6 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
     const callHistory = session.call_history.find(
       (ch) => ch.contact_id === Number(contactId),
     );
-
     if (!callHistory) {
       console.error('Call history not found for contact:', contactId);
       twiml.say('Sorry, call record not found. Goodbye.');
@@ -561,68 +605,202 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
     const recordingUrl = req.body.RecordingUrl;
     if (!recordingUrl) {
       console.error('No recording URL provided');
-      twiml.say('Sorry, no response recorded. Goodbye.');
-      twiml.hangup();
+      twiml.say('Sorry, no response was recorded. Please try speaking again.');
+      const group = session.group_id
+        ? await prisma.groups.findUnique({
+            where: { id: session.group_id },
+            include: { workflows: true },
+          })
+        : null;
+      const workflow = await getWorkflowSteps(group);
+      const currentStepObj = parseCurrentStep(callHistory.current_step);
+      const currentStep = workflow.find(
+        (s) => s.step_id === (currentStepObj?.step_id || 1),
+      );
+
+      if (currentStep) {
+        try {
+          const audioPath = await generateSpeech(
+            currentStep.malayalam || currentStep.question,
+          );
+          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+        } catch {
+          twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+        }
+        twiml.record({
+          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+          method: 'POST',
+          maxLength: 30,
+          playBeep: true,
+          timeout: 10,
+        });
+      } else {
+        twiml.hangup();
+      }
       return res.type('text/xml').send(twiml.toString());
     }
 
-    const audioBuffer = await fetchAudioBuffer(recordingUrl);
-    const userResponse = await transcribeAudio(audioBuffer);
+    try {
+      const audioBuffer = await fetchAudioBuffer(recordingUrl);
+      const userResponse = await transcribeAudio(audioBuffer);
 
-    await prisma.call_history.update({
-      where: { id: callHistory.id },
-      data: { transcription: userResponse, updated_at: new Date() },
-    });
+      if (!userResponse || userResponse.trim().length === 0) {
+        twiml.say('Sorry, I could not understand your response. Please try again.');
+        const group = session.group_id
+          ? await prisma.groups.findUnique({
+              where: { id: session.group_id },
+              include: { workflows: true },
+            })
+          : null;
+        const workflow = await getWorkflowSteps(group);
+        const currentStepObj = parseCurrentStep(callHistory.current_step);
+        const currentStep = workflow.find(
+          (s) => s.step_id === (currentStepObj?.step_id || 1),
+        );
 
-    const groupKey = session.group_id ? `group${session.group_id}` : 'group1';
-    const workflow = defaultWorkflows[groupKey] || defaultWorkflows['group1'];
-    const currentStepIndex = callHistory.current_step || 0;
-    const currentStep = workflow[currentStepIndex] || workflow[0];
+        if (currentStep) {
+          try {
+            const audioPath = await generateSpeech(
+              currentStep.malayalam || currentStep.question,
+            );
+            twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+          } catch {
+            twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+          }
+          twiml.record({
+            action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+            method: 'POST',
+            maxLength: 30,
+            playBeep: true,
+            timeout: 10,
+          });
+        } else {
+          twiml.hangup();
+        }
+        return res.type('text/xml').send(twiml.toString());
+      }
 
-    const { nextQuestion, shouldEnd, nextStepIndex } = await generateNextStep(
-      currentStep.malayalam || currentStep.question,
-      userResponse,
-      workflow,
-    );
-
-    if (shouldEnd) {
-      twiml.say({ voice: 'alice', language: 'ml-IN' }, nextQuestion);
-      twiml.hangup();
       await prisma.call_history.update({
         where: { id: callHistory.id },
-        data: {
-          status: CallStatusEnum.ACCEPTED,
-          ended_at: new Date(),
-          updated_at: new Date(),
-        },
-      });
-    } else {
-      const audioPath = await generateSpeech(nextQuestion);
-      await prisma.call_history.update({
-        where: { id: callHistory.id },
-        data: {
-          current_step: nextStepIndex,
-          updated_at: new Date(),
-        },
+        data: { transcription: userResponse, updated_at: new Date() },
       });
 
-      twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-      twiml.record({
-        action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-        method: 'POST',
-        maxLength: 30,
-        playBeep: true,
-        timeout: 5,
-      });
+      const group = session.group_id
+        ? await prisma.groups.findUnique({
+            where: { id: session.group_id },
+            include: { workflows: true },
+          })
+        : null;
+      const workflow = await getWorkflowSteps(group);
+      const currentStepObj = parseCurrentStep(callHistory.current_step);
+      const currentStep = workflow.find(
+        (s) => s.step_id === (currentStepObj?.step_id || 1),
+      );
+
+      const { nextStep, shouldEnd } = await generateNextStep(
+        currentStep,
+        userResponse,
+        workflow,
+      );
+
+      if (shouldEnd) {
+        try {
+          const audioPath = await generateSpeech(
+            nextStep?.question || 'Thank you for your time. Goodbye.',
+          );
+          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+        } catch {
+          twiml.say(
+            { voice: 'alice', language: 'en-IN' },
+            nextStep?.question || 'Thank you for your time. Goodbye.',
+          );
+        }
+        twiml.hangup();
+        await prisma.call_history.update({
+          where: { id: callHistory.id },
+          data: {
+            status: CallStatusEnum.ACCEPTED,
+            ended_at: new Date(),
+            updated_at: new Date(),
+          },
+        });
+      } else if (nextStep) {
+        await prisma.call_history.update({
+          where: { id: callHistory.id },
+          data: {
+            current_step: JSON.stringify({
+              workflow_id: group?.workflows?.id || null,
+              step_id: nextStep.step_id,
+            }),
+            updated_at: new Date(),
+          },
+        });
+        try {
+          const audioPath = await generateSpeech(nextStep.malayalam || nextStep.question);
+          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+        } catch {
+          twiml.say({ voice: 'alice', language: 'en-IN' }, nextStep.question);
+        }
+        twiml.record({
+          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+          method: 'POST',
+          maxLength: 30,
+          playBeep: true,
+          timeout: 10,
+        });
+      } else {
+        twiml.say('Sorry, an unexpected error occurred. Goodbye.');
+        twiml.hangup();
+      }
+      res.type('text/xml').send(twiml.toString());
+    } catch (transcriptionError) {
+      console.error('Error in transcription/processing:', transcriptionError);
+      twiml.say('Sorry, I had trouble processing your response. Please try again.');
+      const group = session.group_id
+        ? await prisma.groups.findUnique({
+            where: { id: session.group_id },
+            include: { workflows: true },
+          })
+        : null;
+      const workflow = await getWorkflowSteps(group);
+      const currentStepObj = parseCurrentStep(callHistory.current_step);
+      const currentStep = workflow.find(
+        (s) => s.step_id === (currentStepObj?.step_id || 1),
+      );
+
+      if (currentStep) {
+        try {
+          const audioPath = await generateSpeech(
+            currentStep.malayalam || currentStep.question,
+          );
+          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+        } catch {
+          twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+        }
+        twiml.record({
+          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+          method: 'POST',
+          maxLength: 30,
+          playBeep: true,
+          timeout: 10,
+        });
+      } else {
+        twiml.hangup();
+      }
+      res.type('text/xml').send(twiml.toString());
     }
-
-    res.type('text/xml').send(twiml.toString());
   } catch (error) {
     console.error('Error in voice response handler:', error);
-    twiml.say('Sorry, there was an error. Goodbye.');
+    twiml.say('Sorry, there was a technical error. Goodbye.');
     twiml.hangup();
     res.type('text/xml').send(twiml.toString());
   }
+});
+
+// Optional: Add a recording status callback handler
+const recordingStatusHandler = asyncHandler(async (req: Request, res: Response) => {
+  console.log('Recording status callback:', req.body);
+  res.status(200).send('OK');
 });
 
 // Stop a call session
@@ -779,8 +957,13 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       where: { id: callHistory.session_id },
       data: { current_index: { increment: 1 }, updated_at: new Date() },
     });
-    const workflow =
-      defaultWorkflows[`group${session.group_id}`] || defaultWorkflows['group1'];
+    const group = session.group_id
+      ? await prisma.groups.findUnique({
+          where: { id: session.group_id },
+          include: { workflows: true },
+        })
+      : null;
+    const workflow = await getWorkflowSteps(group);
     await initiateNextCall(callHistory.session_id, req, workflow);
   }
 
@@ -809,4 +992,5 @@ export {
   voiceHandler,
   voiceResponseHandler,
   callStatusHandler,
+  recordingStatusHandler,
 };
