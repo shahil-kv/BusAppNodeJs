@@ -42,21 +42,41 @@ setInterval(() => {
     }
   });
 }, 600000);
-
-// Default workflows (fallback)
+// 1. Fix the default workflow to have proper progression
 const defaultWorkflows = {
   group1: [
     {
       step_id: 1,
-      question: 'Hello! Are you ? Please say yes or no.',
+      question: 'Hello! Are you interested in data science? Please say yes or no.',
       malayalam: 'നിനക്ക് ഡാറ്റാ സയൻസ് താല്പര്യമുണ്ടോ? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।',
       yes_next: 2,
-      no_next: null,
+      no_next: 3, // Add a "no" response step
     },
     {
       step_id: 2,
       question: 'Great! When would you like to start? This week or next week?',
       malayalam: 'നല്ലത്! എപ്പോൾ തുടങ്ങണം? ഈ ആഴ്ച അതോ അടുത്ത ആഴ്ച?',
+      yes_next: 4, // Add next steps
+      no_next: 5,
+    },
+    {
+      step_id: 3,
+      question: 'Thank you for your time. Have a great day!',
+      malayalam: 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. നല്ല ദിവസം!',
+      yes_next: null, // End conversation
+      no_next: null,
+    },
+    {
+      step_id: 4,
+      question: 'Perfect! We will contact you this week. Thank you!',
+      malayalam: 'മികച്ചത്! ഞങ്ങൾ ഈ ആഴ്ച നിങ്ങളെ ബന്ധപ്പെടും. നന്ദി!',
+      yes_next: null,
+      no_next: null,
+    },
+    {
+      step_id: 5,
+      question: 'No problem! We will contact you next week. Thank you!',
+      malayalam: 'കുഴപ്പമില്ല! ഞങ്ങൾ അടുത്ത ആഴ്ച നിങ്ങളെ ബന്ധപ്പെടും. നന്ദി!',
       yes_next: null,
       no_next: null,
     },
@@ -114,6 +134,7 @@ async function getWorkflowSteps(group): Promise<WorkflowStep[]> {
   return defaultWorkflows['group1'];
 }
 
+// 2. Improve the generateNextStep function with better response detection
 async function generateNextStep(
   currentStep: WorkflowStep,
   userResponse: string,
@@ -121,29 +142,78 @@ async function generateNextStep(
 ): Promise<NextStepResponse> {
   try {
     const response = userResponse.toLowerCase().trim();
+    console.log(
+      `Processing user response: "${response}" for step ${currentStep.step_id}`,
+    );
+
     let nextStepId: number | string | undefined;
+    let isYesResponse = false;
+    let isNoResponse = false;
 
-    if (
-      response.includes('yes') ||
-      response.includes('അതെ') ||
-      response.includes('okay') ||
-      response.includes('sure')
-    ) {
+    // Enhanced response detection
+    const yesKeywords = [
+      'yes',
+      'yeah',
+      'yep',
+      'sure',
+      'okay',
+      'ok',
+      'അതെ',
+      'ഉണ്ട്',
+      'വേണം',
+    ];
+    const noKeywords = ['no', 'nope', 'not', 'ഇല്ല', 'വേണ്ട', 'താല്പര്യമില്ല'];
+
+    // Check for yes responses
+    isYesResponse = yesKeywords.some((keyword) => response.includes(keyword));
+
+    // Check for no responses
+    isNoResponse = noKeywords.some((keyword) => response.includes(keyword));
+
+    // Handle this week/next week responses for step 2
+    if (currentStep.step_id === 2) {
+      if (response.includes('this week') || response.includes('ഈ ആഴ്ച')) {
+        isYesResponse = true;
+      } else if (response.includes('next week') || response.includes('അടുത്ത ആഴ്ച')) {
+        isNoResponse = true;
+      }
+    }
+
+    if (isYesResponse && currentStep.yes_next !== undefined) {
       nextStepId = currentStep.yes_next;
-    } else if (
-      response.includes('no') ||
-      response.includes('ഇല്ല') ||
-      response.includes('not interested')
-    ) {
+      console.log(`YES response detected, moving to step: ${nextStepId}`);
+    } else if (isNoResponse && currentStep.no_next !== undefined) {
       nextStepId = currentStep.no_next;
+      console.log(`NO response detected, moving to step: ${nextStepId}`);
+    } else {
+      // If response is unclear, ask for clarification but don't repeat indefinitely
+      console.log(`Unclear response: "${response}". Asking for clarification.`);
+      const clarificationStep: WorkflowStep = {
+        step_id: `${currentStep.step_id}_clarify`,
+        question: "I didn't understand your response. Please say yes or no clearly.",
+        malayalam:
+          'നിങ്ങളുടെ ഉത്തരം മനസ്സിലായില്ല. ദയവായി വ്യക്തമായി അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് പറയൂ।',
+        yes_next: currentStep.yes_next,
+        no_next: currentStep.no_next,
+      };
+      return { nextStep: clarificationStep, shouldEnd: false };
     }
 
-    if (nextStepId !== undefined) {
+    // Find the next step
+    if (nextStepId !== undefined && nextStepId !== null) {
       const nextStep = workflow.find((s) => s.step_id === nextStepId);
-      return { nextStep: nextStep || null, shouldEnd: !nextStep };
+      if (nextStep) {
+        console.log(`Found next step: ${nextStep.step_id}`);
+        return { nextStep, shouldEnd: false };
+      } else {
+        console.log(`Next step ${nextStepId} not found in workflow, ending conversation`);
+        return { nextStep: null, shouldEnd: true };
+      }
     }
-    // Repeat current step on unclear response
-    return { nextStep: currentStep, shouldEnd: false };
+
+    // If nextStepId is null, end the conversation
+    console.log('No next step defined, ending conversation');
+    return { nextStep: null, shouldEnd: true };
   } catch (error) {
     console.error('Error in generateNextStep:', error);
     return { nextStep: null, shouldEnd: true };
@@ -564,12 +634,15 @@ const voiceHandler = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-// Handle voice response
+// 3. Improved voice response handler with better error handling and logging
 const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) => {
   const twiml = new twilio.twiml.VoiceResponse();
 
   try {
     const { sessionId, contactId } = req.query;
+    console.log(`=== Voice Response Handler Started ===`);
+    console.log(`Session ID: ${sessionId}, Contact ID: ${contactId}`);
+    console.log(`Request body:`, req.body);
 
     if (!sessionId || !contactId) {
       console.error('Missing sessionId or contactId in voice response handler');
@@ -577,11 +650,7 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
       return res.type('text/xml').send(twiml.toString());
     }
 
-    console.log(
-      `Processing voice response for session: ${sessionId}, contact: ${contactId}`,
-    );
-    console.log('Request body:', req.body);
-
+    // Get session and call history
     const session = await prisma.call_session.findUnique({
       where: { id: Number(sessionId) },
       include: { call_history: true },
@@ -602,120 +671,79 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
       return res.type('text/xml').send(twiml.toString());
     }
 
+    // Check if recording URL is provided
     const recordingUrl = req.body.RecordingUrl;
-    if (!recordingUrl) {
-      console.error('No recording URL provided');
-      twiml.say('Sorry, no response was recorded. Please try speaking again.');
-      const group = session.group_id
-        ? await prisma.groups.findUnique({
-            where: { id: session.group_id },
-            include: { workflows: true },
-          })
-        : null;
-      const workflow = await getWorkflowSteps(group);
-      const currentStepObj = parseCurrentStep(callHistory.current_step);
-      const currentStep = workflow.find(
-        (s) => s.step_id === (currentStepObj?.step_id || 1),
-      );
+    console.log(`Recording URL: ${recordingUrl}`);
 
-      if (currentStep) {
-        try {
-          const audioPath = await generateSpeech(
-            currentStep.malayalam || currentStep.question,
-          );
-          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-        } catch {
-          twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
-        }
-        twiml.record({
-          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-          method: 'POST',
-          maxLength: 30,
-          playBeep: true,
-          timeout: 10,
-        });
-      } else {
-        twiml.hangup();
-      }
-      return res.type('text/xml').send(twiml.toString());
+    if (!recordingUrl) {
+      console.error('No recording URL provided - user may not have spoken');
+      return await handleNoResponse(req, res, session, callHistory, twiml);
     }
 
+    // Process the recording
     try {
+      console.log('Fetching audio buffer...');
       const audioBuffer = await fetchAudioBuffer(recordingUrl);
+      console.log(`Audio buffer size: ${audioBuffer.length} bytes`);
+
+      console.log('Transcribing audio...');
       const userResponse = await transcribeAudio(audioBuffer);
+      console.log(`Transcription result: "${userResponse}"`);
 
       if (!userResponse || userResponse.trim().length === 0) {
-        twiml.say('Sorry, I could not understand your response. Please try again.');
-        const group = session.group_id
-          ? await prisma.groups.findUnique({
-              where: { id: session.group_id },
-              include: { workflows: true },
-            })
-          : null;
-        const workflow = await getWorkflowSteps(group);
-        const currentStepObj = parseCurrentStep(callHistory.current_step);
-        const currentStep = workflow.find(
-          (s) => s.step_id === (currentStepObj?.step_id || 1),
-        );
-
-        if (currentStep) {
-          try {
-            const audioPath = await generateSpeech(
-              currentStep.malayalam || currentStep.question,
-            );
-            twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-          } catch {
-            twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
-          }
-          twiml.record({
-            action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-            method: 'POST',
-            maxLength: 30,
-            playBeep: true,
-            timeout: 10,
-          });
-        } else {
-          twiml.hangup();
-        }
-        return res.type('text/xml').send(twiml.toString());
+        console.error('Transcription returned empty result');
+        return await handleNoResponse(req, res, session, callHistory, twiml);
       }
 
+      // Save the transcription
       await prisma.call_history.update({
         where: { id: callHistory.id },
         data: { transcription: userResponse, updated_at: new Date() },
       });
 
+      // Process the workflow
       const group = session.group_id
         ? await prisma.groups.findUnique({
             where: { id: session.group_id },
             include: { workflows: true },
           })
         : null;
+
       const workflow = await getWorkflowSteps(group);
       const currentStepObj = parseCurrentStep(callHistory.current_step);
       const currentStep = workflow.find(
         (s) => s.step_id === (currentStepObj?.step_id || 1),
       );
 
+      if (!currentStep) {
+        console.error('Current step not found in workflow');
+        twiml.say('Thank you for your time. Goodbye.');
+        twiml.hangup();
+        return res.type('text/xml').send(twiml.toString());
+      }
+
+      console.log(`Current step: ${currentStep.step_id}`);
       const { nextStep, shouldEnd } = await generateNextStep(
         currentStep,
         userResponse,
         workflow,
       );
 
-      if (shouldEnd) {
+      if (shouldEnd || !nextStep) {
+        console.log('Ending conversation');
+        const endMessage = 'Thank you for your time. Have a great day!';
+        const endMessageMalayalam = 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. നല്ല ദിവസം!';
+
         try {
-          const audioPath = await generateSpeech(
-            nextStep?.question || 'Thank you for your time. Goodbye.',
-          );
+          const audioPath = await generateSpeech(endMessageMalayalam);
           twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-        } catch {
-          twiml.say(
-            { voice: 'alice', language: 'en-IN' },
-            nextStep?.question || 'Thank you for your time. Goodbye.',
-          );
+        } catch (ttsError) {
+          console.error('TTS failed for end message:', ttsError);
+          twiml.say({ voice: 'alice', language: 'en-IN' }, endMessage);
         }
+
         twiml.hangup();
+
         await prisma.call_history.update({
           where: { id: callHistory.id },
           data: {
@@ -724,7 +752,10 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
             updated_at: new Date(),
           },
         });
-      } else if (nextStep) {
+      } else {
+        console.log(`Moving to next step: ${nextStep.step_id}`);
+
+        // Update current step
         await prisma.call_history.update({
           where: { id: callHistory.id },
           data: {
@@ -735,67 +766,93 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
             updated_at: new Date(),
           },
         });
+
+        // Play next question
+        const questionText = nextStep.malayalam || nextStep.question;
+        console.log(`Playing next question: "${questionText}"`);
+
         try {
-          const audioPath = await generateSpeech(nextStep.malayalam || nextStep.question);
+          const audioPath = await generateSpeech(questionText);
           twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-        } catch {
+        } catch (ttsError) {
+          console.error('TTS failed, using Twilio say:', ttsError);
           twiml.say({ voice: 'alice', language: 'en-IN' }, nextStep.question);
         }
-        twiml.record({
-          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-          method: 'POST',
-          maxLength: 30,
-          playBeep: true,
-          timeout: 10,
-        });
-      } else {
-        twiml.say('Sorry, an unexpected error occurred. Goodbye.');
-        twiml.hangup();
-      }
-      res.type('text/xml').send(twiml.toString());
-    } catch (transcriptionError) {
-      console.error('Error in transcription/processing:', transcriptionError);
-      twiml.say('Sorry, I had trouble processing your response. Please try again.');
-      const group = session.group_id
-        ? await prisma.groups.findUnique({
-            where: { id: session.group_id },
-            include: { workflows: true },
-          })
-        : null;
-      const workflow = await getWorkflowSteps(group);
-      const currentStepObj = parseCurrentStep(callHistory.current_step);
-      const currentStep = workflow.find(
-        (s) => s.step_id === (currentStepObj?.step_id || 1),
-      );
 
-      if (currentStep) {
-        try {
-          const audioPath = await generateSpeech(
-            currentStep.malayalam || currentStep.question,
-          );
-          twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
-        } catch {
-          twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
-        }
+        // Record next response
         twiml.record({
           action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
           method: 'POST',
           maxLength: 30,
           playBeep: true,
           timeout: 10,
+          transcribe: false,
         });
-      } else {
-        twiml.hangup();
       }
+
+      console.log('=== Voice Response Handler Completed Successfully ===');
       res.type('text/xml').send(twiml.toString());
+    } catch (processingError) {
+      console.error('Error processing audio/transcription:', processingError);
+      return await handleNoResponse(req, res, session, callHistory, twiml);
     }
   } catch (error) {
-    console.error('Error in voice response handler:', error);
+    console.error('Critical error in voice response handler:', error);
     twiml.say('Sorry, there was a technical error. Goodbye.');
     twiml.hangup();
     res.type('text/xml').send(twiml.toString());
   }
 });
+
+// Helper function to handle cases where no response is detected
+async function handleNoResponse(
+  req: Request,
+  res: Response,
+  session,
+  callHistory,
+  twiml,
+) {
+  console.log('Handling no response case');
+
+  const group = session.group_id
+    ? await prisma.groups.findUnique({
+        where: { id: session.group_id },
+        include: { workflows: true },
+      })
+    : null;
+
+  const workflow = await getWorkflowSteps(group);
+  const currentStepObj = parseCurrentStep(callHistory.current_step);
+  const currentStep = workflow.find((s) => s.step_id === (currentStepObj?.step_id || 1));
+
+  if (currentStep) {
+    twiml.say("I didn't hear your response. Let me repeat the question.");
+
+    try {
+      const audioPath = await generateSpeech(
+        currentStep.malayalam || currentStep.question,
+      );
+      twiml.play(`${NGROK_BASE_URL}/audio/${path.basename(audioPath)}`);
+    } catch (ttsError) {
+      console.error('TTS failed in handleNoResponse:', ttsError);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+    }
+
+    twiml.record({
+      action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${req.query.sessionId}&contactId=${req.query.contactId}`,
+      method: 'POST',
+      maxLength: 30,
+      playBeep: true,
+      timeout: 10,
+      transcribe: false,
+    });
+  } else {
+    twiml.say('Sorry, there was an error. Goodbye.');
+    twiml.hangup();
+  }
+
+  return res.type('text/xml').send(twiml.toString());
+}
 
 // Optional: Add a recording status callback handler
 const recordingStatusHandler = asyncHandler(async (req: Request, res: Response) => {
