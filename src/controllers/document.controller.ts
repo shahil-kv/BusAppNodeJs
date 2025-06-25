@@ -92,6 +92,7 @@ const manageWorkFlowDocument = asyncHandler(async (req, res: Response) => {
           documentId: doc.id,
           filePath: supabaseUrl,
           fileName: file.originalname,
+          workflowId: doc.workflow_id,
         });
 
         return res
