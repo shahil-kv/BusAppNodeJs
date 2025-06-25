@@ -23,6 +23,7 @@ import {
 } from './controllers/status.controller';
 import { Server } from 'socket.io';
 import path from 'path';
+import documentRouter from './routes/document.routes';
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -102,6 +103,7 @@ app.use(API_PREFIX + '/call', callRouter);
 app.use(API_PREFIX + '/home', HomeRouter);
 app.use(API_PREFIX + '/report', reportRouter);
 app.use(API_PREFIX + '/workflow', WorkflowRouter);
+app.use(API_PREFIX + '/workflow-document', documentRouter);
 //for calling purpose from twilio api
 app.post('/call-status', callStatusHandler);
 app.post('/voice-update', voiceHandler);

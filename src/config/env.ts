@@ -26,4 +26,7 @@ export const env = {
   API_PREFIX: process.env.API_PREFIX || "/api/v1",
   HOST: process.env.HOST || "localhost",
   LOG_LEVEL: process.env.LOG_LEVEL || "debug",
+  REDIS_HOST: process.env.REDIS_HOST || '127.0.0.1',
+  REDIS_PORT: process.env.REDIS_PORT || '6379',
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD || '',
 };
