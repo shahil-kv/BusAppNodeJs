@@ -428,9 +428,6 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Memory monitoring
-setInterval(() => {
-  logMemoryUsage('periodic check');
-}, 30000); // Log memory every 30 seconds
+
 
 export default worker;
