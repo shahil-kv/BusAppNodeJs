@@ -13,7 +13,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const SUPABASE_BUCKET = process.env.SUPABASE_BUCKET;
 
-// Initialize Supabase client
+// Initialize clients
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function uploadFileToSupabase(file: MulterFile): Promise<string> {
@@ -38,6 +38,7 @@ async function uploadFileToSupabase(file: MulterFile): Promise<string> {
 
   return publicUrl;
 }
+
 async function deleteFileFromSupabase(fileUrl: string): Promise<void> {
   const bucketName = SUPABASE_BUCKET; // 'workflowdocuments' based on your screenshot
   const publicPrefix = `/storage/v1/object/public/${bucketName}/`;
@@ -64,47 +65,73 @@ async function deleteFileFromSupabase(fileUrl: string): Promise<void> {
 const manageWorkFlowDocument = asyncHandler(async (req, res: Response) => {
   const { opsMode, documentId, workflowId } = req.body;
   const file = req.file as MulterFile | undefined;
-  let doc, toDelete;
+  let toDelete;
 
   switch (opsMode) {
     case 'INSERT': {
-      if (!file || !workflowId) {
-        return res.status(400).json({ error: 'File and workflowId required' });
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      if (!workflowId) {
+        return res.status(400).json({ error: 'workflowId required' });
       }
 
       try {
-        // Upload file to Supabase Storage
-        const supabaseUrl = await uploadFileToSupabase(file);
+        // Upload file to Supabase
+        const fileUrl = await uploadFileToSupabase(file);
 
-        // Remove local file after upload
-        fs.unlinkSync(file.path);
-
-        doc = await prisma.documents.create({
+        // Create document record
+        const document = await prisma.documents.create({
           data: {
             workflow_id: Number(workflowId),
             file_name: file.originalname,
-            file_path: supabaseUrl, // Store Supabase URL
-            status: 'uploaded',
+            file_path: fileUrl,
+            status: 'pending',
           },
         });
 
-        await documentQueue.add('process-document', {
-          documentId: doc.id,
-          filePath: supabaseUrl,
-          fileName: file.originalname,
-          workflowId: doc.workflow_id,
-        });
+        // Add job to queue
+        await documentQueue.add(
+          'process-document',
+          {
+            documentId: document.id,
+            filePath: fileUrl,
+            fileName: file.originalname,
+            userId: req.user?.id,
+            workflowId: Number(workflowId),
+          },
+          {
+            removeOnComplete: 100, // Keep last 100 completed jobs
+            removeOnFail: 50, // Keep last 50 failed jobs
+          },
+        );
 
-        return res
-          .status(200)
-          .json(new ApiResponse(200, doc, 'Document uploaded to Supabase'));
+        // Clean up uploaded file
+        fs.unlinkSync(file.path);
+
+        return res.status(201).json(
+          new ApiResponse(
+            201,
+            {
+              documentId: document.id,
+              fileName: file.originalname,
+              status: 'pending',
+              message: 'Document uploaded successfully and queued for processing',
+            },
+            'Document uploaded successfully',
+          ),
+        );
       } catch (error) {
-        // Clean up local file if upload fails
+        // Clean up uploaded file on error
         if (file && fs.existsSync(file.path)) {
           fs.unlinkSync(file.path);
         }
-        console.error('Supabase upload failed:', error);
-        return res.status(500).json(new ApiResponse(500, null, 'File upload failed'));
+
+        console.error('Error uploading document:', error);
+        return res
+          .status(500)
+          .json(new ApiResponse(500, null, 'Failed to upload document'));
       }
     }
 
@@ -120,7 +147,6 @@ const manageWorkFlowDocument = asyncHandler(async (req, res: Response) => {
       if (!toDelete) {
         return res.status(404).json({ error: 'Document not found' });
       }
-
       // Delete file from Supabase Storage
       if (toDelete.file_path) {
         try {
