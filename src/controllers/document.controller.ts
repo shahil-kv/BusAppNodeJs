@@ -7,6 +7,7 @@ import type { File as MulterFile } from 'multer';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
 import { createClient } from '@supabase/supabase-js';
+import { deleteDocumentVectorsFromPinecone } from '../utils/pinecone.utils';
 
 // Supabase Configuration
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -155,6 +156,14 @@ const manageWorkFlowDocument = asyncHandler(async (req, res: Response) => {
           // Log but don't block DB delete if Supabase delete fails
           console.error('Failed to delete file from Supabase:', err);
         }
+      }
+
+      // Delete all vectors for this document from Pinecone
+      try {
+        await deleteDocumentVectorsFromPinecone(documentId);
+      } catch (err) {
+        // Log but don't block DB delete if Pinecone delete fails
+        console.error('Failed to delete vectors from Pinecone:', err);
       }
 
       await prisma.documents.delete({ where: { id: Number(documentId) } });

@@ -6,6 +6,7 @@ import { InferenceClient } from '@huggingface/inference';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { environment } from '../environments/environment';
 import logger from '../logger/winston.logger';
+import { deleteDocumentVectorsFromPinecone } from 'src/utils/pinecone.utils';
 
 // Environment variables
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -16,6 +17,9 @@ const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
 
 // Initialize clients
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// HuggingFace InferenceClient initialization
+// Note: You may see a warning like "Defaulting to 'auto' which will select the first provider available for the model..."
+// This is normal and safe to ignore unless you want to specify a provider explicitly in your HuggingFace account settings.
 const hf = new InferenceClient(HUGGINGFACE_API_KEY);
 const pinecone = new Pinecone({ apiKey: PINECONE_API_KEY });
 
@@ -43,6 +47,7 @@ function forceGarbageCollection() {
 }
 
 // Download file from Supabase with size check and progress logging
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function downloadFile(url: string, job: Job): Promise<Buffer> {
   logger.info(`Starting download from: ${url}`);
 
@@ -193,6 +198,7 @@ async function generateEmbeddings(texts: string[]): Promise<number[][]> {
       const response = await hf.featureExtraction({
         model: 'sentence-transformers/all-MiniLM-L6-v2',
         inputs: text,
+        provider: 'hf-inference',
       });
 
       const embedding = Array.isArray(response[0]) ? response[0] : response;
@@ -392,6 +398,17 @@ const worker = new Worker(
           .eq('user_id', job.data.userId);
       }
 
+      // Clean up any partial Pinecone vectors for this document
+      try {
+        await deleteDocumentVectorsFromPinecone(documentId);
+        logger.info(`Cleaned up partial Pinecone vectors for documentId: ${documentId}`);
+      } catch (cleanupError) {
+        logger.error(
+          'Failed to clean up Pinecone vectors after job failure:',
+          cleanupError,
+        );
+      }
+
       throw error;
     }
   },
@@ -427,7 +444,5 @@ process.on('SIGTERM', async () => {
   await worker.close();
   process.exit(0);
 });
-
-
 
 export default worker;
