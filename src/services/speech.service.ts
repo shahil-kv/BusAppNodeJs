@@ -34,9 +34,10 @@ setInterval(() => {
 
 const googleTTSClient = new textToSpeech.TextToSpeechClient();
 
-// TODO: Set GOOGLE_APPLICATION_CREDENTIALS in your environment to the path of your Google Cloud service account JSON key
-// TODO: Set ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID in your .env for ElevenLabs
-// TODO: Set TTS_PROVIDER in your .env to either 'google' or 'elevenlabs'
+// TTS_PROVIDER=google will use Google Cloud Text-to-Speech for all TTS
+// GOOGLE_APPLICATION_CREDENTIALS must be set to your Google service account JSON key for Google TTS
+// TTS_PROVIDER=elevenlabs will use ElevenLabs for TTS
+// See .env.example for required environment variables
 
 // Alternative approach using fs.promises (more modern)
 async function generateGoogleSpeechModern(text: string, lang = 'ml-IN'): Promise<string> {

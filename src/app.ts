@@ -24,6 +24,7 @@ import {
 import { Server } from 'socket.io';
 import path from 'path';
 import documentRouter from './routes/document.routes';
+import { setupTwilioAudioWebSocket } from './ws/twilioAudioStream.ws';
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -134,5 +135,7 @@ app.use(
 
 // common error handling middleware
 app.use(errorHandler);
+
+setupTwilioAudioWebSocket(httpServer);
 
 export { httpServer };

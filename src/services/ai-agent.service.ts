@@ -1,8 +1,10 @@
+// All Gemini/AI agent logic is handled in this file.
+// Requires GEMINI_API_KEY in your environment.
+// Do not use gemini.service.ts; use this file for all agent/AI logic.
 // Intelligent AI Agent for Call System
 // Replaces Dialogflow with Gemini-based intent classification and workflow management
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { queryPineconeWithCache } from '../utils/pinecone.utils';
-import { generateMalayalamAnswer } from './gemini.service';
 
 const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = gemini.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -202,7 +204,7 @@ export async function analyzeUserResponse(workflowContext: WorkflowContext): Pro
                 action: 'clarification',
                 confidence: 0.6,
                 reasoning: 'Fallback: Unclear response',
-                clarificationMessage: 'ദയവായി നിങ്ങളുടെ മറുപടി വ്യക്തമാക്കാമോ?'
+                clarificationMessage: 'ദയവായി നിങ്ങളുടെ മറുപടി വ്യക്തമാക്കാൻ കഴിയില്ല. ദയവായി വീണ്ടും ചോദിക്കൂ.'
             };
         }
     }
@@ -217,8 +219,15 @@ export async function handleDocumentQuery(userResponse: string): Promise<string>
         const context = await queryPineconeWithCache(userResponse, 3);
         console.log('Pinecone Context Retrieved');
 
-        // Generate answer using Gemini
-        const answer = await generateMalayalamAnswer(userResponse, context);
+        const prompt = `
+  നീ പരിചയസമ്പന്നവും, സ്‌നേഹപൂർവ്വവുമായ മലയാളം എഐ സഹായിയാകുന്നു. താഴെ നൽകിയിരിക്കുന്ന വിവരങ്ങൾ ഉപയോഗിച്ച് ചോദ്യം വളരെ വ്യക്തമായും മനോഹരമായ മലയാളത്തിലൂടെ, മനുഷ്യന്റെ ശൈലിയിലുള്ള സ്വാഭാവിക പ്രതികരണത്തോടെ വിശദീകരിക്കണം. ചിന്തനത്തോടെയും, സ്വാഭാവിക പോസുകളും ഉൾപ്പെടുത്തി മറുപടി നൽകുക.
+  
+  Context: ${context}
+  
+  Question: ${userResponse}
+`;
+        const result = await model.generateContent(prompt);
+        const answer = result.response.text();
         console.log('Generated Answer:', answer);
 
         // Fallback if no answer

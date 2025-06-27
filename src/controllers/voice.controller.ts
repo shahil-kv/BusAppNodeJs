@@ -75,13 +75,29 @@ const voiceHandler = asyncHandler(async (req, res: Response) => {
     }
 
     const questionText = currentStep.malayalam || currentStep.question;
+    let audioUrl: string;
     try {
       const audioPath = await generateSpeech(questionText);
-      const audioUrl = await getOrCreateAudioUrl(questionText, audioPath);
+      audioUrl = await getOrCreateAudioUrl(questionText, audioPath);
       twiml.play(audioUrl);
     } catch (error) {
       console.error('TTS failed, falling back to Twilio say:', error);
       twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+    }
+
+    // If useMediaStream is set, use Twilio Media Streams for real-time audio
+    if (req.query.useMediaStream === 'true' || req.body.useMediaStream === true) {
+      const streamUrl = `${process.env.MEDIA_STREAM_WSS_URL || 'wss://your-backend-domain/ws/twilio-audio'}`;
+      const streamName = `session-${sessionId}-contact-${contactId}`;
+      const connect = twiml.connect();
+      connect.stream({
+        url: streamUrl,
+        name: streamName,
+      });
+      // Play the prompt before streaming (audioUrl is already calculated above)
+      if (audioUrl) twiml.play(audioUrl);
+      res.type('text/xml').send(twiml.toString());
+      return;
     }
 
     twiml.record({
