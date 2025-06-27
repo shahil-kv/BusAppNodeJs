@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import twilio from 'twilio';
 import { CallStatusEnum } from '../constant';
-import { generateNextStep, getWorkflowSteps } from '../services/workflow.service';
+import { getWorkflowSteps } from '../services/workflow.service';
 import { parseCurrentStep } from '../utils/call.helper';
 import {
   generateSpeech,
@@ -12,12 +12,16 @@ import {
   getOrCreateAudioUrl,
 } from '../services/speech.service';
 import { fetchAudioBuffer } from '../services/audio.service';
-const { classifyIntent } = require('../services/dialogflow.service');
-const { generateMalayalamAnswer } = require('../services/gemini.service'); // TODO: Add your Gemini API key to your environment variables (.env)
-const { queryPineconeWithCache } = require('../utils/pinecone.utils');
+import {
+  analyzeUserResponse,
+  handleDocumentQuery,
+  getNextWorkflowStep,
+  AIAgentResponse
+} from '../services/ai-agent.service';
 
 const prisma = new PrismaClient();
 const NGROK_BASE_URL = process.env.NGROK_BASE_URL;
+
 // Handle voice interaction
 const voiceHandler = asyncHandler(async (req, res: Response) => {
   const twiml = new twilio.twiml.VoiceResponse();
@@ -99,6 +103,7 @@ const voiceHandler = asyncHandler(async (req, res: Response) => {
     res.type('text/xml').send(twiml.toString());
   }
 });
+
 const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) => {
   const twiml = new twilio.twiml.VoiceResponse();
 
@@ -154,171 +159,492 @@ const voiceResponseHandler = asyncHandler(async (req: Request, res: Response) =>
       data: { transcription: userResponse, updated_at: new Date() },
     });
 
-    // === New: Intent classification ===
-    // TODO: Use a unique session ID for Dialogflow session
-    let dialogflowResult;
-    try {
-      console.log('started dialog flow ');
+    // === New: AI Agent Analysis ===
+    const group = session.group_id
+      ? await prisma.groups.findUnique({
+        where: { id: session.group_id },
+        include: { workflows: true },
+      })
+      : null;
+    const workflow = await getWorkflowSteps(group);
+    const currentStepObj = parseCurrentStep(callHistory.current_step);
+    const currentStep = workflow.find(
+      (s) => s.step_id === (currentStepObj?.step_id || 1),
+    );
 
-      dialogflowResult = await classifyIntent(userResponse, String(sessionId));
-      console.log(dialogflowResult);
-    } catch (error) {
-      console.error(error);
-    }
-    if (dialogflowResult.intent === 'workflow_intent') {
-      // Proceed as before (workflow logic)
-      const group = session.group_id
-        ? await prisma.groups.findUnique({
-          where: { id: session.group_id },
-          include: { workflows: true },
-        })
-        : null;
-      const workflow = await getWorkflowSteps(group);
-      const currentStepObj = parseCurrentStep(callHistory.current_step);
-      const currentStep = workflow.find(
-        (s) => s.step_id === (currentStepObj?.step_id || 1),
-      );
-
-      if (!currentStep) {
-        console.error('Current step not found in workflow:', currentStepObj?.step_id);
-        twiml.say('Thank you for your time. Goodbye.');
-        twiml.hangup();
-        console.log('TwiML for missing step:', twiml.toString());
-        return res.type('text/xml').send(twiml.toString());
-      }
-
-      console.log('Current step:', currentStep);
-      const { nextStep, shouldEnd } = await generateNextStep(
-        currentStep,
-        userResponse,
-        workflow,
-      );
-      console.log('Next step result:', { nextStep, shouldEnd });
-
-      if (shouldEnd || !nextStep) {
-        const endMessage = 'Thank you for your time. Have a great day!';
-        // const endMessageMalayalam = 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. നല്ല ദിവസം!';
-        try {
-          const audioPath = await generateSpeech(endMessage);
-          const audioUrl = await getOrCreateAudioUrl(endMessage, audioPath);
-          console.log('Playing end message:', audioUrl);
-          twiml.play(audioUrl);
-        } catch (error) {
-          console.error('TTS failed for end message:', error);
-          twiml.say({ voice: 'alice', language: 'en-IN' }, endMessage);
-        }
-        twiml.hangup();
-        console.log('Ending call with TwiML:', twiml.toString());
-
-        await prisma.call_history.update({
-          where: { id: callHistory.id },
-          data: {
-            status: CallStatusEnum.ACCEPTED,
-            ended_at: new Date(),
-            updated_at: new Date(),
-          },
-        });
-      } else {
-        await prisma.call_history.update({
-          where: { id: callHistory.id },
-          data: {
-            current_step: JSON.stringify({
-              workflow_id: group?.workflows?.id || null,
-              step_id: nextStep.step_id,
-            }),
-            updated_at: new Date(),
-          },
-        });
-
-        const questionText = nextStep.malayalam || nextStep.question;
-        try {
-          const audioPath = await generateSpeech(questionText);
-          const audioUrl = await getOrCreateAudioUrl(questionText, audioPath);
-          console.log('Playing next question:', audioUrl);
-          twiml.play(audioUrl);
-        } catch (error) {
-          console.error('TTS failed:', error);
-          twiml.say({ voice: 'alice', language: 'en-IN' }, nextStep.question);
-        }
-
-        twiml.record({
-          action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-          method: 'POST',
-          maxLength: 30,
-          playBeep: true,
-          timeout: 2,
-          transcribe: false,
-          recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
-          recordingStatusCallbackMethod: 'POST',
-        });
-      }
-
-      console.log('Final TwiML Response:', twiml.toString());
-      res.type('text/xml').send(twiml.toString());
-    } else if (dialogflowResult.intent === undefined) {
-      // === New: Document-based Q&A ===
-      // 1. Query Pinecone for relevant context
-      const context = await queryPineconeWithCache(userResponse, 3);
-      // 2. Generate answer in Malayalam with OpenAI
-      const answer = await generateMalayalamAnswer(userResponse, context);
-      // 3. Fallback if no answer
-      const finalAnswer =
-        answer && answer.trim() !== ''
-          ? answer
-          : 'ക്ഷമിക്കണം, അതിനുള്ള വിവരം എനിക്ക് ലഭ്യമല്ല.';
-      // 4. Generate TTS with ElevenLabs
-      const audioPath = await generateSpeech(finalAnswer);
-      const audioUrl = await getOrCreateAudioUrl(finalAnswer, audioPath);
-      // 5. Return to workflow by appending the next workflow step/question
-      const group = session.group_id
-        ? await prisma.groups.findUnique({
-          where: { id: session.group_id },
-          include: { workflows: true },
-        })
-        : null;
-      const workflow = await getWorkflowSteps(group);
-      const currentStepObj = parseCurrentStep(callHistory.current_step);
-      const currentStep = workflow.find(
-        (s) => s.step_id === (currentStepObj?.step_id || 1),
-      );
-      const nextPrompt = currentStep?.malayalam || currentStep?.question || '';
-      const combinedText = `${finalAnswer} ${nextPrompt}`;
-      // Play the answer and next workflow prompt
-      twiml.play(audioUrl);
-      // ... existing code for recording next response ...
-      twiml.record({
-        action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
-        method: 'POST',
-        maxLength: 30,
-        playBeep: true,
-        timeout: 2,
-        transcribe: false,
-        recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
-        recordingStatusCallbackMethod: 'POST',
-      });
-      // Save to call history
-      await prisma.call_history.update({
-        where: { id: callHistory.id },
-        data: { transcription: userResponse, updated_at: new Date() },
-      });
-      return res.type('text/xml').send(twiml.toString());
-    } else {
-      // Unknown intent fallback
-      const fallback = 'sorry i didnt understand ';
-      const audioPath = await generateSpeech(fallback);
-      const audioUrl = await getOrCreateAudioUrl(fallback, audioPath);
-      twiml.play(audioUrl);
+    if (!currentStep) {
+      console.error('Current step not found in workflow:', currentStepObj?.step_id);
+      twiml.say('Thank you for your time. Goodbye.');
       twiml.hangup();
       return res.type('text/xml').send(twiml.toString());
     }
+
+    // Analyze user response with AI Agent
+    let aiResponse: AIAgentResponse;
+    try {
+      console.log('=== Starting AI Agent Analysis ===');
+      aiResponse = await analyzeUserResponse({
+        currentStep,
+        workflow,
+        sessionId: String(sessionId),
+        userResponse
+      });
+      console.log('AI Agent Response:', aiResponse);
+    } catch (error) {
+      console.error('Error in AI Agent analysis:', error);
+      // Fallback to workflow logic
+      const { nextStep, shouldEnd } = await getNextWorkflowStep(currentStep, userResponse, workflow);
+      aiResponse = {
+        action: 'workflow',
+        confidence: 0.5,
+        reasoning: 'Fallback due to AI Agent error',
+        nextStep,
+        shouldEnd
+      };
+    }
+
+    // Handle different AI Agent actions
+    switch (aiResponse.action) {
+      case 'workflow':
+        await handleWorkflowAction(aiResponse, session, callHistory, twiml, String(sessionId), String(contactId), userResponse);
+        break;
+
+      case 'document':
+        await handleDocumentAction(userResponse, session, callHistory, twiml, String(sessionId), String(contactId));
+        break;
+
+      case 'clarification':
+        await handleClarificationAction(aiResponse, session, callHistory, twiml, String(sessionId), String(contactId));
+        break;
+
+      case 'end':
+        await handleEndAction(twiml, callHistory);
+        break;
+
+      case 'emotional':
+        await handleEmotionalAction(aiResponse, session, callHistory, twiml, String(sessionId), String(contactId), userResponse);
+        break;
+
+      case 'interruption':
+        await handleInterruptionAction(aiResponse, session, callHistory, twiml, String(sessionId), String(contactId), userResponse);
+        break;
+
+      default:
+        console.error('Unknown AI Agent action:', aiResponse.action);
+        twiml.say('Sorry, I did not understand. Goodbye.');
+        twiml.hangup();
+    }
+
+    console.log('Final TwiML Response:', twiml.toString());
+    res.type('text/xml').send(twiml.toString());
+
   } catch (error) {
     console.error('Error in voice response handler:', error);
     twiml.say('Sorry, there was a technical error. Please try again later. Goodbye.');
     twiml.hangup();
-    console.log('Error TwiML Response:', twiml.toString());
     res.type('text/xml').send(twiml.toString());
   }
 });
+
+// Enhanced workflow action to handle mixed intents
+async function handleWorkflowAction(
+  aiResponse: AIAgentResponse,
+  session: any,
+  callHistory: any,
+  twiml: any,
+  sessionId: string,
+  contactId: string,
+  userResponse: string
+) {
+  console.log('=== Handling Workflow Action ===');
+
+  // Handle mixed intent if present
+  if (aiResponse.mixedIntent && aiResponse.secondaryAction === 'document') {
+    console.log('Handling mixed intent: workflow + document');
+
+    // First handle the document part
+    const documentAnswer = await handleDocumentQuery(userResponse);
+    try {
+      const answerAudioPath = await generateSpeech(documentAnswer);
+      const answerAudioUrl = await getOrCreateAudioUrl(documentAnswer, answerAudioPath);
+      twiml.play(answerAudioUrl);
+    } catch (error) {
+      console.error('TTS failed for mixed intent document answer:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, documentAnswer);
+    }
+  }
+
+  if (aiResponse.shouldEnd) {
+    const endMessage = 'നിങ്ങളുടെ സമയത്തിന് നന്ദി. ഒരു നല്ല ദിവസം ആശംസിക്കുന്നു!';
+    try {
+      const audioPath = await generateSpeech(endMessage);
+      const audioUrl = await getOrCreateAudioUrl(endMessage, audioPath);
+      twiml.play(audioUrl);
+    } catch (error) {
+      console.error('TTS failed for end message:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, endMessage);
+    }
+    twiml.hangup();
+
+    await prisma.call_history.update({
+      where: { id: callHistory.id },
+      data: {
+        status: CallStatusEnum.ACCEPTED,
+        ended_at: new Date(),
+        updated_at: new Date(),
+      },
+    });
+  } else if (aiResponse.nextStep) {
+    // Update call history with next step
+    const group = session.group_id
+      ? await prisma.groups.findUnique({
+        where: { id: session.group_id },
+        include: { workflows: true },
+      })
+      : null;
+
+    await prisma.call_history.update({
+      where: { id: callHistory.id },
+      data: {
+        current_step: JSON.stringify({
+          workflow_id: group?.workflows?.id || null,
+          step_id: aiResponse.nextStep.step_id,
+        }),
+        updated_at: new Date(),
+      },
+    });
+
+    // Play next question
+    const questionText = aiResponse.nextStep.malayalam || aiResponse.nextStep.question;
+    try {
+      const audioPath = await generateSpeech(questionText);
+      const audioUrl = await getOrCreateAudioUrl(questionText, audioPath);
+      twiml.play(audioUrl);
+    } catch (error) {
+      console.error('TTS failed:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, aiResponse.nextStep.question);
+    }
+
+    // Record next response
+    twiml.record({
+      action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+      method: 'POST',
+      maxLength: 30,
+      playBeep: true,
+      timeout: 2,
+      transcribe: false,
+      recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
+      recordingStatusCallbackMethod: 'POST',
+    });
+  }
+}
+
+// Helper function to handle document actions
+async function handleDocumentAction(
+  userResponse: string,
+  session: any,
+  callHistory: any,
+  twiml: any,
+  sessionId: string,
+  contactId: string
+) {
+  console.log('=== Handling Document Action ===');
+
+  // Get document answer
+  const documentAnswer = await handleDocumentQuery(userResponse);
+
+  // Generate TTS for document answer
+  const audioPath = await generateSpeech(documentAnswer);
+  const audioUrl = await getOrCreateAudioUrl(documentAnswer, audioPath);
+  twiml.play(audioUrl);
+
+  // Continue with current workflow step
+  const group = session.group_id
+    ? await prisma.groups.findUnique({
+      where: { id: session.group_id },
+      include: { workflows: true },
+    })
+    : null;
+  const workflow = await getWorkflowSteps(group);
+  const currentStepObj = parseCurrentStep(callHistory.current_step);
+  const currentStep = workflow.find(
+    (s) => s.step_id === (currentStepObj?.step_id || 1),
+  );
+
+  if (currentStep) {
+    const questionText = currentStep.malayalam || currentStep.question;
+    try {
+      const nextAudioPath = await generateSpeech(questionText);
+      const nextAudioUrl = await getOrCreateAudioUrl(questionText, nextAudioPath);
+      twiml.play(nextAudioUrl);
+    } catch (error) {
+      console.error('TTS failed for next question:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+    }
+  }
+
+  // Record next response
+  twiml.record({
+    action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+    method: 'POST',
+    maxLength: 30,
+    playBeep: true,
+    timeout: 2,
+    transcribe: false,
+    recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
+    recordingStatusCallbackMethod: 'POST',
+  });
+}
+
+// Helper function to handle clarification actions
+async function handleClarificationAction(
+  aiResponse: AIAgentResponse,
+  session: any,
+  callHistory: any,
+  twiml: any,
+  sessionId: string,
+  contactId: string
+) {
+  console.log('=== Handling Clarification Action ===');
+
+  const clarificationMessage = aiResponse.clarificationMessage || 'Could you please clarify your response?';
+
+  try {
+    const audioPath = await generateSpeech(clarificationMessage);
+    const audioUrl = await getOrCreateAudioUrl(clarificationMessage, audioPath);
+    twiml.play(audioUrl);
+  } catch (error) {
+    console.error('TTS failed for clarification:', error);
+    twiml.say({ voice: 'alice', language: 'en-IN' }, clarificationMessage);
+  }
+
+  // Repeat current question
+  const group = session.group_id
+    ? await prisma.groups.findUnique({
+      where: { id: session.group_id },
+      include: { workflows: true },
+    })
+    : null;
+  const workflow = await getWorkflowSteps(group);
+  const currentStepObj = parseCurrentStep(callHistory.current_step);
+  const currentStep = workflow.find(
+    (s) => s.step_id === (currentStepObj?.step_id || 1),
+  );
+
+  if (currentStep) {
+    const questionText = currentStep.malayalam || currentStep.question;
+    try {
+      const nextAudioPath = await generateSpeech(questionText);
+      const nextAudioUrl = await getOrCreateAudioUrl(questionText, nextAudioPath);
+      twiml.play(nextAudioUrl);
+    } catch (error) {
+      console.error('TTS failed for repeated question:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+    }
+  }
+
+  // Record next response
+  twiml.record({
+    action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+    method: 'POST',
+    maxLength: 30,
+    playBeep: true,
+    timeout: 2,
+    transcribe: false,
+    recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
+    recordingStatusCallbackMethod: 'POST',
+  });
+}
+
+// Helper function to handle end actions
+async function handleEndAction(twiml: any, callHistory: any) {
+  console.log('=== Handling End Action ===');
+
+  const endMessage = 'Thank you for your time. Have a great day!';
+  try {
+    const audioPath = await generateSpeech(endMessage);
+    const audioUrl = await getOrCreateAudioUrl(endMessage, audioPath);
+    twiml.play(audioUrl);
+  } catch (error) {
+    console.error('TTS failed for end message:', error);
+    twiml.say({ voice: 'alice', language: 'en-IN' }, endMessage);
+  }
+  twiml.hangup();
+
+  await prisma.call_history.update({
+    where: { id: callHistory.id },
+    data: {
+      status: CallStatusEnum.ACCEPTED,
+      ended_at: new Date(),
+      updated_at: new Date(),
+    },
+  });
+}
+
+// Helper function to handle emotional actions
+async function handleEmotionalAction(
+  aiResponse: AIAgentResponse,
+  session: any,
+  callHistory: any,
+  twiml: any,
+  sessionId: string,
+  contactId: string,
+  userResponse: string
+) {
+  console.log('=== Handling Emotional Action ===');
+
+  let emotionalResponse: string;
+
+  switch (aiResponse.emotionalState) {
+    case 'angry':
+      emotionalResponse = 'ക്ഷമിക്കണം, നിങ്ങളെ ബുദ്ധിമുട്ടിച്ചതിന്. എനിക്ക് സഹായിക്കാൻ കഴിയുമോ?';
+      break;
+    case 'confused':
+      emotionalResponse = 'എനിക്ക് മനസ്സിലാക്കാം. ഞാൻ വ്യക്തമായി വിശദീകരിക്കാം.';
+      break;
+    case 'happy':
+      emotionalResponse = 'നിങ്ങൾ സന്തോഷമായിരിക്കുന്നത് കാണാൻ സന്തോഷമുണ്ട്!';
+      break;
+    default:
+      emotionalResponse = 'എനിക്ക് നിങ്ങളെ സഹായിക്കാൻ കഴിയുമോ?';
+  }
+
+  try {
+    const audioPath = await generateSpeech(emotionalResponse);
+    const audioUrl = await getOrCreateAudioUrl(emotionalResponse, audioPath);
+    twiml.play(audioUrl);
+  } catch (error) {
+    console.error('TTS failed for emotional response:', error);
+    twiml.say({ voice: 'alice', language: 'en-IN' }, emotionalResponse);
+  }
+
+  // Continue with current workflow step
+  const group = session.group_id
+    ? await prisma.groups.findUnique({
+      where: { id: session.group_id },
+      include: { workflows: true },
+    })
+    : null;
+  const workflow = await getWorkflowSteps(group);
+  const currentStepObj = parseCurrentStep(callHistory.current_step);
+  const currentStep = workflow.find(
+    (s) => s.step_id === (currentStepObj?.step_id || 1),
+  );
+
+  if (currentStep) {
+    const questionText = currentStep.malayalam || currentStep.question;
+    try {
+      const nextAudioPath = await generateSpeech(questionText);
+      const nextAudioUrl = await getOrCreateAudioUrl(questionText, nextAudioPath);
+      twiml.play(nextAudioUrl);
+    } catch (error) {
+      console.error('TTS failed for next question:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+    }
+  }
+
+  // Record next response
+  twiml.record({
+    action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+    method: 'POST',
+    maxLength: 30,
+    playBeep: true,
+    timeout: 2,
+    transcribe: false,
+    recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
+    recordingStatusCallbackMethod: 'POST',
+  });
+}
+
+// Helper function to handle interruption actions
+async function handleInterruptionAction(
+  aiResponse: AIAgentResponse,
+  session: any,
+  callHistory: any,
+  twiml: any,
+  sessionId: string,
+  contactId: string,
+  userResponse: string
+) {
+  console.log('=== Handling Interruption Action ===');
+
+  let interruptionResponse: string;
+
+  switch (aiResponse.interruptionType) {
+    case 'question':
+      interruptionResponse = 'ശരി, നിങ്ങളുടെ ചോദ്യത്തിന് ഉത്തരം നൽകാം.';
+      break;
+    case 'objection':
+      interruptionResponse = 'എനിക്ക് മനസ്സിലാക്കാം. നിങ്ങളുടെ ആശങ്കകൾ കേൾക്കാം.';
+      break;
+    case 'request':
+      interruptionResponse = 'ശരി, നിങ്ങൾ എന്താണ് വേണ്ടത്?';
+      break;
+    default:
+      interruptionResponse = 'ശരി, എന്താണ് പ്രശ്നം?';
+  }
+
+  try {
+    const audioPath = await generateSpeech(interruptionResponse);
+    const audioUrl = await getOrCreateAudioUrl(interruptionResponse, audioPath);
+    twiml.play(audioUrl);
+  } catch (error) {
+    console.error('TTS failed for interruption response:', error);
+    twiml.say({ voice: 'alice', language: 'en-IN' }, interruptionResponse);
+  }
+
+  // If it's a question, handle it as document query
+  if (aiResponse.interruptionType === 'question') {
+    // Get the question from user response and handle it
+    const documentAnswer = await handleDocumentQuery(userResponse);
+
+    try {
+      const answerAudioPath = await generateSpeech(documentAnswer);
+      const answerAudioUrl = await getOrCreateAudioUrl(documentAnswer, answerAudioPath);
+      twiml.play(answerAudioUrl);
+    } catch (error) {
+      console.error('TTS failed for document answer:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, documentAnswer);
+    }
+  }
+
+  // Continue with current workflow step
+  const group = session.group_id
+    ? await prisma.groups.findUnique({
+      where: { id: session.group_id },
+      include: { workflows: true },
+    })
+    : null;
+  const workflow = await getWorkflowSteps(group);
+  const currentStepObj = parseCurrentStep(callHistory.current_step);
+  const currentStep = workflow.find(
+    (s) => s.step_id === (currentStepObj?.step_id || 1),
+  );
+
+  if (currentStep) {
+    const questionText = currentStep.malayalam || currentStep.question;
+    try {
+      const nextAudioPath = await generateSpeech(questionText);
+      const nextAudioUrl = await getOrCreateAudioUrl(questionText, nextAudioPath);
+      twiml.play(nextAudioUrl);
+    } catch (error) {
+      console.error('TTS failed for next question:', error);
+      twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
+    }
+  }
+
+  // Record next response
+  twiml.record({
+    action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
+    method: 'POST',
+    maxLength: 30,
+    playBeep: true,
+    timeout: 2,
+    transcribe: false,
+    recordingStatusCallback: `${NGROK_BASE_URL}/recording-status?sessionId=${sessionId}&contactId=${contactId}`,
+    recordingStatusCallbackMethod: 'POST',
+  });
+}
 
 async function handleNoResponse(
   req: Request,
@@ -365,7 +691,7 @@ async function handleNoResponse(
         twiml.say({ voice: 'alice', language: 'en-IN' }, currentStep.question);
       }
 
-      const { sessionId, contactId } = req.query; // Fix: Use req.query instead of req.app.get('io')
+      const { sessionId, contactId } = req.query;
       twiml.record({
         action: `${NGROK_BASE_URL}/voice-update/response?sessionId=${sessionId}&contactId=${contactId}`,
         method: 'POST',
@@ -384,8 +710,9 @@ async function handleNoResponse(
 
   return res.type('text/xml').send(twiml.toString());
 }
+
 export { voiceHandler, voiceResponseHandler };
 
-// TODO: Add your Dialogflow and OpenAI API keys to your environment variables (.env)
-// TODO: Ensure Dialogflow agent has workflow and document intents set up
+// TODO: Ensure Gemini API key is set in environment variables (.env)
 // TODO: Ensure Pinecone is populated with document vectors
+// TODO: Test the AI agent with various user responses
