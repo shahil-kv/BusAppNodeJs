@@ -8,6 +8,8 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
 import { createClient } from '@supabase/supabase-js';
 import { deleteDocumentVectorsFromPinecone } from '../utils/pinecone.utils';
+import redisClient from '../lib/redisClient';
+import { hash } from '../utils/call.helper';
 
 // Supabase Configuration
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -164,6 +166,13 @@ const manageWorkFlowDocument = asyncHandler(async (req, res: Response) => {
       } catch (err) {
         // Log but don't block DB delete if Pinecone delete fails
         console.error('Failed to delete vectors from Pinecone:', err);
+      }
+
+      // If you have access to the document text or question, invalidate Redis keys
+      if (toDelete && toDelete.extracted_text) {
+        const docHash = hash(toDelete.extracted_text);
+        await redisClient.del(`pinecone:query:${docHash}`);
+        await redisClient.del(`audio:question:${docHash}`);
       }
 
       await prisma.documents.delete({ where: { id: Number(documentId) } });

@@ -6,6 +6,10 @@ const elevenLabs = new ElevenLabsClient({
 });
 import fs from 'fs';
 import { hash } from '../utils/call.helper';
+import redisClient from '../lib/redisClient';
+import { uploadAudioToSupabase } from './audioUpload.service';
+import textToSpeech from '@google-cloud/text-to-speech';
+import util from 'util';
 // Initialize Deepgram for STT
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 // Ensure temp directory exists
@@ -28,20 +32,66 @@ setInterval(() => {
   });
 }, 600000);
 
-// Generate audio using ElevenLabs with caching
-async function generateSpeech(text: string): Promise<string> {
+const googleTTSClient = new textToSpeech.TextToSpeechClient();
+
+// TODO: Set GOOGLE_APPLICATION_CREDENTIALS in your environment to the path of your Google Cloud service account JSON key
+// TODO: Set ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID in your .env for ElevenLabs
+// TODO: Set TTS_PROVIDER in your .env to either 'google' or 'elevenlabs'
+
+// Alternative approach using fs.promises (more modern)
+async function generateGoogleSpeechModern(text: string, lang = 'ml-IN'): Promise<string> {
+  const audioPath = path.join(tempDir, `tts_google_${hash(text)}.mp3`);
+
+  // Check if file already exists
+  if (fs.existsSync(audioPath)) {
+    return audioPath;
+  }
+
+  try {
+    const request = {
+      input: { text },
+      voice: {
+        languageCode: lang,
+        ssmlGender: 'FEMALE' as const,
+      },
+      audioConfig: {
+        audioEncoding: 'MP3' as const,
+      },
+    };
+
+    const [response] = await googleTTSClient.synthesizeSpeech(request);
+
+    if (!response.audioContent) {
+      throw new Error('No audio content received from Google TTS');
+    }
+
+    // Using fs.promises for cleaner async/await
+    await fs.promises.writeFile(audioPath, response.audioContent, 'binary');
+
+    return audioPath;
+  } catch (error) {
+    console.error('Error generating Google TTS audio:', error);
+    throw error;
+  }
+}
+// Generate audio using ElevenLabs or Google TTS with toggling
+async function generateSpeech(text: string, lang = 'ml-IN'): Promise<string> {
+  const provider = process.env.TTS_PROVIDER || 'elevenlabs';
+  if (provider === 'google') {
+    return generateGoogleSpeechModern(text, lang);
+  }
   try {
     const audioPath = path.join(tempDir, `tts_${hash(text)}.mp3`);
     if (fs.existsSync(audioPath)) {
       return audioPath;
     }
     const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'; // Default to Rachel voice
-
+    const modelId = process.env.ELEVENLABS_MODEL_ID || 'eleven_multilingual_v2';
     const stream = await elevenLabs.textToSpeech.convert(
       voiceId, // Use real voice ID
       {
         text: text,
-        modelId: 'eleven_multilingual_v2',
+        modelId: modelId,
         outputFormat: 'mp3_44100_128',
         optimizeStreamingLatency: 1,
       },
@@ -70,6 +120,7 @@ async function generateSpeech(text: string): Promise<string> {
     throw new Error(`Failed to generate speech: ${(error as Error).message}`);
   }
 }
+
 async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
   try {
     console.log('Transcribing audio, buffer size:', audioBuffer.length);
@@ -97,6 +148,26 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
     }
     return '';
   }
+}
+
+export async function getOrCreateAudioUrl(
+  question: string,
+  localAudioPath: string,
+): Promise<string> {
+  const questionHash = hash(question);
+  const redisKey = `audio:question:${questionHash}`;
+
+  // 1. Check Redis
+  const cachedUrl = await redisClient.get(redisKey);
+  if (typeof cachedUrl === 'string') return cachedUrl.toString();
+
+  // 2. Upload to Supabase
+  const publicUrl = await uploadAudioToSupabase(localAudioPath, questionHash);
+
+  // 3. Cache in Redis
+  await redisClient.set(redisKey, publicUrl, { EX: 3600 }); // 1 hour expiry
+
+  return publicUrl;
 }
 
 export { transcribeAudio, generateSpeech };

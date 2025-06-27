@@ -6,7 +6,7 @@ import { InferenceClient } from '@huggingface/inference';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { environment } from '../environments/environment';
 import logger from '../logger/winston.logger';
-import { deleteDocumentVectorsFromPinecone } from 'src/utils/pinecone.utils';
+import { deleteDocumentVectorsFromPinecone } from '../utils/pinecone.utils';
 
 // Environment variables
 const SUPABASE_URL = process.env.SUPABASE_URL;
