@@ -33,4 +33,7 @@ export const env = {
   NGROK_BASE_URL: process.env.NGROK_BASE_URL,
   ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
   ELEVENLABS_VOICE_ID: process.env.ELEVENLABS_VOICE_ID,
+  // Google Cloud Speech-to-Text for Malayalam support
+  GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  GOOGLE_CLOUD_PROJECT_ID: process.env.GOOGLE_CLOUD_PROJECT_ID,
 };

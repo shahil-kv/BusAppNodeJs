@@ -8,7 +8,7 @@ export interface WorkflowStep {
   no_next: number | string;
 }
 
-// Demo workflow for Entri-like educational institution
+// Malayalam-focused demo workflow for Entri-like educational institution
 const demoWorkflow: WorkflowStep[] = [
   {
     id: 1,
@@ -196,16 +196,16 @@ const demoWorkflow: WorkflowStep[] = [
 
 // Get workflow steps for a group
 export async function getWorkflowSteps(groupId: number | null): Promise<WorkflowStep[]> {
-  logger.log('Getting workflow steps for group ID:', groupId);
+  logger.log('Getting Malayalam workflow steps for group ID:', groupId);
 
   // For now, return demo workflow (simulating database fetch)
   // TODO: In production, fetch from database based on groupId
-  logger.log('Using demo Entri-like educational institution workflow');
-  logger.log('Demo workflow steps count:', demoWorkflow.length);
+  logger.log('Using Malayalam demo Entri-like educational institution workflow');
+  logger.log('Malayalam demo workflow steps count:', demoWorkflow.length);
 
   return demoWorkflow;
 }
 
-logger.success('Workflow Service initialized with demo Entri-like educational institution workflow');
-logger.log('NOTE: This workflow will be given to Gemini as a NORMAL PROMPT (not system prompt)');
-logger.log('NOTE: In production, workflow will come from database based on groupId');
+logger.success('Malayalam Workflow Service initialized with demo Entri-like educational institution workflow');
+logger.log('NOTE: This Malayalam workflow will be given to Gemini as a NORMAL PROMPT (not system prompt)');
+logger.log('NOTE: In production, Malayalam workflow will come from database based on groupId');

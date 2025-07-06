@@ -1,25 +1,28 @@
-// Twilio WebSocket Handler for ConversationRelay - Simplified like Python example
+// Twilio WebSocket Handler for ConversationRelay - Malayalam Focus
 import WebSocket from 'ws';
 import { logger } from '../utils/logger';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createSystemPrompt } from '../services/ai-agent.service';
 import { getWorkflowSteps } from '../services/workflow.service';
+import { env } from '../config/env';
 
 // Check for required environment variables
-if (!process.env.GEMINI_API_KEY) {
+if (!env.GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY environment variable not set');
 }
 
-// Initialize Gemini
-const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Gemini with Malayalam focus
+const gemini = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 const model = gemini.getGenerativeModel({
-    model: 'gemini-2.5-flash',
-    systemInstruction: `You are a helpful and friendly voice assistant. This conversation is happening over a phone call, so your responses will be spoken aloud. 
-Please adhere to the following rules:
-1. Provide clear, concise, and direct answers.
-2. Spell out all numbers (e.g., say 'one thousand two hundred' instead of 1200).
-3. Do not use any special characters like asterisks, bullet points, or emojis.
-4. Keep the conversation natural and engaging.`
+    model: 'gemini-2.0-flash-exp',
+    systemInstruction: `നിങ്ങൾ ഒരു സഹായകരവും സൗഹൃദവുമായ മലയാളം സംസാരിക്കുന്ന AI അസിസ്റ്റന്റ് ആണ്. ഈ സംഭാഷണം ഫോൺ കോളിലൂടെ നടക്കുന്നതിനാൽ, നിങ്ങളുടെ ഉത്തരങ്ങൾ ശബ്ദത്തിൽ പറയപ്പെടും.
+
+ദയവായി ഈ നിയമങ്ങൾ പാലിക്കുക:
+1. വ്യക്തവും ചുരുക്കവും നേരിട്ടുള്ള ഉത്തരങ്ങൾ നൽകുക
+2. എല്ലാ സംഖ്യകളും വാക്കുകളിൽ പറയുക (ഉദാ: 1200-ന് പകരം 'ആയിരത്തി ഇരുനൂറ്' പറയുക)
+3. ആസ്റ്ററിസ്ക്, ബുള്ളറ്റ് പോയിന്റ്, ഇമോജി എന്നിവ ഉപയോഗിക്കരുത്
+4. സംഭാഷണം സ്വാഭാവികവും ആകർഷകവുമായി നിലനിർത്തുക
+5. എല്ലാ ഉത്തരങ്ങളും മലയാളത്തിൽ നൽകുക`
 });
 
 interface TwilioMessage {
@@ -37,7 +40,7 @@ export class TwilioWebSocketHandler {
     constructor(server: any) {
         this.wss = new WebSocket.Server({ server, path: '/ws' });
         this.setupWebSocket();
-        logger.success('WebSocket server setup completed');
+        logger.success('Malayalam WebSocket server setup completed');
     }
 
     private setupWebSocket() {
@@ -51,7 +54,7 @@ export class TwilioWebSocketHandler {
                     if (message.type === 'setup' && message.callSid) {
                         ws.callSid = message.callSid;
                     }
-                    // If callSid is missing in message, use ws.callSid
+
                     if (!message.callSid && ws.callSid) {
                         message.callSid = ws.callSid;
                     }
@@ -96,7 +99,7 @@ export class TwilioWebSocketHandler {
             return;
         }
 
-        logger.log('Setup for call:', callSid);
+        logger.log('Malayalam setup for call:', callSid);
 
         // Fetch workflow for this call (for now, use demo workflow)
         const workflow = await getWorkflowSteps(null); // Pass groupId if available
@@ -120,26 +123,26 @@ export class TwilioWebSocketHandler {
 
         // Send setup confirmation
         ws.send(JSON.stringify({ type: 'setup', status: 'ready' }));
-        logger.log('Setup completed for call:', callSid);
+        logger.log('Malayalam setup completed for call:', callSid);
     }
 
     private async handlePrompt(ws: WebSocket, message: TwilioMessage) {
         const voicePrompt = message.voicePrompt || '';
         const callSid = message.callSid;
 
-        if (!callSid || !sessions[callSid]) {
+        if (!sessions[callSid]) {
             logger.error('No session found for call:', callSid);
             return;
         }
 
-        logger.log('Processing prompt:', voicePrompt);
+        logger.log('Processing Malayalam prompt:', voicePrompt);
 
         try {
             const chatSession = sessions[callSid];
             const response = await chatSession.sendMessage(voicePrompt);
             const responseText = response.response.text();
 
-            logger.log('Gemini response:', responseText);
+            logger.log('Gemini Malayalam response:', responseText);
 
             // Send the complete response back to Twilio like Python example
             await ws.send(JSON.stringify({
@@ -148,15 +151,15 @@ export class TwilioWebSocketHandler {
                 last: true  // Indicate this is the full and final message
             }));
 
-            logger.log('Response sent to Twilio');
+            logger.log('Malayalam response sent to Twilio');
 
         } catch (error) {
-            logger.error('Error processing prompt:', error);
+            logger.error('Error processing Malayalam prompt:', error);
 
-            // Send error response
+            // Send error response in Malayalam
             await ws.send(JSON.stringify({
                 type: 'text',
-                token: 'Sorry, an error occurred. Please try again.',
+                token: 'ക്ഷമിക്കണം, ഒരു പിശക് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കുക.',
                 last: true
             }));
         }
@@ -164,6 +167,6 @@ export class TwilioWebSocketHandler {
 
     public cleanup() {
         this.wss.close();
-        logger.log('WebSocket server closed');
+        logger.log('Malayalam WebSocket server closed');
     }
 } 
