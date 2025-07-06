@@ -2,16 +2,18 @@
 // import { ApiResponse } from '../utils/ApiResponse';
 import { Request } from 'express';
 import { PrismaClient } from '@prisma/client';
-import twilio from 'twilio';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
-import { WorkflowStep } from 'src/types/call.types';
+import { WorkflowStep } from './workflow.service';
+
 // Initialize Twilio client
+const twilio = require('twilio');
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN, {
   lazyLoading: true,
 });
 const prisma = new PrismaClient();
 const NGROK_BASE_URL = process.env.NGROK_BASE_URL;
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
+
 const initiateNextCall = async (
   sessionId: number,
   req: Request,
@@ -63,7 +65,7 @@ const initiateNextCall = async (
 
   try {
     const call = await client.calls.create({
-      url: `${NGROK_BASE_URL}/voice-update?sessionId=${sessionId}&contactId=${callHistory.contact_id}`,
+      url: `${NGROK_BASE_URL}/voice-update`,
       to: contact.phoneNumber,
       from: twilioNumber,
       statusCallback: `${NGROK_BASE_URL}/call-status`,

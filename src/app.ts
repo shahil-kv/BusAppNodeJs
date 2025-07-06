@@ -16,7 +16,7 @@ import reportRouter from './routes/report.routes';
 import callRouter from './routes/call.routes';
 import HomeRouter from './routes/home.routes';
 import WorkflowRouter from './routes/workflow.routes';
-import { voiceHandler, voiceResponseHandler } from './controllers/voice.controller';
+import { voiceHandler } from './controllers/voice.controller';
 import {
   callStatusHandler,
   recordingStatusHandler,
@@ -24,7 +24,12 @@ import {
 import { Server } from 'socket.io';
 import path from 'path';
 import documentRouter from './routes/document.routes';
-import { setupTwilioAudioWebSocket } from './ws/twilioAudioStream.ws';
+import { TwilioWebSocketHandler } from './ws/twilioWebSocket.ws';
+import { logger } from './utils/logger';
+
+logger.log('Starting Bus App Backend...');
+logger.log('Environment:', environment.NODE_ENV);
+logger.log('Port:', environment.PORT);
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -97,6 +102,7 @@ app.use(morganMiddleware);
 // Serve static audio files (add this to your app.ts)
 app.use('/audio', express.static(path.join(__dirname, '../temp')));
 app.set('io', io);
+
 //user route
 app.use(API_PREFIX + '/user', authRouter);
 app.use(API_PREFIX + '/group', groupRouter);
@@ -105,18 +111,21 @@ app.use(API_PREFIX + '/home', HomeRouter);
 app.use(API_PREFIX + '/report', reportRouter);
 app.use(API_PREFIX + '/workflow', WorkflowRouter);
 app.use(API_PREFIX + '/workflow-document', documentRouter);
+
 //for calling purpose from twilio api
 app.post('/call-status', callStatusHandler);
 app.post('/voice-update', voiceHandler);
-app.post('/voice-update/response', voiceResponseHandler);
 app.post('/recording-status', recordingStatusHandler);
+
+// Test endpoint to verify TwiML generation
+app.get('/test-twiml', voiceHandler);
 
 // Socket.IO connection handler
 io.on('connection', (socket) => {
-  console.log('A client connected:', socket.id);
+  logger.log('Socket.IO client connected:', socket.id);
 
   socket.on('disconnect', () => {
-    console.log('A client disconnected:', socket.id);
+    logger.log('Socket.IO client disconnected:', socket.id);
   });
 });
 
@@ -136,6 +145,11 @@ app.use(
 // common error handling middleware
 app.use(errorHandler);
 
-setupTwilioAudioWebSocket(httpServer);
+// Setup Twilio WebSocket for ConversationRelay
+logger.log('Setting up Twilio WebSocket...');
+const twilioWebSocket = new TwilioWebSocketHandler(httpServer);
+logger.log('Twilio WebSocket setup completed');
+
+logger.log('All middleware and routes configured successfully');
 
 export { httpServer };

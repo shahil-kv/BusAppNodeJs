@@ -29,4 +29,8 @@ export const env = {
   REDIS_HOST: process.env.REDIS_HOST || '127.0.0.1',
   REDIS_PORT: process.env.REDIS_PORT || '6379',
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || '',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  NGROK_BASE_URL: process.env.NGROK_BASE_URL,
+  ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
+  ELEVENLABS_VOICE_ID: process.env.ELEVENLABS_VOICE_ID,
 };

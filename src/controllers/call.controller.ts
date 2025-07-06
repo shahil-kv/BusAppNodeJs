@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import twilio from 'twilio';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
@@ -11,6 +10,7 @@ import { getWorkflowSteps } from '../services/workflow.service';
 const prisma = new PrismaClient();
 
 // Initialize Twilio client
+const twilio = require('twilio');
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN, {
   lazyLoading: true,
 });
@@ -121,7 +121,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
       },
     });
 
-    const workflow = await getWorkflowSteps(group);
+    const workflow = await getWorkflowSteps(targetGroupId);
     await prisma.call_history.createMany({
       data: contactsToCall.map((contact) => ({
         session_id: session.id,
@@ -136,7 +136,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
           workflow.length > 0
             ? JSON.stringify({
               workflow_id: group?.workflows?.id || null,
-              step_id: workflow[0].step_id,
+              step_id: workflow[0].id,
             })
             : null,
         called_at: new Date(),

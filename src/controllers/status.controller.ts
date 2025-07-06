@@ -84,13 +84,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       where: { id: callHistory.session_id },
       data: { current_index: { increment: 1 }, updated_at: new Date() },
     });
-    const group = session.group_id
-      ? await prisma.groups.findUnique({
-          where: { id: session.group_id },
-          include: { workflows: true },
-        })
-      : null;
-    const workflow = await getWorkflowSteps(group);
+    const workflow = await getWorkflowSteps(session.group_id);
     await initiateNextCall(callHistory.session_id, req, workflow);
   }
 
