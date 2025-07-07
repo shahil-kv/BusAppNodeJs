@@ -16,8 +16,11 @@ export const voiceHandler = async (req: Request, res: Response) => {
     }
 
     // Malayalam welcome greeting
-    const welcomeGreeting = 'നമസ്കാരം! ഞാൻ നിങ്ങളുടെ മലയാളം സംസാരിക്കുന്ന സഹായി ആണ്. എങ്ങനെ സഹായിക്കാം?';
-    const webSocketUrl = `wss://${ngrokUrl.replace('https://', '').replace('http://', '')}/ws`;
+    const welcomeGreeting =
+      'നമസ്കാരം! എൻട്രി ആപ്പിന്റെ AI അസിസ്റ്റന്റ് ആണ് ഞാൻ. ഏത് കോഴ്സിനെപ്പറ്റിയാണ് നിങ്ങൾക്ക് അറിയേണ്ടത്?';
+    const webSocketUrl = `wss://${ngrokUrl
+      .replace('https://', '')
+      .replace('http://', '')}/ws`;
 
     // Use Google TTS Malayalam voice and Google STT for Malayalam speech recognition
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -35,9 +38,11 @@ export const voiceHandler = async (req: Request, res: Response) => {
     </Connect>
 </Response>`;
 
-    logger.log('Malayalam TwiML response created with Google STT and WebSocket URL:', webSocketUrl);
+    logger.log(
+      'Malayalam TwiML response created with Google STT and WebSocket URL:',
+      webSocketUrl,
+    );
     res.type('text/xml').send(twiml);
-
   } catch (error) {
     logger.error('Error in Malayalam voice handler:', error);
     res.status(500).send('Internal server error');
