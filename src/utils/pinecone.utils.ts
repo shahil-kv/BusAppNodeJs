@@ -1,5 +1,4 @@
 import { Pinecone } from '@pinecone-database/pinecone';
-import redisClient from '../lib/redisClient';
 import { hash } from '../utils/call.helper';
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
@@ -22,29 +21,6 @@ export async function deleteDocumentVectorsFromPinecone(
         throw error;
     }
 }
-
-export async function queryPineconeWithCache(query: string, topK = 5): Promise<any> {
-    const queryHash = hash(query);
-    const redisKey = `pinecone:query:${queryHash}`;
-
-    const cached = await redisClient.get(redisKey);
-    if (cached) return JSON.parse(cached.toString());
-
-    // 2. Query Pinecone (assume vectorizeQuery is a function that returns the embedding)
-    const index = pinecone.index(PINECONE_INDEX_NAME);
-    const vector = await vectorizeQuery(query); // You must have this function somewhere
-    const result = await index.query({
-        vector,
-        topK,
-        includeMetadata: true,
-    });
-
-    // 3. Cache in Redis
-    await redisClient.set(redisKey, JSON.stringify(result), { EX: 3600 });
-
-    return result;
-}
-
 
 export async function vectorizeQuery(query: string): Promise<number[]> {
     const response = await hf.featureExtraction({

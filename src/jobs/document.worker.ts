@@ -324,125 +324,15 @@ async function processAndStoreChunks(
   logger.info(`Completed processing all ${chunks.length} chunks`);
 }
 
-// Main worker
-const worker = new Worker(
-  'document-processing',
-  async (job: Job) => {
-    const { documentId, filePath, fileName, userId, workflowId } = job.data;
-
-    try {
-      logger.info(`Starting job ${job.id} for document: ${fileName}`);
-      logMemoryUsage('job start');
-
-      // Download PDF
-      logger.info('Starting file download...');
-      const fileBuffer = await downloadFile(filePath, job);
-      logMemoryUsage('after download');
-
-      // Process PDF in sections
-      logger.info('Starting PDF processing...');
-      const chunks = await processPDFInSections(fileBuffer);
-      logger.info(`Created ${chunks.length} chunks from document`);
-
-      // Clear file buffer to free memory immediately
-      fileBuffer.fill(0);
-      forceGarbageCollection();
-      logMemoryUsage('after text extraction');
-
-      // Store in Pinecone in batches
-      logger.info('Starting Pinecone upload...');
-      await processAndStoreChunks(documentId, fileName, chunks, workflowId);
-
-      // Clear chunks to free memory
-      chunks.splice(0);
-      forceGarbageCollection();
-      logMemoryUsage('after processing');
-
-      // Update database
-      if (userId) {
-        logger.info('Updating database...');
-        await supabase
-          .from('documents')
-          .update({
-            status: 'processed',
-            chunks_count: chunks.length,
-            processed_at: new Date().toISOString(),
-          })
-          .eq('id', documentId)
-          .eq('user_id', userId);
-      }
-
-      logMemoryUsage('job complete');
-
-      logger.info(`Job ${job.id} completed successfully for document: ${fileName}`);
-
-      return {
-        status: 'success',
-        chunks: chunks.length,
-        documentId,
-        fileName,
-      };
-    } catch (error) {
-      logger.error(`Job ${job.id} failed:`, error);
-      logMemoryUsage('job failed');
-
-      if (job.data.userId) {
-        await supabase
-          .from('documents')
-          .update({
-            status: 'failed',
-            error_message: error.message,
-            failed_at: new Date().toISOString(),
-          })
-          .eq('id', documentId)
-          .eq('user_id', job.data.userId);
-      }
-
-      // Clean up any partial Pinecone vectors for this document
-      try {
-        await deleteDocumentVectorsFromPinecone(documentId);
-        logger.info(`Cleaned up partial Pinecone vectors for documentId: ${documentId}`);
-      } catch (cleanupError) {
-        logger.error(
-          'Failed to clean up Pinecone vectors after job failure:',
-          cleanupError,
-        );
-      }
-
-      throw error;
-    }
-  },
-  {
-    connection: {
-      host: environment.REDIS_HOST || 'localhost',
-      port: Number(environment.REDIS_PORT) || 6379,
-      password: environment.REDIS_PASSWORD || undefined,
-    },
-    concurrency: 1, // Process 1 job at a time for free tier
-  },
-);
-
-worker.on('completed', (job) => {
-  logger.info(`Job ${job.id} completed successfully`);
-  forceGarbageCollection();
-});
-
-worker.on('failed', (job, err) => {
-  logger.error(`Job ${job?.id} failed:`, err);
-  forceGarbageCollection();
-});
-
 // Graceful shutdown
 process.on('SIGINT', async () => {
   logger.info('Received SIGINT, shutting down gracefully...');
-  await worker.close();
+  // Worker is disabled, nothing to close
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
   logger.info('Received SIGTERM, shutting down gracefully...');
-  await worker.close();
+  // Worker is disabled, nothing to close
   process.exit(0);
 });
-
-export default worker;
