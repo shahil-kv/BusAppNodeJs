@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger';
-
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 export interface WorkflowStep {
   id: number;
   question: string;
@@ -205,6 +206,22 @@ export async function getWorkflowSteps(groupId: number | null): Promise<Workflow
 
   return demoWorkflow;
 }
+
+
+// export async function getWorkflowSteps(groupId: number | null): Promise<WorkflowStep[]> {
+//   // Fetch the group and its workflow
+//   const group = await prisma.groups.findUnique({
+//     where: { id: groupId },
+//     include: { workflows: true },
+//   });
+
+//   if (!group || !group.workflows) {
+//     throw new Error('Group or workflow not found');
+//   }
+
+//   // Assuming steps is stored as JSON in the workflows table
+//   return group.workflows.steps as WorkflowStep[];
+// }
 
 logger.success('Malayalam Workflow Service initialized with demo Entri-like educational institution workflow');
 logger.log('NOTE: This Malayalam workflow will be given to Gemini as a NORMAL PROMPT (not system prompt)');
