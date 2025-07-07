@@ -6,7 +6,6 @@ const envFile =
   process.env.NODE_ENV === "production" ? ".env.cloud" : ".env.dev";
 dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
-console.log(process.env.NODE_ENV);
 
 // Export the loaded environment variables
 export const env = {

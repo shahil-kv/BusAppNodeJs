@@ -117,9 +117,6 @@ app.post('/call-status', callStatusHandler);
 app.post('/voice-update', voiceHandler);
 app.post('/recording-status', recordingStatusHandler);
 
-// Test endpoint to verify TwiML generation
-app.get('/test-twiml', voiceHandler);
-
 // Socket.IO connection handler
 io.on('connection', (socket) => {
   logger.log('Socket.IO client connected:', socket.id);
@@ -146,10 +143,6 @@ app.use(
 app.use(errorHandler);
 
 // Setup Twilio WebSocket for ConversationRelay
-logger.log('Setting up Twilio WebSocket...');
-const twilioWebSocket = new TwilioWebSocketHandler(httpServer);
-logger.log('Twilio WebSocket setup completed');
-
-logger.log('All middleware and routes configured successfully');
+new TwilioWebSocketHandler(httpServer);
 
 export { httpServer };

@@ -19,7 +19,7 @@ const NGROK_BASE_URL = process.env.NGROK_BASE_URL;
 
 /**
  * @author shahil
- * @desc main function for calling starting point
+ * @desc main function for calling starting point this is the starting point of our application and based on that we will move to next steps and things 
  */
 // Start a call session
 const startCalls = asyncHandler(async (req: Request, res: Response) => {
@@ -107,6 +107,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
         .json(new ApiResponse(400, null, `Contact limit exceeded: ${contactLimit}`));
     }
 
+    //call session for a group of calls 
     const session = await prisma.call_session.create({
       data: {
         user_id: numericUserId,
@@ -121,7 +122,9 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
       },
     });
 
+    //get workflow based on the group id 
     const workflow = await getWorkflowSteps(targetGroupId);
+    //created call history for each and every contacts
     await prisma.call_history.createMany({
       data: contactsToCall.map((contact) => ({
         session_id: session.id,
@@ -143,7 +146,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
         updated_at: new Date(),
       })),
     });
-
+    //called the service for initiate next call in call service
     await initiateNextCall(session.id, req, workflow);
 
     return res

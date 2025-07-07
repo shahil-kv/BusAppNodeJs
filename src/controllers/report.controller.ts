@@ -216,15 +216,6 @@ const getCompleteOverview = asyncHandler(
           ? ((totalCalls - lastMonthCalls) / lastMonthCalls) * 100
           : 0;
 
-      console.log(
-        "Total calls:",
-        totalCalls,
-        "Last month calls:",
-        lastMonthCalls,
-        "Change %:",
-        callsChangePercent
-      );
-
       // Total unique recipients
       const uniqueRecipients = await prisma.call_history.findMany({
         where: {
@@ -257,17 +248,9 @@ const getCompleteOverview = asyncHandler(
       const recipientsChangePercent =
         lastMonthRecipients > 0
           ? ((totalRecipients - lastMonthRecipients) / lastMonthRecipients) *
-            100
+          100
           : 0;
 
-      console.log(
-        "Total recipients:",
-        totalRecipients,
-        "Last month recipients:",
-        lastMonthRecipients,
-        "Change %:",
-        recipientsChangePercent
-      );
 
       // Weekly activity (last 7 days)
       const today = new Date();
@@ -293,8 +276,6 @@ const getCompleteOverview = asyncHandler(
         weeklyActivity[dayIndex] = entry._count.id;
       });
 
-      console.log("Weekly activity raw:", weeklyActivityRaw);
-      console.log("Weekly activity mapped:", weeklyActivity);
 
       // Call status percentages
       const callStatusRaw = await prisma.call_history.groupBy({
@@ -329,10 +310,6 @@ const getCompleteOverview = asyncHandler(
         failed: Math.round(callStatus.failed),
         missed: Math.round(callStatus.missed),
       };
-
-      console.log("Call status raw:", callStatusRaw);
-      console.log("Total status calls:", totalStatusCalls);
-      console.log("Call status calculated:", callStatus);
 
       // Construct the response
       const analyticsData = {

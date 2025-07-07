@@ -14,7 +14,6 @@ export async function deleteDocumentVectorsFromPinecone(
         // Delete all vectors where metadata.documentId matches
         await index.deleteMany({ documentId });
         // Optionally, you can log or return a result
-        console.log(`Deleted vectors for documentId: ${documentId}`);
     } catch (error) {
         // Log and rethrow for higher-level error handling
         console.error('Failed to delete vectors from Pinecone:', error);

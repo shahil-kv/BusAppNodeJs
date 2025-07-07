@@ -13,7 +13,7 @@ if (!env.GEMINI_API_KEY) {
 
 // Initialize Gemini with Malayalam focus
 const gemini = new GoogleGenerativeAI(env.GEMINI_API_KEY);
-const model = gemini.getGenerativeModel({
+gemini.getGenerativeModel({
     model: 'gemini-2.0-flash-exp',
     systemInstruction: `നിങ്ങൾ ഒരു സഹായകരവും സൗഹൃദവുമായ മലയാളം സംസാരിക്കുന്ന AI അസിസ്റ്റന്റ് ആണ്. ഈ സംഭാഷണം ഫോൺ കോളിലൂടെ നടക്കുന്നതിനാൽ, നിങ്ങളുടെ ഉത്തരങ്ങൾ ശബ്ദത്തിൽ പറയപ്പെടും.
 
@@ -31,20 +31,19 @@ interface TwilioMessage {
     voicePrompt?: string;
 }
 
-// Store active chat sessions like Python example
-const sessions: { [key: string]: any } = {};
+const sessions = {};
 
 export class TwilioWebSocketHandler {
     private wss: WebSocket.Server;
 
-    constructor(server: any) {
+    constructor(server) {
         this.wss = new WebSocket.Server({ server, path: '/ws' });
         this.setupWebSocket();
         logger.success('Malayalam WebSocket server setup completed');
     }
 
     private setupWebSocket() {
-        this.wss.on('connection', (ws: WebSocket & { callSid?: string }, req: any) => {
+        this.wss.on('connection', (ws: WebSocket & { callSid?: string }, req) => {
             logger.log('New WebSocket connection from:', req.socket.remoteAddress);
 
             ws.on('message', async (data: Buffer) => {
@@ -105,7 +104,6 @@ export class TwilioWebSocketHandler {
         const workflow = await getWorkflowSteps(null); // Pass groupId if available
         // Generate a rich Malayalam system prompt for this call
         const systemPrompt = createSystemPrompt(workflow, { id: callSid }, null);
-
         // Start a new chat session for this call with the Malayalam system prompt
         sessions[callSid] = gemini.getGenerativeModel({
             model: 'gemini-2.0-flash-exp',
@@ -142,16 +140,12 @@ export class TwilioWebSocketHandler {
             const response = await chatSession.sendMessage(voicePrompt);
             const responseText = response.response.text();
 
-            logger.log('Gemini Malayalam response:', responseText);
-
             // Send the complete response back to Twilio like Python example
             await ws.send(JSON.stringify({
                 type: 'text',
                 token: responseText,
                 last: true  // Indicate this is the full and final message
             }));
-
-            logger.log('Malayalam response sent to Twilio');
 
         } catch (error) {
             logger.error('Error processing Malayalam prompt:', error);

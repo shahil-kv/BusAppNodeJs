@@ -49,21 +49,3 @@ export const voiceHandler = async (req: Request, res: Response) => {
   }
 };
 
-// Handle WebSocket connections for ConversationRelay (for backward compatibility)
-export const handleWebSocket = async (ws: any) => {
-  logger.log('Malayalam WebSocket handler called (legacy function)');
-
-  // This function is kept for backward compatibility
-  // The actual WebSocket handling is now done by TwilioWebSocketHandler
-  ws.on('message', () => {
-    logger.log('Legacy Malayalam WebSocket message received');
-  });
-
-  ws.on('close', () => {
-    logger.log('Legacy Malayalam WebSocket connection closed');
-  });
-
-  ws.on('error', (error: Error) => {
-    logger.error('Legacy Malayalam WebSocket error:', error);
-  });
-};

@@ -55,7 +55,6 @@ async function deleteFileFromSupabase(fileUrl: string): Promise<void> {
   const encodedPath = url.pathname.slice(idx + publicPrefix.length);
   const decodedPath = decodeURIComponent(encodedPath); // Removes %20 etc.
 
-  console.log('Deleting from Supabase path:', decodedPath);
 
   const { error } = await supabase.storage.from(bucketName).remove([decodedPath]);
 

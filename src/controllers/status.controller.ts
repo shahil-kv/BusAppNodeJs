@@ -108,7 +108,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
 
 // Recording status callback
 const recordingStatusHandler = asyncHandler(async (req: Request, res: Response) => {
-  console.log('Recording status callback:', req.body);
+
   res.status(200).send('OK');
 });
 
