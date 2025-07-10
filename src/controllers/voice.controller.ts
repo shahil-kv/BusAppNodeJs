@@ -7,7 +7,6 @@ import { getWorkflowStepsByGroupId } from '../services/workflow.service';
 
 // Handle voice interaction with Twilio ConversationRelay
 export const voiceHandler = async (req: Request, res: Response) => {
-  logger.log('Malayalam voice handler called');
 
   try {
     const ngrokUrl = env.NGROK_BASE_URL;
@@ -51,7 +50,7 @@ export const voiceHandler = async (req: Request, res: Response) => {
 
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>\n<Response>\n    <Connect>\n        <ConversationRelay \n            url="${webSocketUrl}" \n            welcomeGreeting="${welcomeGreeting}" \n            ttsProvider="Google"\n            voice="ml-IN-Wavenet-A"\n            sttProvider="Google"\n            language="ml-IN"\n            speechTimeout="auto"\n        />\n    </Connect>\n</Response>`;
 
-    logger.log('Malayalam TwiML response created with Google STT and WebSocket URL:', webSocketUrl);
+    logger.success('Malayalam TwiML response created with Google STT and WebSocket URL:', webSocketUrl);
     res.type('text/xml').send(twiml);
   } catch (error) {
     logger.error('Error in Malayalam voice handler:', error);

@@ -8,7 +8,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import * as swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-import limiter from './configs/limiter';
+import limiter from './config/limiter';
 import { errorHandler } from './middleware/error.middleware';
 import authRouter from './routes/auth.routes';
 import groupRouter from './routes/group.routes';
@@ -23,13 +23,8 @@ import {
 } from './controllers/status.controller';
 import { Server } from 'socket.io';
 import path from 'path';
-import documentRouter from './routes/document.routes';
 import { TwilioWebSocketHandler } from './ws/twilioWebSocket.ws';
 import { logger } from './utils/logger';
-
-logger.log('Starting Bus App Backend...');
-logger.log('Environment:', environment.NODE_ENV);
-logger.log('Port:', environment.PORT);
 
 const BASE_URL = environment.API_URL;
 const PORT = environment.PORT;
@@ -110,7 +105,6 @@ app.use(API_PREFIX + '/call', callRouter);
 app.use(API_PREFIX + '/home', HomeRouter);
 app.use(API_PREFIX + '/report', reportRouter);
 app.use(API_PREFIX + '/workflow', WorkflowRouter);
-app.use(API_PREFIX + '/workflow-document', documentRouter);
 
 //for calling purpose from twilio api
 app.post('/call-status', callStatusHandler);

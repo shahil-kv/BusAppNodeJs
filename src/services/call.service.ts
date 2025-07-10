@@ -14,11 +14,7 @@ const prisma = new PrismaClient();
 const NGROK_BASE_URL = process.env.NGROK_BASE_URL;
 const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 
-const initiateNextCall = async (
-  sessionId: number,
-  req: Request,
-  workflow: WorkflowStep[],
-) => {
+const initiateNextCall = async (sessionId: number, req: Request, workflow: WorkflowStep[]) => {
   const session = await prisma.call_session.findUnique({
     where: { id: sessionId },
     include: { call_history: true },
@@ -50,8 +46,7 @@ const initiateNextCall = async (
 
   const contact = contacts[currentIndex];
   const callHistory = session.call_history.find(
-    (ch) =>
-      ch.contact_phone === contact.phoneNumber && ch.status === CallStatusEnum.PENDING,
+    (ch) => ch.contact_phone === contact.phoneNumber && ch.status === CallStatusEnum.PENDING,
   );
   if (!callHistory) {
     await prisma.call_session.update({

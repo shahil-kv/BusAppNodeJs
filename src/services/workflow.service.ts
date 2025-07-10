@@ -13,8 +13,8 @@ export interface WorkflowStep {
 const demoWorkflow: WorkflowStep[] = [
   {
     id: 'greet',
-    question: 'Hello, can I ask you a few questions?',
-    malayalam: 'ഹലോ, ഞാൻ നിങ്ങൾക്ക് കുറച്ച് ചോദ്യങ്ങൾ ചോദിക്കാമോ?',
+    question: 'Hello, contact shahil?',
+    malayalam: 'ഹലോ, panniii paaaaliiiii contact shahil ?',
     answerType: 'yes_no',
     branch: { yes: 'qualify_interest', no: 'end_call' }
   },
@@ -23,19 +23,12 @@ const demoWorkflow: WorkflowStep[] = [
 
 // Get workflow steps for a group
 export async function getWorkflowSteps(groupId: number | null): Promise<WorkflowStep[]> {
-  logger.log('Getting Malayalam workflow steps for group ID:', groupId);
-
-  // For now, return demo workflow (simulating database fetch)
-  // TODO: In production, fetch from database based on groupId
-  logger.log('Using Malayalam demo Entri-like educational institution workflow');
-  logger.log('Malayalam demo workflow steps count:', demoWorkflow.length);
-
+  logger.error("Using Default Workflow what happenedd i don't know " + groupId)
   return demoWorkflow;
 }
 
 // Get workflow steps for a group by groupId (dynamic, DB-backed)
 export async function getWorkflowStepsByGroupId(groupId: number | null): Promise<WorkflowStep[]> {
-  logger.log('Getting workflow steps for group ID:', groupId);
   if (!groupId) return demoWorkflow;
   try {
     const group = await prisma.groups.findUnique({
@@ -43,10 +36,9 @@ export async function getWorkflowStepsByGroupId(groupId: number | null): Promise
       include: { workflows: true },
     });
     if (group && group.workflows && Array.isArray(group.workflows.steps)) {
-      logger.log('Fetched workflow from DB for group:', groupId);
       return group.workflows.steps as unknown as WorkflowStep[];
     } else {
-      logger.warn('No workflow found for group, using demoWorkflow');
+      logger.error('No workflow found for group, using demoWorkflow');
       return demoWorkflow;
     }
   } catch (err) {

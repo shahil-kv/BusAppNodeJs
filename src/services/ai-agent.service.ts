@@ -49,7 +49,6 @@ ${workflowContext}
 }
 // Initialize Gemini chat session with Malayalam focus
 export function initializeChatSession(sessionKey: string, systemPrompt: string) {
-    logger.log('Initializing Malayalam chat session for:', sessionKey);
 
     try {
         const chat = model.startChat({
@@ -67,7 +66,6 @@ export function initializeChatSession(sessionKey: string, systemPrompt: string) 
         chat.sendMessage(systemPrompt);
 
         sessions.set(sessionKey, chat);
-        logger.log('Malayalam chat session created successfully');
         return chat;
     } catch (error) {
         logger.error('Error initializing Malayalam chat session:', error);
@@ -83,7 +81,6 @@ export function getChatSession(sessionKey: string) {
 // Remove chat session
 export function removeChatSession(sessionKey: string) {
     sessions.delete(sessionKey);
-    logger.log('Chat session removed:', sessionKey);
 }
 
 // Send message to Gemini and get Malayalam response
@@ -108,4 +105,3 @@ export async function sendMessageToGemini(sessionKey: string, message: string): 
     }
 }
 
-logger.success('Malayalam AI Agent Service initialized');

@@ -13,38 +13,38 @@ class Logger {
         this.level = level;
     }
 
-    error(message: string, ...args: any[]) {
+    error(message: string, ...args) {
         if (this.level >= LogLevel.ERROR) {
             console.error(`❌ ${message}`, ...args);
         }
     }
 
-    warn(message: string, ...args: any[]) {
+    warn(message: string, ...args) {
         if (this.level >= LogLevel.WARN) {
             console.warn(`⚠️ ${message}`, ...args);
         }
     }
 
-    info(message: string, ...args: any[]) {
+    info(message: string, ...args) {
         if (this.level >= LogLevel.INFO) {
             console.log(`ℹ️ ${message}`, ...args);
         }
     }
 
-    debug(message: string, ...args: any[]) {
+    debug(message: string, ...args) {
         if (this.level >= LogLevel.DEBUG) {
             console.log(`🔍 ${message}`, ...args);
         }
     }
 
-    success(message: string, ...args: any[]) {
+    success(message: string, ...args) {
         if (this.level >= LogLevel.INFO) {
             console.log(`✅ ${message}`, ...args);
         }
     }
 
     // Simple log for important events only
-    log(message: string, ...args: any[]) {
+    log(message: string, ...args) {
         console.log(message, ...args);
     }
 }

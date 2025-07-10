@@ -27,30 +27,48 @@ interface TwilioMessage {
     groupId?: number;
 }
 
+// Helper to build AI prompt for Gemini
+function buildAIPrompt({ isEndStep, stepsArr, nextStepId, voicePrompt, }) {
+    if (isEndStep) {
+        return `IMPORTANT: Do NOT use any emojis in your response. No emojis at all. Your response must be in natural, conversational Malayalam, but without any emojis.\nYou are a helpful, friendly Malayalam AI assistant. The user may answer in English, Malayalam or Manglish. Always respond in natural, conversational Malayalam.\n\nHere is the workflow for this call:\n${JSON.stringify(stepsArr, null, 2)}\n\nYou are currently on step: ${nextStepId}\nThe user's last answer was: ${voicePrompt}\n\nInstructions:\n- This is the last step. Thank the user warmly and end the conversation.\n- Do not ask any more questions.\n- Always be warm, encouraging, and conversational.\n- Accept both English and Malayalam answers for Yes/No and map them to the correct branch.`;
+    } else {
+        return `IMPORTANT: Do NOT use any emojis in your response. No emojis at all. Your response must be in natural, conversational Malayalam, but without any emojis.\nYou are a helpful, friendly Malayalam AI assistant. The user may answer in English or Malayalam. Always respond in natural, conversational Malayalam.\n\nHere is the workflow for this call:\n${JSON.stringify(stepsArr, null, 2)}\n\nYou are currently on step: ${nextStepId}\nThe user's last answer was: ${voicePrompt}\n\nInstructions:\n- Ask the next question from the workflow, following the branching logic.\n- Do not skip or invent questions.\n- If the answer is Yes/No, use the branch to pick the next step. Accept both English and Malayalam and Manglish answers for Yes/No and map them to the correct branch.\n- If the answer is text/number, record it and move to the next step.\n- Always be warm, encouraging, and conversational.\n- If the workflow ends, thank the user and end the conversation.\n- Do not use emojis. Do not add emojis in any message.\n- no emoji in the entire conversation \n\nNow, ask the next question.`;
+    }
+}
+
+// Helper to send a text response to the client
+function sendTextResponse(ws: WebSocket, text: string, last = true) {
+    ws.send(
+        JSON.stringify({
+            type: 'text',
+            token: text,
+            last,
+        })
+    );
+}
+
 export class TwilioWebSocketHandler {
     private wss: WebSocket.Server;
 
     constructor(server) {
         this.wss = new WebSocket.Server({ server, path: '/ws' });
         this.setupWebSocket();
-        logger.success('Malayalam WebSocket server setup completed');
     }
 
     private setupWebSocket() {
         this.wss.on('connection', (ws: WebSocket & { callSid?: string; groupId?: number }, req) => {
-            logger.log('New WebSocket connection from:', req.socket.remoteAddress);
+            logger.success('New WebSocket connection from:', req.socket.remoteAddress);
+            logger.log(ws.callSid)
 
             ws.on('message', async (data: Buffer) => {
                 try {
                     const message: TwilioMessage = JSON.parse(data.toString());
-                    // Store callSid and groupId on ws after setup
                     if (message.type === 'setup' && message.callSid) {
                         ws.callSid = message.callSid;
                         if (message.groupId) {
                             ws.groupId = message.groupId;
                         }
                     }
-
                     if (!message.callSid && ws.callSid) {
                         message.callSid = ws.callSid;
                     }
@@ -74,7 +92,7 @@ export class TwilioWebSocketHandler {
     }
 
     private async handleMessage(ws: WebSocket & { callSid?: string; groupId?: number }, message: TwilioMessage) {
-        logger.log('Received message type:', message.type);
+        logger.success('Received message type:', message.type);
 
         switch (message.type) {
             case 'setup':
@@ -84,10 +102,10 @@ export class TwilioWebSocketHandler {
                 await this.handlePrompt(ws, message);
                 break;
             case 'interrupt':
-                logger.log('Handling interruption for call:', message.callSid);
+                logger.error('Handling interruption for call:', message.callSid);
                 break;
             default:
-                logger.warn('Unknown message type:', message.type);
+                logger.error('Unknown message type:', message.type);
         }
     }
 
@@ -130,7 +148,7 @@ export class TwilioWebSocketHandler {
 
         // Send setup confirmation
         ws.send(JSON.stringify({ type: 'setup', status: 'ready' }));
-        logger.log('Malayalam setup completed for call:', callSid, 'with groupId:', groupId);
+        logger.success('Malayalam setup completed for call:', callSid, 'with groupId:', groupId);
     }
 
     private async handlePrompt(ws: WebSocket & { callSid?: string; groupId?: number }, message: TwilioMessage) {
@@ -142,7 +160,7 @@ export class TwilioWebSocketHandler {
             return;
         }
 
-        logger.log('Processing Malayalam prompt:', voicePrompt);
+        logger.log('Processing Malayalam prompt conversation:', voicePrompt);
 
         try {
             // 1. Fetch call_history and workflow
@@ -192,34 +210,17 @@ export class TwilioWebSocketHandler {
 
             // 4. Check if next step is 'end' and answer the last question before hangup
             const nextStep = stepsArr.find((s) => s.id === nextStepId);
-            if (nextStep && nextStep.answerType === 'end') {
-                console.log('endning');
+            const isEndStep = !!(nextStep && nextStep.answerType === 'end');
+            const aiPrompt = buildAIPrompt({
+                isEndStep,
+                stepsArr,
+                nextStepId,
+                voicePrompt,
+            });
+            const responseText = await sendMessageToGemini(callSid, aiPrompt);
+            sendTextResponse(ws, responseText, true);
 
-                // Send the last question to the AI and user
-                const aiPrompt = `
-You are a helpful, friendly Malayalam AI assistant. The user may answer in English ,  Malayalam or Manglish . Always respond in natural, conversational Malayalam.
-IMPORTANT: Do NOT use any emojis in your response. No emojis at all. Your response must be in natural, conversational Malayalam, but without any emojis.
-Here is the workflow for this call:
-${JSON.stringify(stepsArr, null, 2)}
-
-You are currently on step: ${nextStepId}
-The user's last answer was: ${voicePrompt}
-
-Instructions:
-- This is the last step. Thank the user warmly and end the conversation.
-- Do not ask any more questions.
-- Always be warm, encouraging, and conversational.
-- Accept both English and Malayalam answers for Yes/No and map them to the correct branch.
-`;
-                const responseText = await sendMessageToGemini(callSid, aiPrompt);
-                // Send the final response to the client
-                await ws.send(
-                    JSON.stringify({
-                        type: 'text',
-                        token: responseText,
-                        last: true,
-                    }),
-                );
+            if (isEndStep) {
                 // End the Twilio call
                 if (callSid) {
                     try {
@@ -242,7 +243,7 @@ Instructions:
                 if (io) {
                     io.emit('callStatusUpdate', {
                         sessionId: callHistory.session_id,
-                        status: CallStatusEnum.ACCEPTED,
+                        status: CallStatusEnum.DECLINED,
                         currentIndex: null,
                         totalCalls: null,
                         currentContact: null,
@@ -251,52 +252,9 @@ Instructions:
                 }
                 return;
             }
-
-            // 5. Build AI prompt for next question
-            const aiPrompt = `
-            IMPORTANT: Do NOT use any emojis in your response. No emojis at all. Your response must be in natural, conversational Malayalam, but without any emojis.
-You are a helpful, friendly Malayalam AI assistant. The user may answer in English or Malayalam. Always respond in natural, conversational Malayalam.
-
-Here is the workflow for this call:
-${JSON.stringify(stepsArr, null, 2)}
-
-You are currently on step: ${nextStepId}
-The user's last answer was: ${voicePrompt}
-
-Instructions:
-- Ask the next question from the workflow, following the branching logic.
-- Do not skip or invent questions.
-- If the answer is Yes/No, use the branch to pick the next step. Accept both English and Malayalam and Manglish answers for Yes/No and map them to the correct branch.
-- If the answer is text/number, record it and move to the next step.
-- Always be warm, encouraging, and conversational.
-- If the workflow ends, thank the user and end the conversation.
-- Do not use emojis. Do not add emojis in any message.
-- no emoji in the entire conversation 
-
-Now, ask the next question.
-`;
-
-            // 6. Use ai-agent service to send message and get response
-            const responseText = await sendMessageToGemini(callSid, aiPrompt);
-
-            // Send the complete response back to Twilio
-            await ws.send(
-                JSON.stringify({
-                    type: 'text',
-                    token: responseText,
-                    last: true,
-                }),
-            );
         } catch (error) {
             logger.error('Error processing Malayalam prompt:', error);
-
-            await ws.send(
-                JSON.stringify({
-                    type: 'text',
-                    token: 'ക്ഷമിക്കണം, ഒരു പിശക് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കുക.',
-                    last: true,
-                }),
-            );
+            sendTextResponse(ws, 'ക്ഷമിക്കണം, ഒരു പിശക് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കുക.', true);
         }
     }
 
