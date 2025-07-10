@@ -139,7 +139,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
           workflow.length > 0
             ? JSON.stringify({
               workflow_id: group?.workflows?.id || null,
-              step_id: workflow[0].id,
+              step_id: workflow[0].id, // Always use the first workflow step's id
             })
             : null,
         called_at: new Date(),

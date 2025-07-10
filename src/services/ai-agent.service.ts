@@ -11,17 +11,13 @@ const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 // Store active chat sessions
 const sessions = new Map();
 
-export function createSystemPrompt(
-    workflow: WorkflowStep[],
-    session: any,
-    group: any,
-): string {
-    const workflowContext = workflow
-        .map((step, index) => `${index + 1}. ${step.malayalam || step.question}`)
-        .join('\n\n');
+export function createSystemPrompt(workflow: WorkflowStep[], session: any, group: any): string {
+    const workflowContext = workflow.map((step, index) => `${index + 1}. ${step.malayalam || step.question}`).join('\n\n');
 
     return `
-നിങ്ങൾ മലയാളത്തിൽ സംസാരിക്കുന്ന ഒരു സഹായകവും സ്നേഹപൂർവവുമായ AI അസിസ്റ്റന്റ് ആണു.
+    Important :  Do not use emojis. Do not add emojis in any message.
+   - no emoji in the entire conversation 
+   Important: നിങ്ങൾ മലയാളത്തിൽ സംസാരിക്കുന്ന ഒരു സഹായകവും സ്നേഹപൂർവവുമായ AI അസിസ്റ്റന്റ് ആണു.
 
 **നിനക്ക് ചെയ്യേണ്ടതെന്താണെന്ന് വിശദമായി പറയാം:**
 - താഴെ നൽകിയിരിക്കുന്ന workflow ക്രമത്തിൽ ഓരോ ചോദ്യവും malayalam-ൽ വളരെ സ്വാഭാവികമായി ഉപയോക്താവിനോട് ചോദിക്കുക.
@@ -32,11 +28,13 @@ export function createSystemPrompt(
 - overly formal അല്ലാത്ത, conversational Malayalam ഉപയോഗിക്കുക — വീട്ടിലിരിക്കുന്നു പോലെ.
 - ഉപയോക്താവിന്റെ ഉത്തരം അനുസരിച്ച് workflow-ലുള്ള branch-ുകൾ (Yes/No/Text/Number) ഫലപ്രദമായി നയിക്കുക.
 
+- The user may answer in English or Malayalam. Always respond in natural, conversational Malayalam.
+
 **Yes/No/Text/Number ചോദ്യങ്ങൾക്കുള്ള നിർദ്ദേശങ്ങൾ:**
 - ഉപയോക്താവിന്റെ മറുപടി Malayalam, Manglish (Malayalam in English script), അല്ലെങ്കിൽ English ആകാം. പ്രത്യേകിച്ച് പേരുകൾ, സംഖ്യകൾ, ചെറിയ ഉത്തരം എന്നിവയ്ക്ക് English/മംഗ്ലീഷ് സ്വീകരിക്കുക.
 - സംഖ്യകൾ (age, budget, etc.) Malayalam-ലോ English-ലോ നൽകിയാൽ സ്വീകരിക്കുക.
 - Yes/No ചോദ്യങ്ങൾക്ക്, Malayalam-ലോ English-ലോ Manglish-ലോ ഉള്ള ഉത്തരം സ്വീകരിക്കുക (ഉദാ: "അതെ", "yes", "illa", "no").
-- Emoji ഉപയോഗിക്കാം, പക്ഷേ വളരെ sparingly. ഒരിക്കലും emoji explain ചെയ്യരുത്, അതിന്റെ അർത്ഥം പറയരുത്.
+- Emoji ഉപയോഗിക്കരുത്. ഒരു സന്ദേശത്തിലും emoji ചേർക്കരുത്.
 
 **Conversation-നെ friction-less ആക്കാൻ കൂടുതൽ നിർദ്ദേശങ്ങൾ:**
 - ചെറിയ ചിരികളും, കൗതുകം ഉണർത്തുന്ന natural expressions ഉം ചേർക്കാം. ഉദാഹരണത്തിന്: “അപ്പോ, ഇനി നമുക്ക് അടുത്തതായി...” അല്ലെങ്കിൽ “ശരി, അതിനുപിന്നാലെ...”.
@@ -103,14 +101,6 @@ export async function sendMessageToGemini(sessionKey: string, message: string): 
 
         logger.log('Gemini response:', responseText.substring(0, 50) + '...');
 
-        // Optionally, ensure response is in Malayalam (basic check)
-        // If you want to enforce Malayalam, you can check for English characters and log a warning
-        const englishPattern = /[a-zA-Z]/;
-        if (englishPattern.test(responseText)) {
-            logger.warn('Gemini response may not be in Malayalam.');
-        }
-
-        // Return Gemini's response as-is (no mapping, no hardcoded logic)
         return responseText;
     } catch (error) {
         logger.error('Error sending message to Gemini:', error);
