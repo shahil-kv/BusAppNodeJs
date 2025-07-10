@@ -3,6 +3,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { logger } from '../utils/logger';
 import { env } from '../config/env';
+import { WorkflowStep } from '../types/call.types';
 
 const gemini = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
@@ -10,50 +11,44 @@ const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 // Store active chat sessions
 const sessions = new Map();
 
-export interface WorkflowStep {
-    id: number;
-    question: string;
-    malayalam: string;
-    yes_next: number | string;
-    no_next: number | string;
-}
-
-// Create Malayalam-focused system prompt with entire workflow for Gemini
-// This is a NORMAL PROMPT that changes for every call based on groupId
-// The entire workflow is given to Gemini as a prompt, so Gemini will naturally ask these questions in Malayalam
 export function createSystemPrompt(
     workflow: WorkflowStep[],
     session: any,
     group: any,
 ): string {
-    logger.log('Creating Malayalam workflow prompt for session:', session?.id);
-
-    // Create a comprehensive Malayalam workflow context
     const workflowContext = workflow
-        .map((step, index) => `${index + 1}. ${step.malayalam}`)
+        .map((step, index) => `${index + 1}. ${step.malayalam || step.question}`)
         .join('\n\n');
 
-    const malayalamPrompt = `നിങ്ങൾ ഒരു സഹായകരവും സൗഹൃദവുമായ മലയാളം സംസാരിക്കുന്ന AI അസിസ്റ്റന്റ് ആണ്.
+    return `
+നിങ്ങൾ മലയാളത്തിൽ സംസാരിക്കുന്ന ഒരു സഹായകവും സ്നേഹപൂർവവുമായ AI അസിസ്റ്റന്റ് ആണു.
 
-നിങ്ങൾ പാലിക്കേണ്ട നിയമങ്ങൾ:
-- എല്ലാ ഉത്തരങ്ങളും മലയാളത്തിൽ നൽകുക
-- സൗഹൃദവും സഹായകരവുമായ രീതിയിൽ സംസാരിക്കുക
-- ഉപയോക്താവിന്റെ ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകുക
-- ചിത്തശാന്തിയോടെയും ക്ഷമയോടെയും സംസാരിക്കുക
-- ക്ഷമയോടെയും ശാന്തതയോടെയും സംവദിക്കുക.
-- വിദ്യാഭ്യാസ പ്രോഗ്രാമുകളെക്കുറിച്ച് വിവരങ്ങൾ നൽകുക
+**നിനക്ക് ചെയ്യേണ്ടതെന്താണെന്ന് വിശദമായി പറയാം:**
+- താഴെ നൽകിയിരിക്കുന്ന workflow ക്രമത്തിൽ ഓരോ ചോദ്യവും malayalam-ൽ വളരെ സ്വാഭാവികമായി ഉപയോക്താവിനോട് ചോദിക്കുക.
+- ഓരോ ചോദ്യത്തിനും അവൻ/അവൾ നൽകിയ മറുപടി ശ്രദ്ധാപൂർവം കേട്ട് അതിന്റെ അർത്ഥം മനസ്സിലാക്കുക.
+- ഇത് ഒരു normal conversation ആണെന്ന് കരുതി സംസാരിക്കുക — അതായത്, ജൈവികവും മൃദുവുമായ ഭാഷ ഉപയോഗിക്കുക.
+- ഉപയോക്താവ് കുറച്ച് hesitate ചെയ്‌താൽ താങ്ങുവെച്ച് പ്രതികരിക്കുക, സ്നേഹപൂർവം encourage ചെയ്യുക.
+- സംവാദത്തിൽ വേണ്ടപ്പോൾ context slight ആയി റിമൈൻഡ് ചെയ്യാം, പക്ഷേ bore അല്ലാത്ത വിധത്തിൽ.
+- overly formal അല്ലാത്ത, conversational Malayalam ഉപയോഗിക്കുക — വീട്ടിലിരിക്കുന്നു പോലെ.
+- ഉപയോക്താവിന്റെ ഉത്തരം അനുസരിച്ച് workflow-ലുള്ള branch-ുകൾ (Yes/No/Text/Number) ഫലപ്രദമായി നയിക്കുക.
 
-വിദ്യാഭ്യാസ പ്രോഗ്രാം ചോദ്യങ്ങൾ (ഉപയോഗിക്കാവുന്നത്):
+**Yes/No/Text/Number ചോദ്യങ്ങൾക്കുള്ള നിർദ്ദേശങ്ങൾ:**
+- ഉപയോക്താവിന്റെ മറുപടി Malayalam, Manglish (Malayalam in English script), അല്ലെങ്കിൽ English ആകാം. പ്രത്യേകിച്ച് പേരുകൾ, സംഖ്യകൾ, ചെറിയ ഉത്തരം എന്നിവയ്ക്ക് English/മംഗ്ലീഷ് സ്വീകരിക്കുക.
+- സംഖ്യകൾ (age, budget, etc.) Malayalam-ലോ English-ലോ നൽകിയാൽ സ്വീകരിക്കുക.
+- Yes/No ചോദ്യങ്ങൾക്ക്, Malayalam-ലോ English-ലോ Manglish-ലോ ഉള്ള ഉത്തരം സ്വീകരിക്കുക (ഉദാ: "അതെ", "yes", "illa", "no").
+- Emoji ഉപയോഗിക്കാം, പക്ഷേ വളരെ sparingly. ഒരിക്കലും emoji explain ചെയ്യരുത്, അതിന്റെ അർത്ഥം പറയരുത്.
+
+**Conversation-നെ friction-less ആക്കാൻ കൂടുതൽ നിർദ്ദേശങ്ങൾ:**
+- ചെറിയ ചിരികളും, കൗതുകം ഉണർത്തുന്ന natural expressions ഉം ചേർക്കാം. ഉദാഹരണത്തിന്: “അപ്പോ, ഇനി നമുക്ക് അടുത്തതായി...” അല്ലെങ്കിൽ “ശരി, അതിനുപിന്നാലെ...”.
+- Conversation നിർത്താതെ കൊണ്ട് പോകാൻ, transitional phrases ഉപയോഗിക്കുക: “അത് മനസ്സിലായി. ഇനി...” , “സൂപ്പർ! ഇപ്പോഴിത് നോക്കാം...”.
+- വെറുതെ data എടുക്കുന്നു എന്നില്ല, actively engage ചെയ്യുക — “ഇത് നിന്റെ അനുഭവത്തെ കുറിച്ചാണ്, എങ്ങനെ തോന്നുന്നു പറയൂ...” എന്ന രീതിയിൽ.
+- സംവാദം സ്വാഭാവികവും, മനോഹരവുമാക്കുക. ചെറുതായി യഥാർത്ഥ മനുഷ്യൻ സംസാരിക്കുന്നതുപോലെ expressions (ഉം..., അഹ്..., ഹ്‌മ്..., അത്..., കേട്ടോ...) ഉപയോഗിക്കുക. പക്ഷേ over ചെയ്യരുത് — very light touch.
+- ഉപയോക്താവ് അല്പം ആശങ്കയോടെയോ വിചാരത്തോടെയോ പ്രതികരിക്കുമ്പോൾ അതിനനുസരിച്ച് warm expressions ഉപയോഗിക്കുക (ഉദാ: “ഹ്‌മ്... ശരി, നമുക്ക് നോക്കാം”, “അത് കുറച്ച് ചിന്തിക്കാം”, “അഹ് അതാണോ...”, etc).
+**Workflow ചോദ്യങ്ങൾ:**
 ${workflowContext}
 
-നിങ്ങൾ ഈ ചോദ്യങ്ങൾ ഉപയോഗിച്ച് സംഭാഷണം നയിക്കാവുന്നതാണ്. എന്നാൽ ഉപയോക്താവിന്റെ ഏത് ചോദ്യത്തിനും ഉത്തരം നൽകാവുന്നതാണ്.
-
-സംഭാഷണം ആരംഭിക്കുക.`;
-
-    logger.log('Malayalam workflow prompt created, length:', malayalamPrompt.length);
-    return malayalamPrompt;
+`.trim();
 }
-
 // Initialize Gemini chat session with Malayalam focus
 export function initializeChatSession(sessionKey: string, systemPrompt: string) {
     logger.log('Initializing Malayalam chat session for:', sessionKey);
@@ -89,15 +84,12 @@ export function getChatSession(sessionKey: string) {
 
 // Remove chat session
 export function removeChatSession(sessionKey: string) {
-    const deleted = sessions.delete(sessionKey);
+    sessions.delete(sessionKey);
     logger.log('Chat session removed:', sessionKey);
 }
 
 // Send message to Gemini and get Malayalam response
-export async function sendMessageToGemini(
-    sessionKey: string,
-    message: string,
-): Promise<string> {
+export async function sendMessageToGemini(sessionKey: string, message: string): Promise<string> {
     logger.log('Sending to Gemini:', message.substring(0, 50) + '...');
 
     try {

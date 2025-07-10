@@ -1,9 +1,9 @@
 interface WorkflowStep {
-  step_id: number | string;
+  id: string; // was number | string
   question: string;
   malayalam?: string;
-  yes_next?: number | string | null;
-  no_next?: number | string | null;
+  answerType?: string;
+  branch?: { [answer: string]: string };
 }
 
 interface NextStepResponse {
