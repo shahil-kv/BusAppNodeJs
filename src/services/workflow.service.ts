@@ -21,11 +21,6 @@ const demoWorkflow: WorkflowStep[] = [
   // ... more steps ...
 ];
 
-// Get workflow steps for a group
-export async function getWorkflowSteps(groupId: number | null): Promise<WorkflowStep[]> {
-  logger.error("Using Default Workflow what happenedd i don't know " + groupId)
-  return demoWorkflow;
-}
 
 // Get workflow steps for a group by groupId (dynamic, DB-backed)
 export async function getWorkflowStepsByGroupId(groupId: number | null): Promise<WorkflowStep[]> {

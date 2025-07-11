@@ -4,7 +4,7 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/ApiResponse';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
 import { initiateNextCall } from '../services/call.service';
-import { getWorkflowSteps } from '../services/workflow.service';
+import { getWorkflowStepsByGroupId } from '../services/workflow.service';
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
@@ -123,7 +123,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     });
 
     //get workflow based on the group id 
-    const workflow = await getWorkflowSteps(targetGroupId);
+    const workflow = await getWorkflowStepsByGroupId(targetGroupId);
     //created call history for each and every contacts
     await prisma.call_history.createMany({
       data: contactsToCall.map((contact) => ({

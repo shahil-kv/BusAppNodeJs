@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
 import { PrismaClient } from '@prisma/client';
 import { initiateNextCall } from '../services/call.service';
-import { getWorkflowSteps } from '../services/workflow.service';
+import { getWorkflowStepsByGroupId } from '../services/workflow.service';
 
 const prisma = new PrismaClient();
 
@@ -84,7 +84,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       where: { id: callHistory.session_id },
       data: { current_index: { increment: 1 }, updated_at: new Date() },
     });
-    const workflow = await getWorkflowSteps(session.group_id);
+    const workflow = await getWorkflowStepsByGroupId(session.group_id);
     await initiateNextCall(callHistory.session_id, req, workflow);
   }
 
