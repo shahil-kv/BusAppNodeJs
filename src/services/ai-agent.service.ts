@@ -84,21 +84,37 @@ export function initializeChatSession(sessionKey: string, systemPrompt: string) 
 
 
 // Send message to Gemini and get Malayalam response
-export async function sendMessageToGemini(sessionKey: string, message: string): Promise<string> {
-    logger.log('Sending to Gemini:', message.substring(0, 50) + '...');
+export async function sendMessageToGemini(sessionKey: string, message: string, onToken?: (token: string, isLast: boolean) => Promise<void> | void): Promise<string> {
 
     try {
         const chat = sessions.get(sessionKey);
         if (!chat) {
             throw new Error(`No chat session found for key: ${sessionKey}`);
         }
-
-        const result = await chat.sendMessage(message);
-        const responseText = result.response.text();
-
-        logger.log('Gemini response:', responseText.substring(0, 50) + '...');
-
-        return responseText;
+        // Use Gemini streaming API if callback is provided
+        if (onToken) {
+            const aiStart = Date.now();
+            logger.log(`[TIMING] [AI] [Gemini] Streaming AI start: ${aiStart}`);
+            const stream = await chat.sendMessageStream(message);
+            let lastToken = '';
+            for await (const chunk of stream.stream) {
+                const token = chunk.text();
+                lastToken += token;
+                await onToken(token, false);
+            }
+            await onToken('', true); // signal end of stream
+            const aiEnd = Date.now();
+            logger.log(`[TIMING] [AI] [Gemini] Streaming AI end: ${aiEnd}, duration: ${aiEnd - aiStart}ms`);
+            return lastToken;
+        } else {
+            const aiStart = Date.now();
+            logger.log(`[TIMING] [AI] [Gemini] Non-streaming AI start: ${aiStart}`);
+            const result = await chat.sendMessage(message);
+            const responseText = result.response.text();
+            const aiEnd = Date.now();
+            logger.log(`[TIMING] [AI] [Gemini] Non-streaming AI end: ${aiEnd}, duration: ${aiEnd - aiStart}ms`);
+            return responseText;
+        }
     } catch (error) {
         logger.error('Error sending message to Gemini:', error);
         throw error;
