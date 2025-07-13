@@ -1,15 +1,6 @@
-// Simplified AI Agent Service for Twilio ConversationRelay
-// Fully Malayalam-focused conversational AI
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { logger } from '../utils/logger';
-import { env } from '../config/env';
+// Prompt builder for Gemini Live Malayalam conversational AI
+// Only exports createSystemPrompt for workflow-based system prompts
 import { WorkflowStep } from '../types/call.types';
-
-const gemini = new GoogleGenerativeAI(env.GEMINI_API_KEY);
-const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-
-// Store active chat sessions
-const sessions = new Map();
 
 export function createSystemPrompt(workflow: WorkflowStep[]): string {
     const workflowContext = workflow.map((step, index) => `${index + 1}. ${step.malayalam || step.question}`).join('\n\n');
@@ -28,6 +19,13 @@ export function createSystemPrompt(workflow: WorkflowStep[]): string {
 - ഒരിക്കലും ഉപയോക്താവിന്റെ ചോദ്യങ്ങൾ ignore ചെയ്യരുത്
 - എല്ലാ ചോദ്യങ്ങൾക്കും ഉത്തരം നൽകുക, പക്ഷേ workflow-നെ ഓർക്കുക
 
+**Enhanced Conversation Abilities:**
+- **Context Awareness**: Remember what the user has said and reference it naturally
+- **Emotional Intelligence**: Show empathy, excitement, or concern based on user responses
+- **Personalization**: Use the user's name if provided, remember their preferences
+- **Natural Transitions**: Smoothly move between topics without being robotic
+- **Active Listening**: Acknowledge what the user says before responding
+
 **Workflow ചോദ്യങ്ങൾക്കുള്ള നിർദ്ദേശങ്ങൾ:**
 - താഴെ നൽകിയിരിക്കുന്ന workflow ക്രമത്തിൽ ഓരോ ചോദ്യവും malayalam-ൽ വളരെ സ്വാഭാവികമായി ഉപയോക്താവിനോട് ചോദിക്കുക.
 - ഓരോ ചോദ്യത്തിനും അവൻ/അവൾ നൽകിയ മറുപടി ശ്രദ്ധാപൂർവം കേട്ട് അതിന്റെ അർത്ഥം മനസ്സിലാക്കുക.
@@ -37,6 +35,13 @@ export function createSystemPrompt(workflow: WorkflowStep[]): string {
 - ഉപയോക്താവ് workflow-ലെ ചോദ്യമല്ലാത്ത എന്തെങ്കിലും ചോദിച്ചാൽ, ആദ്യം അതിന് സഹായകരമായ ഉത്തരം നൽകുക
 - ഉത്തരം നൽകിയ ശേഷം സ്വാഭാവികമായി workflow-ലെ അടുത്ത ചോദ്യത്തിലേക്ക് തിരികെ പോകുക
 - ഉദാഹരണം: "അത് നല്ല ചോദ്യമാണ്. [ഉത്തരം]. ഇനി നമുക്ക് അടുത്തതായി..."
+
+**Advanced Conversation Techniques:**
+- **Follow-up Questions**: Ask clarifying questions when needed
+- **Validation**: Confirm understanding before proceeding
+- **Encouragement**: Motivate and encourage the user
+- **Relatability**: Share relevant examples or stories
+- **Flexibility**: Adapt conversation style based on user's mood and responses
 
 **Conversation Style:**
 - ജൈവികവും മൃദുവുമായ ഭാഷ ഉപയോഗിക്കുക
@@ -55,69 +60,4 @@ export function createSystemPrompt(workflow: WorkflowStep[]): string {
 ${workflowContext}
 
 `.trim();
-}
-// Initialize Gemini chat session with Malayalam focus
-export function initializeChatSession(sessionKey: string, systemPrompt: string) {
-
-    try {
-        const chat = model.startChat({
-            history: [],
-            generationConfig: {
-                temperature: 0.3,
-                topK: 1,
-                topP: 0.9,
-                maxOutputTokens: 1024,
-                candidateCount: 1,
-            },
-        });
-
-        // Set the Malayalam prompt (this will guide Gemini to respond in Malayalam)
-        chat.sendMessage(systemPrompt);
-
-        sessions.set(sessionKey, chat);
-        return chat;
-    } catch (error) {
-        logger.error('Error initializing Malayalam chat session:', error);
-        throw error;
-    }
-}
-
-
-// Send message to Gemini and get Malayalam response
-export async function sendMessageToGemini(sessionKey: string, message: string, onToken?: (token: string, isLast: boolean) => Promise<void> | void): Promise<string> {
-
-    try {
-        const chat = sessions.get(sessionKey);
-        if (!chat) {
-            throw new Error(`No chat session found for key: ${sessionKey}`);
-        }
-        // Use Gemini streaming API if callback is provided
-        if (onToken) {
-            const aiStart = Date.now();
-            logger.log(`[TIMING] [AI] [Gemini] Streaming AI start: ${aiStart}`);
-            const stream = await chat.sendMessageStream(message);
-            let lastToken = '';
-            for await (const chunk of stream.stream) {
-                const token = chunk.text();
-                lastToken += token;
-                await onToken(token, false);
-            }
-            await onToken('', true); // signal end of stream
-            const aiEnd = Date.now();
-            logger.log(`[TIMING] [AI] [Gemini] Streaming AI end: ${aiEnd}, duration: ${aiEnd - aiStart}ms`);
-            return lastToken;
-        } else {
-            const aiStart = Date.now();
-            logger.log(`[TIMING] [AI] [Gemini] Non-streaming AI start: ${aiStart}`);
-            const result = await chat.sendMessage(message);
-            const responseText = result.response.text();
-            const aiEnd = Date.now();
-            logger.log(`[TIMING] [AI] [Gemini] Non-streaming AI end: ${aiEnd}, duration: ${aiEnd - aiStart}ms`);
-            return responseText;
-        }
-    } catch (error) {
-        logger.error('Error sending message to Gemini:', error);
-        throw error;
-    }
-}
-
+} 

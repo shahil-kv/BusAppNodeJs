@@ -13,8 +13,8 @@
       "options": {
         "platform": "node",
         "outputPath": "dist/Node_NX",
-        "format": ["cjs"],
-        "bundle": false,
+        "format": ["esm"],
+        "bundle": true,
         "main": "src/main.ts",
         "tsConfig": "tsconfig.app.json",
         "assets": ["src/assets"],

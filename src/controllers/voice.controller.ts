@@ -1,60 +1,118 @@
-// Voice Controller for Twilio ConversationRelay - Malayalam Focus with Google STT
+// Voice Controller for Gemini Live Streaming - Malayalam Focus
 import { Request, Response } from 'express';
 import { logger } from '../utils/logger';
 import { env } from '../config/env';
 import { PrismaClient } from '@prisma/client';
-import { getWorkflowStepsByGroupId } from '../services/workflow.service';
+import { GeminiLiveService } from '../ai/geminiLive.service';
 
-// Handle voice interaction with Twilio ConversationRelay
+const prisma = new PrismaClient();
+new GeminiLiveService(env.GEMINI_API_KEY);
+
 export const voiceHandler = async (req: Request, res: Response) => {
-
   try {
-    const ngrokUrl = env.NGROK_BASE_URL;
-    if (!ngrokUrl) {
-      logger.error('NGROK_BASE_URL environment variable not set');
-      return res.status(500).send('Configuration error: NGROK_BASE_URL not set');
-    }
-
-    // 1. Get callSid from Twilio request
-    const callSid = req.body.CallSid || req.query.CallSid;
-    if (!callSid) {
-      logger.error('Missing CallSid');
-      return res.status(400).send('Missing CallSid');
-    }
-
-    // 2. Find call_history by callSid, include call_session
-    const prisma = new PrismaClient();
-    const callHistory = await prisma.call_history.findFirst({
-      where: { call_sid: callSid },
-      include: { call_session: true },
+    logger.log('=== VOICE HANDLER CALLED ===');
+    logger.log('Incoming /voice-update request:', {
+      body: req.body,
+      query: req.query,
+      headers: req.headers,
+      method: req.method,
+      url: req.url,
     });
-    if (!callHistory || !callHistory.call_session) {
-      logger.error('Call session not found for CallSid:', callSid);
-      return res.status(404).send('Call session not found');
+
+    // Construct proper WebSocket URL
+    let mediaStreamUrl: string;
+
+    if (env.MEDIA_STREAM_WSS_URL) {
+      // Use the explicitly set WebSocket URL
+      mediaStreamUrl = env.MEDIA_STREAM_WSS_URL;
+    } else if (env.NGROK_BASE_URL) {
+      // Convert ngrok HTTP URL to WebSocket URL
+      // Remove trailing slash and ensure proper wss:// scheme
+      const baseUrl = env.NGROK_BASE_URL.replace(/\/$/, '');
+      mediaStreamUrl = baseUrl.replace('https://', 'wss://') + '/ws/twilio-audio';
+    } else {
+      logger.error('Neither MEDIA_STREAM_WSS_URL nor NGROK_BASE_URL environment variables are set');
+      return res.status(500).send('Configuration error: WebSocket URL not configured');
     }
 
-    // 3. Get groupId from call_session
-    const groupId = callHistory.call_session.group_id;
-    if (!groupId) {
-      logger.error('Group not found for this call');
-      return res.status(404).send('Group not found for this call');
+    logger.log('Final WebSocket URL:', mediaStreamUrl);
+
+    // Validate WebSocket URL format
+    if (!mediaStreamUrl.startsWith('wss://')) {
+      logger.error('WebSocket URL must use wss:// scheme for Twilio Media Streams');
+      return res.status(500).send('Configuration error: WebSocket URL must use wss:// scheme');
     }
 
-    // 4. Fetch workflow steps for this group
-    const steps = await getWorkflowStepsByGroupId(groupId);
+    // Extract callSid and groupId for context
+    const callSid = req.body.CallSid || req.query.CallSid;
+    let groupId = req.body.groupId || req.query.groupId;
 
-    // 5. Use the first step's Malayalam question as the greeting if available
-    const welcomeGreeting = steps[0]?.malayalam || steps[0]?.question || 'Default greeting';
+    logger.log('Extracted parameters:', { callSid, groupId });
 
-    const webSocketUrl = `wss://${ngrokUrl.replace('https://', '').replace('http://', '')}/ws`;
+    // If groupId is not present, look it up from call_context using callSid
+    if (!groupId && callSid) {
+      logger.log('Looking up groupId from call_context for callSid:', callSid);
+      try {
+        const ctx = await prisma.call_context.findUnique({
+          where: { call_sid: callSid },
+        });
+        if (ctx) {
+          groupId = ctx.group_id;
+          logger.log('Found groupId from database:', groupId);
+        } else {
+          logger.warn('No call_context found for callSid:', callSid);
+        }
+      } catch (dbError) {
+        logger.error('Error looking up groupId from database:', dbError);
+      }
+    }
 
-    const twiml = `<?xml version="1.0" encoding="UTF-8"?>\n<Response>\n    <Connect>\n        <ConversationRelay \n            url="${webSocketUrl}" \n            welcomeGreeting="${welcomeGreeting}" \n            ttsProvider="Google"\n            voice="ml-IN-Wavenet-A"\n            sttProvider="Google"\n            language="ml-IN"\n            speechTimeout="auto"\n        />\n    </Connect>\n</Response>`;
+    // Build the TwiML response with proper Twilio Media Streams structure
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Aditi" language="hi-IN">Connecting you to our Malayalam AI assistant...</Say>
+  <Connect>
+    <Stream url="${mediaStreamUrl}">
+      ${callSid ? `<Parameter name="CallSid" value="${callSid}" />` : ''}
+      ${groupId ? `<Parameter name="groupId" value="${groupId}" />` : ''}
+    </Stream>
+  </Connect>
+</Response>`;
 
-    logger.success('Malayalam TwiML response created with Google STT and WebSocket URL:', webSocketUrl);
-    res.type('text/xml').send(twiml);
+    logger.log('=== GENERATED TWIML ===');
+    logger.log(twiml);
+    logger.log('=== END TWIML ===');
+
+    logger.success('TwiML response created for Twilio Media Streams:', mediaStreamUrl);
+
+    // Set proper headers for TwiML response
+    res.set({
+      'Content-Type': 'text/xml',
+      'Cache-Control': 'no-cache',
+    });
+
+    res.send(twiml);
   } catch (error) {
-    logger.error('Error in Malayalam voice handler:', error);
+    logger.error('Error in voice handler:', error);
     res.status(500).send('Internal server error');
   }
 };
 
+// Additional helper function to validate WebSocket connection
+export const validateWebSocketConnection = async (wsUrl: string): Promise<boolean> => {
+  try {
+    // Basic URL validation
+    const url = new URL(wsUrl);
+    if (url.protocol !== 'wss:') {
+      logger.error('WebSocket URL must use wss:// protocol');
+      return false;
+    }
+
+    // You can add additional validation here
+    logger.log('WebSocket URL validation passed:', wsUrl);
+    return true;
+  } catch (error) {
+    logger.error('Invalid WebSocket URL:', error);
+    return false;
+  }
+};

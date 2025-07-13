@@ -4,6 +4,7 @@
 dist
 tmp
 out-tsc
+./temp
 
 # dependencies
 node_modules
@@ -83,3 +84,5 @@ logs/
 .env.cloud
 .env.dev
 google-credentials.json
+temp/
+temp/audio/

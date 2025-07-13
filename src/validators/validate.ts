@@ -1,6 +1,4 @@
-// Try these different import styles:
-// Method 1
-const { validationResult } = require("express-validator");
+import { validationResult } from "express-validator";
 import { ApiError } from "../utils/ApiError";
 /**
  *
@@ -20,11 +18,11 @@ export const validate = (req, res, next) => {
     return next();
   }
 
-  // Create a simple array of errors
-  const extractedErrors = errors.array().map((err) => ({
-    field: err.path,
-    message: err.msg,
+  // Robustly extract field name for all error types, silence linter with any
+  const extractedErrors = errors.array().map((err: any) => ({
+    field: err?.path ?? err?.param ?? undefined,
+    message: err?.msg,
   }));
-  // 422: Unprocessable Entity
+
   throw new ApiError(422, "Received data is not valid", extractedErrors);
 };

@@ -5,12 +5,12 @@ import { ApiResponse } from '../utils/ApiResponse';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
 import { initiateNextCall } from '../services/call.service';
 import { getWorkflowStepsByGroupId } from '../services/workflow.service';
+import twilio from 'twilio';
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
 
 // Initialize Twilio client
-const twilio = require('twilio');
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN, {
   lazyLoading: true,
 });

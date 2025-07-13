@@ -35,4 +35,5 @@ export const env = {
   // Google Cloud Speech-to-Text for Malayalam support
   GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
   GOOGLE_CLOUD_PROJECT_ID: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  MEDIA_STREAM_WSS_URL: process.env.MEDIA_STREAM_WSS_URL,
 };

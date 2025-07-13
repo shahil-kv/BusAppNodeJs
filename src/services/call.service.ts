@@ -4,9 +4,9 @@ import { Request } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { CallStatusEnum, SessionStatusEnum } from '../constant';
 import { WorkflowStep } from './workflow.service';
+import twilio from 'twilio';
 
 // Initialize Twilio client
-const twilio = require('twilio');
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN, {
   lazyLoading: true,
 });
@@ -59,12 +59,22 @@ const initiateNextCall = async (sessionId: number, req: Request, workflow: Workf
   }
 
   try {
+    // Always include groupId in the voice-update URL for Twilio
+    const groupId = session.group_id;
     const call = await client.calls.create({
       url: `${NGROK_BASE_URL}/voice-update`,
       to: contact.phoneNumber,
       from: twilioNumber,
       statusCallback: `${NGROK_BASE_URL}/call-status`,
       statusCallbackMethod: 'POST',
+    });
+
+    // Store callSid to groupId mapping for Twilio Media Streams context
+    await prisma.call_context.create({
+      data: {
+        call_sid: call.sid,
+        group_id: groupId,
+      },
     });
 
     await prisma.call_history.update({

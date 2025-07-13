@@ -9,35 +9,29 @@ export interface WorkflowStep {
   branch?: { [answer: string]: string };
 }
 
-
-const demoWorkflow: WorkflowStep[] = [
-  {
-    id: 'greet',
-    question: 'Hello, contact shahil?',
-    malayalam: 'ഹലോ, panniii paaaaliiiii contact shahil ?',
-    answerType: 'yes_no',
-    branch: { yes: 'qualify_interest', no: 'end_call' }
-  },
-  // ... more steps ...
-];
-
-
-// Get workflow steps for a group by groupId (dynamic, DB-backed)
+// Get workflow steps for a group by groupId (database-backed only)
 export async function getWorkflowStepsByGroupId(groupId: number | null): Promise<WorkflowStep[]> {
-  if (!groupId) return demoWorkflow;
+  if (!groupId) {
+    logger.error('No groupId provided, cannot fetch workflow');
+    throw new Error('groupId is required to fetch workflow');
+  }
+
   try {
+    logger.log(`[WorkflowService] Fetching workflow for groupId: ${groupId}`);
     const group = await prisma.groups.findUnique({
       where: { id: groupId },
       include: { workflows: true },
     });
+
     if (group && group.workflows && Array.isArray(group.workflows.steps)) {
+      logger.log(`[WorkflowService] Workflow found with ${group.workflows.steps.length} steps`);
       return group.workflows.steps as unknown as WorkflowStep[];
     } else {
-      logger.error('No workflow found for group, using demoWorkflow');
-      return demoWorkflow;
+      logger.error(`[WorkflowService] No workflow found for groupId: ${groupId}`);
+      throw new Error(`No workflow found for groupId: ${groupId}`);
     }
   } catch (err) {
-    logger.error('Error fetching workflow for group:', groupId, err);
-    return demoWorkflow;
+    logger.error(`[WorkflowService] Error fetching workflow for groupId: ${groupId}`, err);
+    throw err;
   }
 }

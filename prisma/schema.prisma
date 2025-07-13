@@ -176,3 +176,9 @@ model documents {
 
   @@index([workflow_id], map: "idx_documents_workflow_id")
 }
+
+model call_context {
+  call_sid   String    @id @db.VarChar(64)
+  group_id   Int
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+}
