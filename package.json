@@ -50,6 +50,8 @@
     "@prisma/client": "^6.7.0",
     "@supabase/supabase-js": "^2.50.1",
     "@types/socket.io": "^3.0.1",
+    "alawmulaw": "^6.0.0",
+    "audio-resampler": "^1.0.1",
     "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.56.0",
@@ -78,6 +80,7 @@
     "swagger-ui-express": "^5.0.1",
     "twilio": "^5.7.3",
     "uuid": "^11.1.0",
+    "wavefile": "^11.0.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
     "ws": "^8.18.2"

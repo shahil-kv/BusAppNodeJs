@@ -6,7 +6,6 @@ import { PrismaClient } from '@prisma/client';
 import { GeminiLiveService } from '../ai/geminiLive.service';
 
 const prisma = new PrismaClient();
-new GeminiLiveService(env.GEMINI_API_KEY);
 
 export const voiceHandler = async (req: Request, res: Response) => {
   try {
