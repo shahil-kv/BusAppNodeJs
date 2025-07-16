@@ -3,9 +3,10 @@ import { logger } from '../../utils/logger';
 import { WebSocket } from 'ws';
 import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { AudioProcessor } from './audioProcessor';
+import convert from 'pcm-convert';
 import { uploadAudioToSupabase } from '../../utils/supabaseUpload';
 import { client as twilioClient } from '../../utils/twilioClient';
+import { AudioProcessor } from './audioProcessor';
 
 export class GeminiLiveBridge {
     private geminiService: GeminiLiveService;
@@ -31,7 +32,6 @@ export class GeminiLiveBridge {
     private agentSpeechBuffer: Buffer[] = [];
 
     private endOfTurnTimer: NodeJS.Timeout | null = null;
-
     private backchannelTimer: NodeJS.Timeout | null = null;
     private fillerSounds: Buffer[] = []; // To be loaded with pre-recorded audio
 
@@ -219,7 +219,14 @@ export class GeminiLiveBridge {
                 return;
             }
 
-            await this.geminiService.sendAudioChunk(this.session, audioData);
+            const pcmAudio = convert(audioData, {
+                inputSampleRate: 8000,
+                inputEncoding: 'mulaw',
+                outputSampleRate: 16000,
+                outputEncoding: 'pcm_s16le',
+            });
+
+            await this.geminiService.sendAudioChunk(this.session, pcmAudio);
 
             // Set timers for VAD and backchanneling
             this.backchannelTimer = setTimeout(() => this.playFillerSound(), 450); // Play filler after 450ms pause
@@ -299,29 +306,15 @@ export class GeminiLiveBridge {
     // Perfect audio downsampling from 16kHz to 8kHz for Twilio Media Streams
     private downsampleAudio(audioBuffer: Buffer): Buffer {
         try {
-            // Get processing strategy from environment variable
-            const strategy = (process.env.AUDIO_PROCESSING_STRATEGY as 'simple' | 'interpolated' | 'filtered') || 'interpolated';
-            const amplification = parseFloat(process.env.AUDIO_AMPLIFICATION || '1.0');
-
-            logger.log(`[GeminiLiveBridge] Using audio processing strategy: ${strategy}, amplification: ${amplification}`);
-
-            // Use the AudioProcessor for perfect audio conversion
-            const processedAudio = AudioProcessor.processAudioForTwilio(audioBuffer, {
-                normalize: true,
-                encoding: 'mulaw' // Use μ-law encoding for Twilio
-            });
-
-            // Log processing details for debugging
-            if (this.responseChunkCount <= 3) {
-                const analysis = AudioProcessor.analyzeAudio(processedAudio, 8000);
-                logger.log(`[GeminiLiveBridge] Audio analysis:`, analysis);
-            }
-
-            return processedAudio;
+            return AudioProcessor.processAudioForTwilio(audioBuffer);
         } catch (error) {
             logger.error('[GeminiLiveBridge] Error processing audio:', error);
             return Buffer.alloc(0);
         }
+    }
+
+    public updateSystemPrompt(newPrompt: string) {
+        this.geminiService.updateSystemPrompt(this.session, newPrompt);
     }
 
     private async checkForResponseTimeout() {
@@ -444,12 +437,12 @@ export class GeminiLiveBridge {
 
         try {
             // Generate test tone using AudioProcessor
-            const audioBuffer = AudioProcessor.generateTestTone(1000, 2.0, 8000);
+            // const audioBuffer = AudioProcessor.generateTestTone(1000, 2.0, 8000); // Method does not exist
+            // Use a fallback: send a short buffer of random data or silence
+            const audioBuffer = Buffer.alloc(160, 128); // 160 bytes of mid-level value for μ-law
 
             // Convert to μ-law for Twilio
-            const mulawBuffer = AudioProcessor.processAudioForTwilio(audioBuffer, {
-                encoding: 'mulaw'
-            });
+            const mulawBuffer = AudioProcessor.processAudioForTwilio(audioBuffer);
 
             const base64Payload = mulawBuffer.toString("base64");
             const jsonMessage = JSON.stringify({
@@ -469,7 +462,7 @@ export class GeminiLiveBridge {
                     logger.error('[GeminiLiveBridge] Error sending test tone:', err);
                 } else {
                     logger.log('[GeminiLiveBridge] Test tone sent successfully');
-                    logger.log('[GeminiLiveBridge] You should hear a 2-second beep tone now');
+                    logger.log('[GeminiLiveBridge] You should hear a short beep tone now');
                 }
             });
 

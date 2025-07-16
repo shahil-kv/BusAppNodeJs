@@ -3,6 +3,7 @@
 // TODO: Install and configure @google/genai or relevant Gemini Live SDK
 
 import { GoogleGenAI, Modality } from '@google/genai';
+
 import { logger } from '../utils/logger';
 import fs from 'fs';
 import path from 'path';
@@ -102,7 +103,7 @@ export class GeminiLiveService {
                 }
                 const audioData = {
                     data: chunk.toString('base64'),
-                    mimeType: 'audio/pcm;rate=8000',
+                    mimeType: 'audio/pcm;rate=16000', // We are now sending 16kHz PCM
                 };
                 await session.sendRealtimeInput({ audio: audioData });
                 if (this.audioChunkCount === 1) {
@@ -124,6 +125,7 @@ export class GeminiLiveService {
             logger.log('[GeminiLiveService] System prompt updated dynamically');
         }
     }
+
 
     async endSession(session: any) {
         try {
