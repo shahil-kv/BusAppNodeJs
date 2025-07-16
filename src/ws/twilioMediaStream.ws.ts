@@ -88,8 +88,13 @@ export const setupTwilioWebSocket = (httpServer: any) => {
                         }
 
                         // Create Gemini Live Bridge for this connection
-                        bridge = new GeminiLiveBridge(geminiService);
+                        bridge = new GeminiLiveBridge(geminiService, callSid);
                         activeBridges.set(connectionId, bridge);
+
+                        // IMPORTANT: Set the streamSid in the bridge
+                        if (streamSid) {
+                            bridge.setStreamSid(streamSid);
+                        }
 
                         // Generate system prompt based on groupId
                         const systemPrompt = generateSystemPrompt(groupId);

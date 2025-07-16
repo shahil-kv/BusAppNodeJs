@@ -67,8 +67,36 @@ export const voiceHandler = async (req: Request, res: Response) => {
       }
     }
 
-    // Build the TwiML response with proper Twilio Media Streams structure
-    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+    // Check for pending AI response URL for this callSid
+    let aiResponseUrl: string | null = null;
+    if (callSid) {
+      const ctx = await prisma.call_context.findUnique({ where: { call_sid: callSid } });
+      if (ctx && ctx.ai_response_url) {
+        aiResponseUrl = ctx.ai_response_url;
+      }
+    }
+
+    let twiml: string;
+    if (aiResponseUrl) {
+      // Respond with <Play> and then <Connect><Stream> for next turn
+      twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Play>${aiResponseUrl}</Play>
+  <Connect>
+    <Stream url="${mediaStreamUrl}">
+      ${callSid ? `<Parameter name="CallSid" value="${callSid}" />` : ''}
+      ${groupId ? `<Parameter name="groupId" value="${groupId}" />` : ''}
+    </Stream>
+  </Connect>
+</Response>`;
+      // Clear the ai_response_url for the next turn
+      await prisma.call_context.update({
+        where: { call_sid: callSid },
+        data: { ai_response_url: null },
+      });
+    } else {
+      // Initial or no pending AI response: just <Connect><Stream>
+      twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="Polly.Aditi" language="hi-IN">Connecting you to our Malayalam AI assistant...</Say>
   <Connect>
@@ -78,6 +106,7 @@ export const voiceHandler = async (req: Request, res: Response) => {
     </Stream>
   </Connect>
 </Response>`;
+    }
 
     logger.log('=== GENERATED TWIML ===');
     logger.log(twiml);

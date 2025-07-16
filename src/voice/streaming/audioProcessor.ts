@@ -68,21 +68,14 @@ export class AudioProcessor {
                     processedBuffer = this.interpolatedDownsample(inputBuffer, opts);
             }
 
-            // Apply normalization and amplification
-            if (opts.normalize || opts.amplification !== 1.0) {
-                processedBuffer = this.normalizeAndAmplify(processedBuffer, opts);
-            }
-
-            logger.log(`[AudioProcessor] Output buffer: ${processedBuffer.length} bytes`);
-
-            // Apply encoding (PCM or μ-law)
-            processedBuffer = this.applyEncoding(processedBuffer, opts.encoding);
-            logger.log(`[AudioProcessor] Applied ${opts.encoding} encoding, final buffer: ${processedBuffer.length} bytes`);
-
-            // Verify output quality
+            // Verify output quality of the 16-bit PCM audio before encoding
             this.verifyOutputQuality(processedBuffer);
 
-            return processedBuffer;
+            // Apply encoding (PCM or μ-law)
+            const encodedBuffer = this.applyEncoding(processedBuffer, opts.encoding);
+            logger.log(`[AudioProcessor] Applied ${opts.encoding} encoding, final buffer: ${encodedBuffer.length} bytes`);
+
+            return encodedBuffer;
 
         } catch (error) {
             logger.error('[AudioProcessor] Error processing audio:', error);
@@ -189,13 +182,16 @@ export class AudioProcessor {
         }
 
         // Calculate normalization factor
-        const targetMaxAmplitude = 16384; // 75% of 16-bit range
+        const targetMaxAmplitude = 16384; // Target 50% of 16-bit range, leaving headroom
         const normalizationFactor = maxAmplitude > 0 ?
-            Math.min(targetMaxAmplitude / maxAmplitude, 4.0) : 1.0;
+            Math.min(targetMaxAmplitude / maxAmplitude, 1.5) : 1.0; // Capped at 1.5x amplification
 
         const totalFactor = normalizationFactor * opts.amplification;
 
-        logger.log(`[AudioProcessor] Max amplitude: ${maxAmplitude}, Normalization factor: ${normalizationFactor.toFixed(2)}, Total factor: ${totalFactor.toFixed(2)}`);
+        // Only log if there's a significant adjustment
+        if (totalFactor > 1.05 || totalFactor < 0.95) {
+            logger.log(`[AudioProcessor] Max amplitude: ${maxAmplitude}, Normalization factor: ${normalizationFactor.toFixed(2)}, Total factor: ${totalFactor.toFixed(2)}`);
+        }
 
         // Apply normalization and amplification
         for (let i = 0; i < samples; i++) {

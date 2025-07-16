@@ -178,7 +178,8 @@ model documents {
 }
 
 model call_context {
-  call_sid   String    @id @db.VarChar(64)
-  group_id   Int
-  created_at DateTime? @default(now()) @db.Timestamp(6)
+  call_sid        String    @id @db.VarChar(64)
+  group_id        Int
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  ai_response_url String?   @db.VarChar(1000)
 }

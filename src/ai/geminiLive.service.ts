@@ -31,135 +31,97 @@ export class GeminiLiveService {
         };
         const model = 'gemini-2.5-flash-preview-native-audio-dialog';
 
-        logger.log(`[GeminiLiveService] [Session ${sessionId}] Using model: ${model}`);
-        logger.log(`[GeminiLiveService] [Session ${sessionId}] Config:`, JSON.stringify(config, null, 2));
-
-        try {
-            logger.log(`[GeminiLiveService] [Session ${sessionId}] Calling ai.live.connect...`);
-
-            // Test if the AI object is properly initialized
-            if (!this.ai) {
-                throw new Error('GoogleGenAI not initialized');
-            }
-
-            if (!this.ai.live) {
-                throw new Error('Live API not available - check if you have the correct Google GenAI version');
-            }
-
-            const session = await this.ai.live.connect({
-                model,
-                config,
-                callbacks: {
-                    onmessage: (msg: any) => {
-                        if (msg.data) {
-                            try {
-                                const buffer = Buffer.from(msg.data, 'base64');
-                                // Extra debug: log first 16 bytes
-                                logger.log(`[GeminiLiveService] [Session ${sessionId}] [IN] Received audio chunk (length: ${buffer.length}), first 16 bytes: ${buffer.slice(0, 16).toString('hex')}`);
-                                // Save raw Gemini audio for inspection (ESM compatible)
-                                const audioDir = path.join(process.cwd(), 'temp', 'audio');
-                                if (!fs.existsSync(audioDir)) fs.mkdirSync(audioDir, { recursive: true });
-                                const filename = `${Date.now()}_gemini_raw_session${sessionId}.raw`;
-                                const filepath = path.join(audioDir, filename);
-                                fs.writeFileSync(filepath, new Uint8Array(buffer));
-                                logger.log(`[GeminiLiveService] [Session ${sessionId}] [IN] Saved raw Gemini audio to ${filepath}`);
-                                onAudioResponse(buffer);
-                            } catch (error) {
-                                logger.error(`[GeminiLiveService] [Session ${sessionId}] Error processing audio data:`, error);
+        let retries = 0;
+        const maxRetries = 3;
+        let session = null;
+        while (retries < maxRetries) {
+            try {
+                if (!this.ai) throw new Error('GoogleGenAI not initialized');
+                if (!this.ai.live) throw new Error('Live API not available');
+                session = await this.ai.live.connect({
+                    model,
+                    config,
+                    callbacks: {
+                        onmessage: (msg: any) => {
+                            if (msg.data) {
+                                try {
+                                    const buffer = Buffer.from(msg.data, 'base64');
+                                    onAudioResponse(buffer);
+                                } catch (error) {
+                                    logger.error(`[GeminiLiveService] [Session ${sessionId}] Error processing audio data:`, error);
+                                }
+                            } else {
+                                logger.warn(`[GeminiLiveService] [Session ${sessionId}] [IN] No audio data in message:`, msg);
                             }
-                        } else {
-                            logger.warn(`[GeminiLiveService] [Session ${sessionId}] [IN] No audio data in message:`, msg);
+                        },
+                        onerror: (error: any) => {
+                            logger.error(`[GeminiLiveService] [Session ${sessionId}] Session error:`, error);
+                        },
+                        onclose: () => {
+                            logger.log(`[GeminiLiveService] [Session ${sessionId}] Session closed`);
                         }
                     },
-                    onerror: (error: any) => {
-                        logger.error(`[GeminiLiveService] [Session ${sessionId}] Session error:`, error);
-                        // Don't throw error, just log it to prevent WebSocket disconnection
-                    },
-                    onclose: () => {
-                        logger.log(`[GeminiLiveService] [Session ${sessionId}] Session closed`);
-                    }
-                },
-            });
-
-            if (!session) {
-                throw new Error('Session creation returned null');
-            }
-
-            logger.log(`[GeminiLiveService] [Session ${sessionId}] Gemini Live session started successfully`);
-
-            // Send initial text prompt to trigger AI to start speaking
-            logger.log(`[GeminiLiveService] [Session ${sessionId}] Sending initial text prompt to start conversation...`);
-            try {
-                await session.sendRealtimeInput({
-                    text: "ഹലോ, ഞാൻ നിങ്ങളുമായി സംസാരിക്കാൻ തയ്യാറാണ്. എന്താണ് നിങ്ങൾക്ക് സഹായിക്കാൻ കഴിയുക?"
                 });
-                logger.log(`[GeminiLiveService] [Session ${sessionId}] Initial text prompt sent successfully`);
-            } catch (promptError) {
-                logger.error(`[GeminiLiveService] [Session ${sessionId}] Error sending initial prompt:`, promptError);
-                // Don't throw error, session can still work without initial prompt
+                if (session) break;
+            } catch (error) {
+                retries++;
+                logger.error(`[GeminiLiveService] [Session ${sessionId}] Session creation attempt ${retries} failed:`, error);
+                if (retries >= maxRetries) throw error;
+                await new Promise(res => setTimeout(res, 1000 * retries));
             }
-
-            return session;
-        } catch (error) {
-            logger.error(`[GeminiLiveService] [Session ${sessionId}] Error starting Gemini Live session:`, error);
-            logger.error(`[GeminiLiveService] [Session ${sessionId}] Error details:`, {
-                name: error.name,
-                message: error.message,
-                stack: error.stack
-            });
-
-            // Check if it's an API key or authentication error
-            if (error.message && error.message.includes('API_KEY')) {
-                logger.error(`[GeminiLiveService] [Session ${sessionId}] GEMINI_API_KEY is invalid or missing`);
-            }
-
-            // Check if it's a model error
-            if (error.message && error.message.includes('model')) {
-                logger.error(`[GeminiLiveService] [Session ${sessionId}] Model '${model}' may not be available or correctly named`);
-            }
-
-            throw error;
         }
+        if (!session) throw new Error('Session creation returned null');
+
+        logger.log(`[GeminiLiveService] [Session ${sessionId}] Gemini Live session started successfully`);
+
+        // Send initial text prompt to trigger AI to start speaking
+        logger.log(`[GeminiLiveService] [Session ${sessionId}] Sending initial text prompt to start conversation...`);
+        try {
+            await session.sendRealtimeInput({
+                text: "ഹലോ, ഞാൻ നിങ്ങളുമായി സംസാരിക്കാൻ തയ്യാറാണ്. എന്താണ് നിങ്ങൾക്ക് സഹായിക്കാൻ കഴിയുക?"
+            });
+            logger.log(`[GeminiLiveService] [Session ${sessionId}] Initial text prompt sent successfully`);
+        } catch (promptError) {
+            logger.error(`[GeminiLiveService] [Session ${sessionId}] Error sending initial prompt:`, promptError);
+            // Don't throw error, session can still work without initial prompt
+        }
+
+        return session;
     }
 
     async sendAudioChunk(session: any, chunk: Buffer) {
-        try {
-            this.audioChunkCount++;
-            // Only log first chunk and then every 1000th chunk for debug
-            if (this.audioChunkCount === 1 || this.audioChunkCount % 1000 === 0) {
-                logger.log(`[GeminiLiveService] [OUT] Sending audio chunk to Gemini Live (length: ${chunk.length})`);
-            }
-
-            // Check if this is mostly silence (all zeros or very low values)
-            const isSilence = chunk.every(byte => byte === 0 || Math.abs(byte) < 10);
-            if (this.audioChunkCount === 1 || this.audioChunkCount % 1000 === 0) {
-                logger.log(`[GeminiLiveService] [OUT] Audio chunk #${this.audioChunkCount} is silence: ${isSilence}`);
-            }
-
-            // Skip sending silence to avoid unnecessary processing
-            if (isSilence) {
-                if (this.audioChunkCount === 1 || this.audioChunkCount % 1000 === 0) {
-                    logger.log(`[GeminiLiveService] [OUT] Skipping silence chunk #${this.audioChunkCount}`);
+        let retries = 0;
+        const maxRetries = 3;
+        while (retries < maxRetries) {
+            try {
+                this.audioChunkCount++;
+                const isSilence = chunk.every(byte => byte === 0 || Math.abs(byte) < 10);
+                if (isSilence) {
+                    logger.warn(`[GeminiLiveService] [OUT] Skipping silence chunk #${this.audioChunkCount}`);
+                    return;
                 }
-                return;
+                const audioData = {
+                    data: chunk.toString('base64'),
+                    mimeType: 'audio/pcm;rate=8000',
+                };
+                await session.sendRealtimeInput({ audio: audioData });
+                if (this.audioChunkCount === 1) {
+                    logger.log(`[GeminiLiveService] [OUT] Audio chunk sent successfully`);
+                }
+                break;
+            } catch (error) {
+                retries++;
+                logger.error(`[GeminiLiveService] [OUT] Error sending audio chunk (attempt ${retries}):`, error);
+                if (retries >= maxRetries) return;
+                await new Promise(res => setTimeout(res, 1000 * retries));
             }
+        }
+    }
 
-            const audioData = {
-                data: chunk.toString('base64'),
-                mimeType: 'audio/pcm;rate=8000', // Twilio sends 8kHz audio
-            };
-
-            await session.sendRealtimeInput({
-                audio: audioData,
-            });
-
-            // Only log success for first chunk
-            if (this.audioChunkCount === 1) {
-                logger.log(`[GeminiLiveService] [OUT] Audio chunk sent successfully`);
-            }
-        } catch (error) {
-            logger.error(`[GeminiLiveService] [OUT] Error sending audio chunk:`, error);
-            // Don't throw error to prevent WebSocket disconnection
+    updateSystemPrompt(session: any, newPrompt: string) {
+        if (session && session.sendRealtimeInput) {
+            session.sendRealtimeInput({ text: newPrompt });
+            logger.log('[GeminiLiveService] System prompt updated dynamically');
         }
     }
 
@@ -179,7 +141,6 @@ export class GeminiLiveService {
         }
     }
 
-    // Test method to verify Gemini Live is working
     async testConnection() {
         try {
             logger.log(`[GeminiLiveService] Testing Gemini Live connection...`);

@@ -1,9 +1,11 @@
 import { GeminiLiveService } from '../../ai/geminiLive.service';
 import { logger } from '../../utils/logger';
 import { WebSocket } from 'ws';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { AudioProcessor } from './audioProcessor';
+import { uploadAudioToSupabase } from '../../utils/supabaseUpload';
+import { client as twilioClient } from '../../utils/twilioClient';
 
 export class GeminiLiveBridge {
     private geminiService: GeminiLiveService;
@@ -21,14 +23,33 @@ export class GeminiLiveBridge {
     private incomingAudioChunks: Buffer[] = [];
     private outgoingAudioChunks: Buffer[] = [];
     private sessionId = '';
+    private callSid: string | null = null;
 
-    constructor(geminiService: GeminiLiveService) {
+    private streamSid: string | null = null; // Added to manage the stream SID
+
+    private isAgentSpeaking = false;
+    private agentSpeechBuffer: Buffer[] = [];
+
+    private endOfTurnTimer: NodeJS.Timeout | null = null;
+
+    private backchannelTimer: NodeJS.Timeout | null = null;
+    private fillerSounds: Buffer[] = []; // To be loaded with pre-recorded audio
+
+    constructor(geminiService: GeminiLiveService, callSid: string | null = null) {
         this.geminiService = geminiService;
         this.sessionId = Date.now().toString();
+        this.callSid = callSid;
         logger.log('[GeminiLiveBridge] Bridge initialized with session ID:', this.sessionId);
 
         // Create audio storage directory
         this.ensureAudioDirectory();
+        this.loadFillerSounds();
+    }
+
+    // Method to set the stream SID once it's available
+    public setStreamSid(streamSid: string) {
+        this.streamSid = streamSid;
+        logger.log(`[GeminiLiveBridge] Stream SID set: ${streamSid}`);
     }
 
     private ensureAudioDirectory() {
@@ -133,138 +154,146 @@ export class GeminiLiveBridge {
     }
 
     // This method will be called by the WebSocket handler with extracted audio data
+    private loadFillerSounds() {
+        const fillerDir = join(process.cwd(), 'src', 'assets', 'audio', 'fillers');
+        if (existsSync(fillerDir)) {
+            const files = readdirSync(fillerDir);
+            files.forEach(file => {
+                if (file.endsWith('.raw')) {
+                    const filePath = join(fillerDir, file);
+                    const buffer = readFileSync(filePath);
+                    this.fillerSounds.push(buffer);
+                }
+            });
+            logger.log(`[GeminiLiveBridge] Loaded ${this.fillerSounds.length} filler sounds.`);
+        }
+    }
+
+    private playFillerSound() {
+        if (this.fillerSounds.length === 0 || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        const sound = this.fillerSounds[Math.floor(Math.random() * this.fillerSounds.length)];
+        const base64Payload = sound.toString('base64');
+
+        const twilioMessage = JSON.stringify({
+            event: 'media',
+            streamSid: this.streamSid,
+            media: {
+                track: 'outbound',
+                payload: base64Payload,
+            },
+        });
+
+        this.ws.send(twilioMessage);
+        logger.log('[GeminiLiveBridge] Played backchannel filler sound.');
+    }
+
     async handleTwilioAudio(audioData: Buffer) {
         try {
             this.audioChunkCount++;
             this.lastAudioReceived = Date.now();
+
+            // VAD: Clear any existing timers
+            if (this.endOfTurnTimer) clearTimeout(this.endOfTurnTimer);
+            if (this.backchannelTimer) clearTimeout(this.backchannelTimer);
+
+            if (this.isAgentSpeaking) {
+                logger.log('[GeminiLiveBridge] Barge-in detected! User is speaking while agent is talking.');
+                this.agentSpeechBuffer = []; // Clear the agent's speech buffer
+            }
+
             this.incomingAudioChunks.push(audioData);
 
             // Save audio chunk for testing
             this.saveAudioChunk(audioData, 'incoming', this.audioChunkCount);
-
-            // Log first chunk and every 100th chunk for monitoring
-            if (this.audioChunkCount === 1 || this.audioChunkCount % 100 === 0) {
-                logger.log(`[GeminiLiveBridge] [IN] Received Twilio audio chunk #${this.audioChunkCount} (length: ${audioData.length})`);
-            }
 
             if (!this.session) {
                 logger.error('[GeminiLiveBridge] No active session, cannot process audio');
                 return;
             }
 
-            // Check if audio data is valid
             if (!audioData || audioData.length === 0) {
                 logger.warn(`[GeminiLiveBridge] Empty audio chunk received #${this.audioChunkCount}`);
                 return;
             }
 
-            // Send audio to Gemini Live
             await this.geminiService.sendAudioChunk(this.session, audioData);
 
-            if (this.audioChunkCount === 1) {
-                logger.log('[GeminiLiveBridge] First audio chunk sent to Gemini Live successfully');
-            }
+            // Set timers for VAD and backchanneling
+            this.backchannelTimer = setTimeout(() => this.playFillerSound(), 450); // Play filler after 450ms pause
+            this.endOfTurnTimer = setTimeout(() => {
+                logger.log('[GeminiLiveBridge] End of turn detected (700ms of silence).');
+            }, 700);
+
         } catch (error) {
             logger.error('[GeminiLiveBridge] Error handling Twilio audio:', error);
-            // Don't throw error to prevent WebSocket disconnection
         }
     }
 
-    private async handleGeminiResponse(audioChunk: Buffer) {
-        try {
-            this.responseChunkCount++;
-            this.lastResponseSent = Date.now();
-            this.lastResponseTime = Date.now();
-            this.outgoingAudioChunks.push(audioChunk);
+    private handleGeminiResponse(audioChunk: Buffer) {
+        this.isAgentSpeaking = true;
+        this.agentSpeechBuffer.push(audioChunk);
+        this.flushAgentSpeech();
+    }
 
-            // Clear any existing timeout since we got a response
-            if (this.responseTimeout) {
-                clearTimeout(this.responseTimeout);
-                this.responseTimeout = null;
-            }
-
-            // Log first response and every 20th response for monitoring
-            if (this.responseChunkCount === 1 || this.responseChunkCount % 20 === 0) {
-                logger.log(`[GeminiLiveBridge] [OUT] Received Gemini response chunk #${this.responseChunkCount} (length: ${audioChunk.length})`);
-            }
-
-            if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-                logger.error('[GeminiLiveBridge] WebSocket not open, cannot send audio response');
-                return;
-            }
-
-            // Ensure we have valid audio data
-            if (audioChunk.length === 0) {
-                logger.warn(`[GeminiLiveBridge] Audio chunk is empty for chunk #${this.responseChunkCount}`);
-                return;
-            }
-
-            // TEST MODE: Send first few chunks directly without downsampling to test if Twilio can handle 16kHz
-            const testDirectMode = process.env.TEST_DIRECT_AUDIO === 'true' && this.responseChunkCount <= 5;
-
-            if (testDirectMode) {
-                logger.log(`[GeminiLiveBridge] TEST MODE: Sending chunk #${this.responseChunkCount} directly without downsampling`);
-                await this.sendGeminiAudioDirect(audioChunk);
-                return;
-            }
-
-            // Convert 16kHz PCM to 8kHz PCM for Twilio using perfect downsampling
-            // Twilio expects: 8kHz, 16-bit, mono, linear PCM, little-endian
-            const convertedAudio = this.downsampleAudio(audioChunk);
-
-            // Save converted audio chunk for testing
-            this.saveAudioChunk(convertedAudio, 'outgoing', this.responseChunkCount);
-
-            // Ensure we have valid audio data after conversion
-            if (convertedAudio.length === 0) {
-                logger.warn(`[GeminiLiveBridge] Converted audio is empty for chunk #${this.responseChunkCount}`);
-                return;
-            }
-
-            // Base64 encode the audio
-            const base64Payload = convertedAudio.toString("base64");
-
-            // Create the Twilio Media Streams message
-            const jsonMessage = JSON.stringify({
-                event: "media",
-                media: {
-                    track: "outbound",
-                    payload: base64Payload
-                }
-            });
-
-            // Enhanced logging for debugging
-            if (this.responseChunkCount === 1 || this.responseChunkCount % 20 === 0) {
-                logger.log(`[GeminiLiveBridge] [OUT] Sending JSON message to Twilio (chunk #${this.responseChunkCount}):`);
-                logger.log(`[GeminiLiveBridge] Original audio length: ${audioChunk.length} bytes`);
-                logger.log(`[GeminiLiveBridge] Converted audio length: ${convertedAudio.length} bytes`);
-                logger.log(`[GeminiLiveBridge] Base64 payload length: ${base64Payload.length} chars`);
-                logger.log(`[GeminiLiveBridge] JSON message length: ${jsonMessage.length} chars`);
-
-                // Log first few bytes of converted audio to verify it's not all zeros
-                const firstBytes = convertedAudio.slice(0, 16);
-                const hasAudio = firstBytes.some(byte => byte !== 0);
-                logger.log(`[GeminiLiveBridge] First 16 bytes of converted audio: ${firstBytes.toString('hex')}`);
-                logger.log(`[GeminiLiveBridge] Audio contains non-zero data: ${hasAudio}`);
-            }
-
-            // Send the message to Twilio
-            this.ws.send(jsonMessage, (err) => {
-                if (err) {
-                    logger.error(`[GeminiLiveBridge] WebSocket send error (chunk #${this.responseChunkCount}):`, err);
-                } else if (this.responseChunkCount === 1) {
-                    logger.log('[GeminiLiveBridge] First response chunk sent to Twilio successfully');
-                }
-            });
-
-            // Set a timeout to check if Gemini stops responding
-            this.responseTimeout = setTimeout(() => {
-                this.checkForResponseTimeout();
-            }, 5000); // 5 seconds timeout
-
-        } catch (error) {
-            logger.error('[GeminiLiveBridge] Error handling Gemini response:', error);
+    private flushAgentSpeech() {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            this.isAgentSpeaking = false;
+            return;
         }
+
+        while (this.agentSpeechBuffer.length > 0) {
+            const audioChunk = this.agentSpeechBuffer.shift();
+            if (!audioChunk) continue;
+
+            try {
+                this.responseChunkCount++;
+                this.lastResponseSent = Date.now();
+                this.outgoingAudioChunks.push(audioChunk); // Still useful for debugging
+
+                if (!this.streamSid) {
+                    logger.error('[GeminiLiveBridge] No streamSid available. Cannot send media.');
+                    continue;
+                }
+
+                if (audioChunk.length === 0) {
+                    logger.warn(`[GeminiLiveBridge] Received empty audio chunk from Gemini.`);
+                    continue;
+                }
+
+                // 1. Process the audio for Twilio (downsample to 8kHz and encode as μ-law)
+                const twilioAudioChunk = this.downsampleAudio(audioChunk);
+
+                if (twilioAudioChunk.length === 0) {
+                    continue;
+                }
+
+                // 2. Base64 encode the payload
+                const base64Payload = twilioAudioChunk.toString('base64');
+
+                // 3. Create the Twilio Media Streams message
+                const twilioMessage = JSON.stringify({
+                    event: 'media',
+                    streamSid: this.streamSid,
+                    media: {
+                        track: 'outbound',
+                        payload: base64Payload,
+                    },
+                });
+
+                // 4. Send it back over the WebSocket
+                this.ws.send(twilioMessage);
+
+                // Optional: Save the outgoing chunk for debugging
+                this.saveAudioChunk(twilioAudioChunk, 'outgoing', this.responseChunkCount);
+
+            } catch (error) {
+                logger.error('[GeminiLiveBridge] Error handling Gemini response:', error);
+            }
+        }
+        this.isAgentSpeaking = false;
     }
 
     // Perfect audio downsampling from 16kHz to 8kHz for Twilio Media Streams
