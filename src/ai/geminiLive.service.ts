@@ -10,7 +10,7 @@ import path from 'path';
 
 export class GeminiLiveService {
     private ai: GoogleGenAI;
-    
+
 
     constructor(apiKey: string) {
         this.ai = new GoogleGenAI({ apiKey });
@@ -28,6 +28,11 @@ export class GeminiLiveService {
         let retries = 0;
         const maxRetries = 3;
         let session = null;
+        let firstAudioChunkReceived = false;
+        let firstAudioChunkResolver: (() => void) | null = null;
+        const firstAudioPromise = new Promise<void>((resolve) => {
+            firstAudioChunkResolver = resolve;
+        });
         while (retries < maxRetries) {
             try {
                 if (!this.ai) throw new Error('GoogleGenAI not initialized');
@@ -40,12 +45,16 @@ export class GeminiLiveService {
                             if (msg.data) {
                                 try {
                                     const buffer = Buffer.from(msg.data, 'base64');
+                                    if (!firstAudioChunkReceived) {
+                                        firstAudioChunkReceived = true;
+                                        if (firstAudioChunkResolver) firstAudioChunkResolver();
+                                    }
                                     onAudioResponse(buffer);
                                 } catch (error) {
                                     logger.error(`[GeminiLiveService] [Session ${sessionId}] Error processing audio data:`, error);
                                 }
                             } else {
-                                logger.warn(`[GeminiLiveService] [Session ${sessionId}] [IN] No audio data in message:`, msg);
+                                logger.warn(`[GeminiLiveService] [Session ${sessionId}] [IN] Message without audio data:`, JSON.stringify(msg));
                             }
                         },
                         onerror: (error: any) => {
@@ -66,14 +75,29 @@ export class GeminiLiveService {
         }
         if (!session) throw new Error('Session creation returned null');
 
+        const extractFirstQuestion = (prompt: string): string => {
+            const workflowSection = prompt.split('**Workflow ചോദ്യങ്ങൾ:**')[1];
+            if (workflowSection) {
+                const firstQuestionMatch = workflowSection.match(/\d+\.\s*(.*)/);
+                if (firstQuestionMatch && firstQuestionMatch[1]) {
+                    return firstQuestionMatch[1].trim();
+                }
+            }
+            return "ഹലോ, ഞാൻ നിങ്ങളുമായി സംസാരിക്കാൻ തയ്യാറാണ്. എന്താണ് നിങ്ങൾക്ക് സഹായിക്കാൻ കഴിയുക?";
+        };
+
+        const initialPrompt = extractFirstQuestion(systemPrompt);
+        logger.log(`[GeminiLiveService] [Session ${sessionId}] Attempting to send initial prompt: ${initialPrompt}`);
 
         try {
             await session.sendRealtimeInput({
-                text: "ഹലോ, ഞാൻ നിങ്ങളുമായി സംസാരിക്കാൻ തയ്യാറാണ്. എന്താണ് നിങ്ങൾക്ക് സഹായിക്കാൻ കഴിയുക?"
+                text: initialPrompt
             });
-
+            logger.log(`[GeminiLiveService] [Session ${sessionId}] Initial prompt sent successfully.`);
+            await firstAudioPromise; // Wait for the first audio chunk
+            logger.log(`[GeminiLiveService] [Session ${sessionId}] First audio chunk received for initial prompt.`);
         } catch (promptError) {
-            logger.error(`[GeminiLiveService] [Session ${sessionId}] Error sending initial prompt:`, promptError);
+            logger.error(`[GeminiLiveService] [Session ${sessionId}] Error sending initial prompt or waiting for audio:`, promptError);
             // Don't throw error, session can still work without initial prompt
         }
 

@@ -3,6 +3,8 @@ import { logger } from '../../utils/logger';
 import { WebSocket } from 'ws';
 
 import { AudioProcessor } from './audioProcessor';
+import { getWorkflowStepsByGroupId, WorkflowStep } from '../../services/workflow.service';
+import prisma from '../../lib/prisma';
 
 export class GeminiLiveBridge {
     private static readonly MAX_AUDIO_BUFFER = 10;
@@ -24,7 +26,7 @@ export class GeminiLiveBridge {
     private streamSid: string | null = null; // Added to manage the stream SID
 
     private isAgentSpeaking = false;
-    
+
 
     private endOfTurnTimer: NodeJS.Timeout | null = null;
     private backchannelTimer: NodeJS.Timeout | null = null;
@@ -50,6 +52,47 @@ export class GeminiLiveBridge {
         // You can implement logic to keep a session open and ready for new calls
         if (!GeminiLiveBridge.warmSession) {
             GeminiLiveBridge.warmSession = await geminiService.startSession(systemPrompt, () => { console.log('shahi') });
+        }
+    }
+
+    private workflowSteps: WorkflowStep[] = [];
+    private currentStepIndex = 0;
+    private groupId: number | null = null;
+
+    public async initializeWorkflow(groupId: number | null) {
+        this.groupId = groupId;
+        if (!groupId) {
+            return;
+        }
+        try {
+            this.workflowSteps = await getWorkflowStepsByGroupId(groupId);
+            this.currentStepIndex = 0;
+        } catch (err) {
+            // Only log error
+            logger.error('[GeminiLiveBridge] Error initializing workflow:', err);
+        }
+    }
+
+    public async updateStepIndexInDb(callSessionId: number, callHistoryId: number | null = null) {
+        if (this.groupId == null) return;
+        try {
+            await prisma.call_session.update({
+                where: { id: callSessionId },
+                data: { current_index: this.currentStepIndex, updated_at: new Date() },
+            });
+            if (callHistoryId) {
+                await prisma.call_history.update({
+                    where: { id: callHistoryId },
+                    data: {
+                        current_step: JSON.stringify({
+                            workflow_id: this.groupId,
+                            step_id: this.workflowSteps[this.currentStepIndex]?.id || null,
+                        }), updated_at: new Date()
+                    },
+                });
+            }
+        } catch (err) {
+            logger.error('[GeminiLiveBridge] Error updating step index in DB:', err);
         }
     }
 
@@ -107,12 +150,13 @@ export class GeminiLiveBridge {
         if (this.incomingAudioBuffer.length === 0) {
             return;
         }
-
+        if (!this.session) {
+            this.incomingAudioBuffer = [];
+            return;
+        }
         // Concatenate all buffered audio chunks
-        const combinedAudio = Buffer.concat(this.incomingAudioBuffer);
-        this.incomingAudioBuffer = []; // Clear the buffer
-
-        logger.debug(`[GeminiLiveBridge] Processing combined incoming audio buffer of size ${combinedAudio.length}`);
+        const combinedAudio = Buffer.concat(this.incomingAudioBuffer as any);
+        this.incomingAudioBuffer = [];
         await this.sendAudioToGemini(combinedAudio);
     }
 
@@ -130,7 +174,7 @@ export class GeminiLiveBridge {
         }
 
         // Concatenate all buffered audio chunks
-        const combinedAudio = Buffer.concat(this.outgoingAudioBuffer);
+        const combinedAudio = Buffer.concat(this.outgoingAudioBuffer as any);
         this.outgoingAudioBuffer = []; // Clear the buffer
 
         try {
@@ -246,7 +290,7 @@ export class GeminiLiveBridge {
             // if (this.endOfTurnTimer) clearTimeout(this.endOfTurnTimer);
             // if (this.backchannelTimer) clearTimeout(this.backchannelTimer);
 
-            
+
 
 
 
@@ -310,7 +354,7 @@ export class GeminiLiveBridge {
         }, GeminiLiveBridge.OUTGOING_BUFFER_MS);
     }
 
-    
+
 
 
 
