@@ -33,7 +33,7 @@ export class AudioProcessor {
         }
         try {
             // Initialize resamplers with a faster converter type
-            this.srcDown = await create(1, 16000, 8000, { converterType: ConverterType.SRC_SINC_FASTEST });
+            this.srcDown = await create(1, 24000, 8000, { converterType: ConverterType.SRC_SINC_FASTEST });
             this.srcUp = await create(1, 8000, 16000, { converterType: ConverterType.SRC_SINC_FASTEST });
             this.isInitialized = true;
             logger.log('[AudioProcessor] Resamplers initialized successfully.');

@@ -24,7 +24,7 @@ export class GeminiLiveBridge {
     private streamSid: string | null = null; // Added to manage the stream SID
 
     private isAgentSpeaking = false;
-    private agentSpeechBuffer: Buffer[] = [];
+    
 
     private endOfTurnTimer: NodeJS.Timeout | null = null;
     private backchannelTimer: NodeJS.Timeout | null = null;
@@ -34,6 +34,14 @@ export class GeminiLiveBridge {
     private audioBufferQueue: Buffer[] = [];
 
     private _droppedAudioWarned = false;
+
+    private incomingAudioBuffer: Buffer[] = []; // Jitter buffer for incoming audio
+    private incomingAudioTimer: NodeJS.Timeout | null = null; // Timer for jitter buffer
+    private static readonly JITTER_BUFFER_MS = 50; // Jitter buffer delay (e.g., 50ms)
+
+    private outgoingAudioBuffer: Buffer[] = []; // Buffer for outgoing audio to Twilio
+    private outgoingAudioTimer: NodeJS.Timeout | null = null; // Timer for outgoing audio buffer
+    private static readonly OUTGOING_BUFFER_MS = 50; // Outgoing buffer delay (e.g., 50ms)
 
     // (Optional) Static warm session holder
     private static warmSession: any = null;
@@ -91,6 +99,85 @@ export class GeminiLiveBridge {
             }
         } catch (err) {
             logger.error('[GeminiLiveBridge] Error sending audio to Gemini:', err);
+        }
+    }
+
+    // New: Process buffered incoming audio
+    private async _processIncomingAudioBuffer() {
+        if (this.incomingAudioBuffer.length === 0) {
+            return;
+        }
+
+        // Concatenate all buffered audio chunks
+        const combinedAudio = Buffer.concat(this.incomingAudioBuffer);
+        this.incomingAudioBuffer = []; // Clear the buffer
+
+        logger.debug(`[GeminiLiveBridge] Processing combined incoming audio buffer of size ${combinedAudio.length}`);
+        await this.sendAudioToGemini(combinedAudio);
+    }
+
+    // New: Process buffered outgoing audio
+    private async _processOutgoingAudioBuffer() {
+        if (this.outgoingAudioBuffer.length === 0) {
+            this.isAgentSpeaking = false;
+            return;
+        }
+
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            this.isAgentSpeaking = false;
+            this.outgoingAudioBuffer = []; // Clear buffer if WebSocket is not open
+            return;
+        }
+
+        // Concatenate all buffered audio chunks
+        const combinedAudio = Buffer.concat(this.outgoingAudioBuffer);
+        this.outgoingAudioBuffer = []; // Clear the buffer
+
+        try {
+            this.lastResponseSent = Date.now();
+
+            if (!this.streamSid) {
+                logger.error('[GeminiLiveBridge] No streamSid available. Cannot send media.');
+                return;
+            }
+
+            if (combinedAudio.length === 0) {
+                logger.error(`[GeminiLiveBridge] Dropped empty combined audio chunk from Gemini.`);
+                return;
+            }
+
+            const t0 = Date.now();
+            // Process the audio for Twilio (downsample to 8kHz and encode as μ-law)
+            const twilioAudioChunk = await AudioProcessor.processAudioForTwilio(combinedAudio);
+            const t1 = Date.now();
+            if (t1 - t0 > 20) {
+                logger.warn(`[GeminiLiveBridge] Twilio audio processing took ${t1 - t0}ms`);
+            }
+            if (twilioAudioChunk.length === 0) {
+                logger.error(`[GeminiLiveBridge] Dropped empty twilioAudioChunk after downsampling.`);
+                return;
+            }
+
+            // Base64 encode the payload
+            const base64Payload = twilioAudioChunk.toString('base64');
+
+            // Create the Twilio Media Streams message
+            const twilioMessage = JSON.stringify({
+                event: 'media',
+                streamSid: this.streamSid,
+                media: {
+                    track: 'outbound',
+                    payload: base64Payload,
+                },
+            });
+
+            // Send it back over the WebSocket
+            this.ws.send(twilioMessage);
+
+        } catch (error) {
+            logger.error('[GeminiLiveBridge] Error handling Gemini response:', error);
+        } finally {
+            this.isAgentSpeaking = false;
         }
     }
 
@@ -159,9 +246,7 @@ export class GeminiLiveBridge {
             // if (this.endOfTurnTimer) clearTimeout(this.endOfTurnTimer);
             // if (this.backchannelTimer) clearTimeout(this.backchannelTimer);
 
-            if (this.isAgentSpeaking) {
-                this.agentSpeechBuffer = []; // Clear the agent's speech buffer
-            }
+            
 
 
 
@@ -187,7 +272,17 @@ export class GeminiLiveBridge {
                 return;
             }
 
-            await this.sendAudioToGemini(audioData);
+            this.incomingAudioBuffer.push(audioData);
+
+            // If a timer is already set, clear it to extend the buffering period
+            if (this.incomingAudioTimer) {
+                clearTimeout(this.incomingAudioTimer);
+            }
+
+            // Set a new timer to process the buffered audio after JITTER_BUFFER_MS
+            this.incomingAudioTimer = setTimeout(() => {
+                this._processIncomingAudioBuffer();
+            }, GeminiLiveBridge.JITTER_BUFFER_MS);
 
             // Set timers for VAD and backchanneling
             // this.backchannelTimer = setTimeout(() => this.playFillerSound(), 450); // Play filler after 450ms pause
@@ -202,72 +297,20 @@ export class GeminiLiveBridge {
 
     private handleGeminiResponse(audioChunk: Buffer) {
         this.isAgentSpeaking = true;
-        this.agentSpeechBuffer.push(audioChunk);
-        this.flushAgentSpeech();
-    }
+        this.outgoingAudioBuffer.push(audioChunk);
 
-    private async flushAgentSpeech() {
-        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-            this.isAgentSpeaking = false;
-            return;
+        // If a timer is already set, clear it to extend the buffering period
+        if (this.outgoingAudioTimer) {
+            clearTimeout(this.outgoingAudioTimer);
         }
 
-        while (this.agentSpeechBuffer.length > 0) {
-            const audioChunk = this.agentSpeechBuffer.shift();
-            if (!audioChunk) continue;
-
-            try {
-
-                this.lastResponseSent = Date.now();
-
-
-                if (!this.streamSid) {
-                    logger.error('[GeminiLiveBridge] No streamSid available. Cannot send media.');
-                    continue;
-                }
-
-                if (audioChunk.length === 0) {
-                    logger.error(`[GeminiLiveBridge] Dropped empty audio chunk from Gemini.`);
-                    continue;
-                }
-
-                const t0 = Date.now();
-                // 1. Process the audio for Twilio (downsample to 8kHz and encode as μ-law)
-                const twilioAudioChunk = await AudioProcessor.processAudioForTwilio(audioChunk);
-                const t1 = Date.now();
-                if (t1 - t0 > 20) {
-                    logger.warn(`[GeminiLiveBridge] Twilio audio processing took ${t1 - t0}ms`);
-                }
-                if (twilioAudioChunk.length === 0) {
-                    logger.error(`[GeminiLiveBridge] Dropped empty twilioAudioChunk after downsampling.`);
-                    continue;
-                }
-
-                // 2. Base64 encode the payload
-                const base64Payload = twilioAudioChunk.toString('base64');
-
-                // 3. Create the Twilio Media Streams message
-                const twilioMessage = JSON.stringify({
-                    event: 'media',
-                    streamSid: this.streamSid,
-                    media: {
-                        track: 'outbound',
-                        payload: base64Payload,
-                    },
-                });
-
-                // 4. Send it back over the WebSocket
-                this.ws.send(twilioMessage);
-
-            } catch (error) {
-                logger.error('[GeminiLiveBridge] Error handling Gemini response:', error);
-            }
-        }
-        this.isAgentSpeaking = false;
-        // if (this.session && !this.isAgentSpeaking) { // Removed comfort noise logic
-        //     this.startComfortNoise();
-        // }
+        // Set a new timer to process the buffered audio after OUTGOING_BUFFER_MS
+        this.outgoingAudioTimer = setTimeout(() => {
+            this._processOutgoingAudioBuffer();
+        }, GeminiLiveBridge.OUTGOING_BUFFER_MS);
     }
+
+    
 
 
 

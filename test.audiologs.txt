@@ -1,0 +1,1023 @@
+GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveService] [Session 1752756864824] [IN] Interruption detected.
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveService] [Session 1752756864824] [IN] Turn complete.
+[GeminiLiveBridge] handleTurnComplete called
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 3840
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 2, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 2880
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 1, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 960
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 3, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 4800
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 2, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 2880
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 640
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 640
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 1, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 960
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 800
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 800
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 4, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 6720
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 6720
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 5760
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 960
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 960
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1120
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1120
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1280
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1280
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1440
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 1440
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 1, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 960
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 1600
+[GeminiLiveBridge] Sending audio chunk to Gemini, chunk.length: 1600
+[GeminiLiveBridge] sendAudioToGemini called, audioData.length: 1600
+[GeminiLiveBridge] sendAudioToGemini processed PCM length: 6400
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 0, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Not enough PCM for full frame. Leftover: 0
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 4, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 6720
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 1
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 160
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 160
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] handleGeminiResponse called, audioChunk.length: 1920
+[GeminiLiveBridge] sendTwilioAudioChunk called. agentSpeechBuffer.length: 4, leftoverPcmBuffer.length: 0
+[GeminiLiveBridge] Processing PCM frame for Twilio. Size: 960
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Attempting to send audio chunk to Twilio. Stream SID: MZ52d0ab4afb3e03a5e18e5327f616c99e
+[GeminiLiveBridge] Successfully sent 20ms audio chunk to Twilio. Leftover PCM: 6720
+[GeminiLiveBridge] handleTwilioAudio called, state: 2, audioData.length: 160
+[GeminiLiveBridge] Interrupting due to incoming Twilio audio
+[GeminiLiveBridge] handleInterrupt called
+[GeminiLiveBridge] Sent clear message to Twilio.
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 320
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 320
+[GeminiLiveBridge] handleTwilioAudio called, state: 1, audioData.length: 160
+[GeminiLiveBridge] processAudioQueue called, audioQueue.length: 2
+[GeminiLiveBridge] processAudioQueue combinedBuffer.length: 480
+[GeminiLiveBridge] processAudioQueue leftover buffer length: 480
+^CSIGINT signal received: closing HTTP server
+[AudioProcessor] Resamplers destroyed.
