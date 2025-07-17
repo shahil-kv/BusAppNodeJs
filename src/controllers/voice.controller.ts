@@ -9,14 +9,6 @@ const prisma = new PrismaClient();
 
 export const voiceHandler = async (req: Request, res: Response) => {
   try {
-    logger.log('=== VOICE HANDLER CALLED ===');
-    logger.log('Incoming /voice-update request:', {
-      body: req.body,
-      query: req.query,
-      headers: req.headers,
-      method: req.method,
-      url: req.url,
-    });
 
     // Construct proper WebSocket URL
     let mediaStreamUrl: string;
@@ -34,7 +26,6 @@ export const voiceHandler = async (req: Request, res: Response) => {
       return res.status(500).send('Configuration error: WebSocket URL not configured');
     }
 
-    logger.log('Final WebSocket URL:', mediaStreamUrl);
 
     // Validate WebSocket URL format
     if (!mediaStreamUrl.startsWith('wss://')) {
@@ -46,18 +37,15 @@ export const voiceHandler = async (req: Request, res: Response) => {
     const callSid = req.body.CallSid || req.query.CallSid;
     let groupId = req.body.groupId || req.query.groupId;
 
-    logger.log('Extracted parameters:', { callSid, groupId });
 
     // If groupId is not present, look it up from call_context using callSid
     if (!groupId && callSid) {
-      logger.log('Looking up groupId from call_context for callSid:', callSid);
       try {
         const ctx = await prisma.call_context.findUnique({
           where: { call_sid: callSid },
         });
         if (ctx) {
           groupId = ctx.group_id;
-          logger.log('Found groupId from database:', groupId);
         } else {
           logger.warn('No call_context found for callSid:', callSid);
         }
@@ -107,11 +95,6 @@ export const voiceHandler = async (req: Request, res: Response) => {
 </Response>`;
     }
 
-    logger.log('=== GENERATED TWIML ===');
-    logger.log(twiml);
-    logger.log('=== END TWIML ===');
-
-    logger.success('TwiML response created for Twilio Media Streams:', mediaStreamUrl);
 
     // Set proper headers for TwiML response
     res.set({
@@ -137,7 +120,6 @@ export const validateWebSocketConnection = async (wsUrl: string): Promise<boolea
     }
 
     // You can add additional validation here
-    logger.log('WebSocket URL validation passed:', wsUrl);
     return true;
   } catch (error) {
     logger.error('Invalid WebSocket URL:', error);

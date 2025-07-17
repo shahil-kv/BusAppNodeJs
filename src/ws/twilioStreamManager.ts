@@ -3,6 +3,10 @@ import { logger } from '../utils/logger';
 import { GeminiLiveService } from '../ai/geminiLive.service';
 import { GeminiLiveBridge } from '../voice/streaming/geminiLiveBridge';
 import { Server } from 'http';
+import { PrismaClient } from '@prisma/client';
+import { createSystemPrompt } from '../services/prompt.service';
+
+const prisma = new PrismaClient();
 
 export class TwilioStreamManager {
     private wss: WebSocketServer;
@@ -41,12 +45,17 @@ export class TwilioStreamManager {
                         const { streamSid, callSid, customParameters } = data.start;
                         const groupId = customParameters?.groupId;
 
-                        bridge = new GeminiLiveBridge(this.geminiService, callSid);
+                        bridge = new GeminiLiveBridge(this.geminiService, callSid, ws);
                         this.activeBridges.set(connectionId, bridge);
                         bridge.setStreamSid(streamSid);
 
-                        const systemPrompt = this.generateSystemPrompt(groupId);
-                        await bridge.startCall(systemPrompt, ws);
+                        const systemPrompt = await this.getSystemPromptForGroup(groupId);
+                        if (!systemPrompt) {
+                            logger.error(`[Connection ${connectionId}] Could not generate system prompt for groupId:`, groupId);
+                            ws.send(JSON.stringify({ event: 'error', message: 'No workflow found for this group.' }));
+                            return;
+                        }
+                        await bridge.startCall(systemPrompt);
                         break;
                     }
                     case 'media':
@@ -80,20 +89,29 @@ export class TwilioStreamManager {
         });
     }
 
-    private generateSystemPrompt(groupId: string | null): string {
-        const basePrompt = `You are a helpful Malayalam AI assistant.`;
-        let groupContext = '';
-        switch (groupId) {
-            case '1':
-                groupContext = ' This is a customer service call for a bus transportation company.';
-                break;
-            case '2':
-                groupContext = ' This is a technical support call.';
-                break;
-            default:
-                groupContext = ' This is a general inquiry call.';
+    private async getSystemPromptForGroup(groupId: string | null) {
+        if (!groupId) return null;
+        logger.log(`[getSystemPromptForGroup] Fetching group for groupId: ${groupId}`);
+        const group = await prisma.groups.findUnique({ where: { id: Number(groupId) } });
+        if (!group || !group.workflow_id) {
+            logger.error(`[getSystemPromptForGroup] No group or workflow_id found for groupId: ${groupId}`);
+            return null;
         }
-        return basePrompt + groupContext;
+        const workflow = await prisma.workflows.findUnique({ where: { id: group.workflow_id } });
+        if (!workflow) {
+            logger.error(`[getSystemPromptForGroup] No workflow found for workflow_id: ${group.workflow_id}`);
+            return null;
+        }
+        let steps;
+        if (typeof workflow.steps === 'string') {
+            steps = JSON.parse(workflow.steps);
+        } else {
+            steps = workflow.steps;
+        }
+        logger.log(`[getSystemPromptForGroup] Workflow steps from DB (pretty):\n${JSON.stringify(steps, null, 2)}`);
+        const prompt = createSystemPrompt(steps);
+        logger.log(`[getSystemPromptForGroup] Final system prompt (full):\n${prompt}`);
+        return prompt;
     }
 
     public getBridgeStats() {
