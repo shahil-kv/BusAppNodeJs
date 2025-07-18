@@ -76,14 +76,8 @@ export class GeminiLiveService {
         if (!session) throw new Error('Session creation returned null');
 
         const extractFirstQuestion = (prompt: string): string => {
-            const workflowSection = prompt.split('**Workflow ചോദ്യങ്ങൾ:**')[1];
-            if (workflowSection) {
-                const firstQuestionMatch = workflowSection.match(/\d+\.\s*(.*)/);
-                if (firstQuestionMatch && firstQuestionMatch[1]) {
-                    return firstQuestionMatch[1].trim();
-                }
-            }
-            return "ഹലോ, ഞാൻ നിങ്ങളുമായി സംസാരിക്കാൻ തയ്യാറാണ്. എന്താണ് നിങ്ങൾക്ക് സഹായിക്കാൻ കഴിയുക?";
+            // For testing, return a simple, static prompt
+            return "ഹലോ, ഇത് ഒരു പരീക്ഷണമാണ്. നിങ്ങൾക്ക് കേൾക്കാൻ കഴിയുന്നുണ്ടോ?"; // "Hello, this is a test. Can you hear me?"
         };
 
         const initialPrompt = extractFirstQuestion(systemPrompt);
