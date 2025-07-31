@@ -89,29 +89,23 @@ export class TwilioStreamManager {
         });
     }
 
-    private async getSystemPromptForGroup(groupId: string | null) {
+    private async getSystemPromptForGroup(groupId: string | null): Promise<string | null> {
         if (!groupId) return null;
-        logger.log(`[getSystemPromptForGroup] Fetching group for groupId: ${groupId}`);
-        const group = await prisma.groups.findUnique({ where: { id: Number(groupId) } });
-        if (!group || !group.workflow_id) {
-            logger.error(`[getSystemPromptForGroup] No group or workflow_id found for groupId: ${groupId}`);
+        try {
+            const group = await prisma.groups.findUnique({ where: { id: Number(groupId) } });
+            if (!group || !group.workflow_id) {
+                return null;
+            }
+            const workflow = await prisma.workflows.findUnique({ where: { id: group.workflow_id } });
+            if (!workflow) {
+                return null;
+            }
+            const steps = typeof workflow.steps === 'string' ? JSON.parse(workflow.steps) : workflow.steps;
+            return createSystemPrompt(steps);
+        } catch (error) {
+            logger.error(`[getSystemPromptForGroup] Error fetching workflow for groupId: ${groupId}`, error);
             return null;
         }
-        const workflow = await prisma.workflows.findUnique({ where: { id: group.workflow_id } });
-        if (!workflow) {
-            logger.error(`[getSystemPromptForGroup] No workflow found for workflow_id: ${group.workflow_id}`);
-            return null;
-        }
-        let steps;
-        if (typeof workflow.steps === 'string') {
-            steps = JSON.parse(workflow.steps);
-        } else {
-            steps = workflow.steps;
-        }
-        logger.log(`[getSystemPromptForGroup] Workflow steps from DB (pretty):\n${JSON.stringify(steps, null, 2)}`);
-        const prompt = createSystemPrompt(steps);
-        logger.log(`[getSystemPromptForGroup] Final system prompt (full):\n${prompt}`);
-        return prompt;
     }
 
     public getBridgeStats() {
@@ -122,15 +116,6 @@ export class TwilioStreamManager {
                 status: bridge.getStatus(),
             })),
         };
-    }
-
-    public async sendTestTone(connectionId: string) {
-        const bridge = this.activeBridges.get(connectionId);
-        if (bridge) {
-            await bridge.sendTestTone();
-            return true;
-        }
-        return false;
     }
 
     public close(callback?: () => void) {
