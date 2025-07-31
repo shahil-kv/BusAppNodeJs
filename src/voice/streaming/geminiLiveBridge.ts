@@ -73,7 +73,7 @@ export class GeminiLiveBridge {
   public async startCall(systemPrompt: string, workflow: WorkflowStep[]) {
     this.workflow = workflow;
     this.currentStepIndex = 0;
-    const initialPrompt = this.workflow.length > 0 ? this.workflow[0].malayalam || this.workflow[0].question : 'ഹലോ, നിങ്ങൾക്ക് എന്നെ കേൾക്കാമോ?';
+    const initialPromptText = this.workflow.length > 0 ? (this.workflow[0].malayalam || this.workflow[0].question) : "ഹലോ, നിങ്ങൾക്ക് എന്നെ കേൾക്കാമോ?";
 
     this.transitionTo(CallState.AI_GREETING, 'Starting call');
     const callbacks: GeminiSessionCallbacks = {
@@ -82,10 +82,12 @@ export class GeminiLiveBridge {
       onError: (error) => this.endCall(error),
       onClose: () => this.endCall(),
     };
-    this.session = await this.geminiService.startSession(systemPrompt, initialPrompt, callbacks);
+    this.session = await this.geminiService.startSession(systemPrompt, callbacks);
     if (this.session) {
       logger.log('[GeminiLiveBridge] Gemini session started successfully.');
       this.outgoingAudioTimer = setInterval(() => this.processOutgoingAudio(), GeminiLiveBridge.OUTGOING_BUFFER_MS);
+      // Send the initial prompt after the session is established
+      this.geminiService.sendText(this.session, initialPromptText);
     } else {
       logger.error('[GeminiLiveBridge] Failed to start Gemini session.');
       this.endCall(new Error('Session startup failed'));

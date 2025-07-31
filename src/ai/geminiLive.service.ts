@@ -16,7 +16,7 @@ export class GeminiLiveService {
         this.ai = new GoogleGenAI({ apiKey });
     }
 
-    async startSession(systemPrompt: string, initialPrompt: string, callbacks: GeminiSessionCallbacks) {
+    async startSession(systemPrompt: string, callbacks: GeminiSessionCallbacks) {
         const sessionId = Date.now();
         logger.log(`[GeminiLiveService] [Session ${sessionId}] Starting new session.`);
 
@@ -62,10 +62,6 @@ export class GeminiLiveService {
                 },
             });
 
-            const initialPrompt = "ഹലോ, ഇത് ഒരു പരീക്ഷണമാണ്. നിങ്ങൾക്ക് കേൾക്കാൻ കഴിയുന്നുണ്ടോ?";
-            logger.log(`[GeminiLiveService] [Session ${sessionId}] Sending initial prompt: ${initialPrompt}`);
-            await session.sendRealtimeInput({ text: initialPrompt });
-
             return session;
 
         } catch (error) {
@@ -92,7 +88,10 @@ export class GeminiLiveService {
         if (!session) return;
         try {
             logger.log(`[GeminiLiveService] Sending text input: "${text}"`);
-            await session.sendRealtimeInput({ text });
+            await session.sendRealtimeInput({
+                text,
+                responseModality: [Modality.AUDIO],
+            });
         } catch (error) {
             logger.error(`[GeminiLiveService] Error sending text input:`, error);
         }
@@ -107,4 +106,3 @@ export class GeminiLiveService {
         }
     }
 }
- 

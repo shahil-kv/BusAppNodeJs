@@ -4,7 +4,7 @@ import { GeminiLiveService } from '../ai/geminiLive.service';
 import { GeminiLiveBridge } from '../voice/streaming/geminiLiveBridge';
 import { Server } from 'http';
 import { PrismaClient } from '@prisma/client';
-import { createSystemPrompt, createInitialPrompt } from '../services/prompt.service';
+import { createSystemPrompt } from '../services/prompt.service';
 import { getWorkflowStepsByGroupId } from '../services/workflow.service';
 
 const prisma = new PrismaClient();
@@ -58,7 +58,6 @@ export class TwilioStreamManager {
                         }
 
                         const systemPrompt = createSystemPrompt(workflow);
-                        const initialPrompt = createInitialPrompt(workflow);
 
                         await bridge.startCall(systemPrompt, workflow);
                         break;
