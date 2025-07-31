@@ -123,7 +123,7 @@ const startCalls = asyncHandler(async (req: Request, res: Response) => {
     });
 
     //get workflow based on the group id 
-    const workflow = await getWorkflowStepsByGroupId(targetGroupId);
+    const workflow = await getWorkflowStepsByGroupId(targetGroupId.toString());
     //created call history for each and every contacts
     await prisma.call_history.createMany({
       data: contactsToCall.map((contact) => ({

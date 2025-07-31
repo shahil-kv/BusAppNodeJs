@@ -16,7 +16,7 @@ export class GeminiLiveService {
         this.ai = new GoogleGenAI({ apiKey });
     }
 
-    async startSession(systemPrompt: string, callbacks: GeminiSessionCallbacks) {
+    async startSession(systemPrompt: string, initialPrompt: string, callbacks: GeminiSessionCallbacks) {
         const sessionId = Date.now();
         logger.log(`[GeminiLiveService] [Session ${sessionId}] Starting new session.`);
 

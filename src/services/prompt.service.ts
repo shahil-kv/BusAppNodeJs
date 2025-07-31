@@ -1,5 +1,3 @@
-// Prompt builder for Gemini Live Malayalam conversational AI
-// Only exports createSystemPrompt for workflow-based system prompts
 import { WorkflowStep } from '../types/call.types';
 
 export function createSystemPrompt(workflow: WorkflowStep[]): string {
@@ -45,7 +43,7 @@ export function createSystemPrompt(workflow: WorkflowStep[]): string {
 - **Flexibility**: Adapt conversation style based on user's mood and responses
 
 **Conversation Style:**
-- ജൈവികവും മൃദുവുമായ ഭാഷ ഉപയോഗിക്കുക
+- ജൈവികവും മൃദലവുമായ ഭാഷ ഉപയോഗിക്കുക
 - ഉപയോക്താവ് കുറച്ച് hesitate ചെയ്‌താൽ താങ്ങുവെച്ച് പ്രതികരിക്കുക, സ്നേഹപൂർവം encourage ചെയ്യുക
 - overly formal അല്ലാത്ത, conversational Malayalam ഉപയോഗിക്കുക — വീട്ടിലിരിക്കുന്നു പോലെ
 - ചെറിയ ചിരികളും, കൗതുകം ഉണർത്തുന്ന natural expressions ഉം ചേർക്കാം
@@ -61,4 +59,11 @@ export function createSystemPrompt(workflow: WorkflowStep[]): string {
 ${workflowContext}
 
 `.trim();
+}
+
+export function createInitialPrompt(workflow: WorkflowStep[]): string {
+    if (workflow.length > 0) {
+        return workflow[0].malayalam || workflow[0].question;
+    }
+    return "ഹലോ, നിങ്ങൾക്ക് എന്നെ കേൾക്കാമോ?"; // Fallback greeting
 } 

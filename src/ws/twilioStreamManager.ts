@@ -4,7 +4,8 @@ import { GeminiLiveService } from '../ai/geminiLive.service';
 import { GeminiLiveBridge } from '../voice/streaming/geminiLiveBridge';
 import { Server } from 'http';
 import { PrismaClient } from '@prisma/client';
-import { createSystemPrompt } from '../services/prompt.service';
+import { createSystemPrompt, createInitialPrompt } from '../services/prompt.service';
+import { getWorkflowStepsByGroupId } from '../services/workflow.service';
 
 const prisma = new PrismaClient();
 
@@ -49,13 +50,17 @@ export class TwilioStreamManager {
                         this.activeBridges.set(connectionId, bridge);
                         bridge.setStreamSid(streamSid);
 
-                        const systemPrompt = await this.getSystemPromptForGroup(groupId);
-                        if (!systemPrompt) {
-                            logger.error(`[Connection ${connectionId}] Could not generate system prompt for groupId:`, groupId);
+                        const workflow = await getWorkflowStepsByGroupId(groupId);
+                        if (!workflow) {
+                            logger.error(`[Connection ${connectionId}] No workflow found for groupId:`, groupId);
                             ws.send(JSON.stringify({ event: 'error', message: 'No workflow found for this group.' }));
                             return;
                         }
-                        await bridge.startCall(systemPrompt);
+
+                        const systemPrompt = createSystemPrompt(workflow);
+                        const initialPrompt = createInitialPrompt(workflow);
+
+                        await bridge.startCall(systemPrompt, workflow);
                         break;
                     }
                     case 'media':
@@ -87,25 +92,6 @@ export class TwilioStreamManager {
         ws.on('error', (error: Error) => {
             logger.error(`[Connection ${connectionId}] Twilio WebSocket error:`, error);
         });
-    }
-
-    private async getSystemPromptForGroup(groupId: string | null): Promise<string | null> {
-        if (!groupId) return null;
-        try {
-            const group = await prisma.groups.findUnique({ where: { id: Number(groupId) } });
-            if (!group || !group.workflow_id) {
-                return null;
-            }
-            const workflow = await prisma.workflows.findUnique({ where: { id: group.workflow_id } });
-            if (!workflow) {
-                return null;
-            }
-            const steps = typeof workflow.steps === 'string' ? JSON.parse(workflow.steps) : workflow.steps;
-            return createSystemPrompt(steps);
-        } catch (error) {
-            logger.error(`[getSystemPromptForGroup] Error fetching workflow for groupId: ${groupId}`, error);
-            return null;
-        }
     }
 
     public getBridgeStats() {

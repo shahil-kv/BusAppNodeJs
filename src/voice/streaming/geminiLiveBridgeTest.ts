@@ -38,7 +38,7 @@ async function main() {
     const minimalPrompt = 'നമസ്കാരം! ഞാൻ ഒരു ടെസ്റ്റ് ബോട്ട് ആണ്. നിങ്ങൾക്ക് എങ്ങനെ സഹായിക്കാം?';
 
     logger.log('--- Starting GeminiLiveBridge test session ---');
-    await bridge.startCall(minimalPrompt);
+    await bridge.startCall(minimalPrompt, []);
 
     // Wait a bit to see if audio is received
     logger.log('Waiting 5 seconds for Gemini audio...');

@@ -84,7 +84,7 @@ const callStatusHandler = asyncHandler(async (req: Request, res: Response) => {
       where: { id: callHistory.session_id },
       data: { current_index: { increment: 1 }, updated_at: new Date() },
     });
-    const workflow = await getWorkflowStepsByGroupId(session.group_id);
+    const workflow = await getWorkflowStepsByGroupId(session.group_id.toString());
     await initiateNextCall(callHistory.session_id, req, workflow);
   }
 

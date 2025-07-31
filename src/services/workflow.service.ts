@@ -10,16 +10,22 @@ export interface WorkflowStep {
 }
 
 // Get workflow steps for a group by groupId (database-backed only)
-export async function getWorkflowStepsByGroupId(groupId: number | null): Promise<WorkflowStep[]> {
+export async function getWorkflowStepsByGroupId(groupId: string | null): Promise<WorkflowStep[]> {
   if (!groupId) {
     logger.error('No groupId provided, cannot fetch workflow');
     throw new Error('groupId is required to fetch workflow');
   }
 
-  try {
-    logger.log(`[WorkflowService] Fetching workflow for groupId: ${groupId}`);
-    const group = await prisma.groups.findUnique({
-      where: { id: groupId },
+  const numericGroupId = parseInt(groupId, 10);
+    if (isNaN(numericGroupId)) {
+        logger.error(`[WorkflowService] Invalid groupId provided: ${groupId}`);
+        throw new Error('Invalid groupId');
+    }
+
+    try {
+        logger.log(`[WorkflowService] Fetching workflow for groupId: ${numericGroupId}`);
+        const group = await prisma.groups.findUnique({
+            where: { id: numericGroupId },
       include: { workflows: true },
     });
 
